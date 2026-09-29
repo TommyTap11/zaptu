@@ -32,6 +32,9 @@ Agents request local services. This service validates the request, logs it, and 
 |---|---|---|
 | MCP tools | `/mcp` | `request_home_service`, `request_cleaning`, `get_lead_status`, `list_supported_services` |
 | Health | `GET /health` | Deploy probes |
+| Web form | `GET /` | Public Miami-style intake |
+| Agent spec | `GET /llms.txt` | How assistants should connect |
+| Public intake | `POST /v1/intake` | Same pipeline, no admin token |
 | REST intake | `POST /v1/leads` | Same pipeline for non-MCP agents |
 | REST lookup | `GET /v1/leads/{id}` | Status check |
 | Storage | `data/leads.jsonl` | MVP log |

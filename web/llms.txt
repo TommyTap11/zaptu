@@ -1,0 +1,25 @@
+# Zaptu
+
+Zaptu is an agent services hub. Vertical 1 routes US residential home-service requests (house cleaning first) to affiliate / pay-per-call buyers.
+
+This is a lead request, not a booked appointment. Do not invent a company name or arrival time.
+
+## Connect
+
+- MCP (streamable HTTP): {BASE}/mcp
+- REST intake: POST {BASE}/v1/intake
+- Health: GET {BASE}/health
+- Human form: GET {BASE}/
+
+## Tools
+
+- request_cleaning
+- request_home_service
+- get_lead_status
+- list_supported_services
+
+## Required fields
+
+service_type, zip_code, customer_name, customer_phone, consent_to_contact=true
+
+Monetized today: house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control.

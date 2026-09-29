@@ -17,7 +17,7 @@ from typing import Annotated, Literal
 
 from pydantic import Field
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 
 # Allow `python src/aslc/server.py` without installing the package.
 ROOT = Path(__file__).resolve().parents[2]
@@ -66,6 +66,51 @@ def _token_ok(request: Request) -> bool:
     if header.startswith("Bearer "):
         return header.removeprefix("Bearer ").strip() == settings.api_token
     return request.headers.get("x-api-token") == settings.api_token
+
+
+WEB = ROOT / "web"
+
+
+def _cors(response: Response) -> Response:
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "content-type, authorization, x-api-token"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response
+
+
+@mcp.custom_route("/", methods=["GET"])
+async def home(_request: Request) -> Response:
+    page = WEB / "index.html"
+    if page.exists():
+        return FileResponse(page, media_type="text/html")
+    return PlainTextResponse("Zaptu lead router. POST /v1/intake or connect MCP at /mcp")
+
+
+@mcp.custom_route("/llms.txt", methods=["GET"])
+async def llms(_request: Request) -> Response:
+    path = WEB / "llms.txt"
+    text = path.read_text(encoding="utf-8") if path.exists() else "Zaptu MCP at /mcp"
+    text = text.replace("{BASE}", settings.public_base_url.rstrip("/"))
+    return PlainTextResponse(text)
+
+
+@mcp.custom_route("/v1/intake", methods=["OPTIONS"])
+async def intake_options(_request: Request) -> Response:
+    return _cors(Response(status_code=204))
+
+
+@mcp.custom_route("/v1/intake", methods=["POST"])
+async def public_intake(request: Request) -> Response:
+    """Public front door used by the website form. Same pipeline as MCP/REST."""
+    try:
+        body = await request.json()
+        if not body.get("source_agent"):
+            body["source_agent"] = "web"
+        req = ServiceRequest.model_validate(body)
+    except Exception as exc:
+        return _cors(JSONResponse({"error": "invalid_request", "detail": str(exc)}, status_code=422))
+    result = await submit_request(req)
+    return _cors(JSONResponse(result.model_dump(mode="json"), status_code=202))
 
 
 @mcp.custom_route("/health", methods=["GET"])

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zaptu — request a cleaner</title>
+  <meta name="description" content="Tell Zaptu you need a house cleaner. A local provider will contact you. This is a request, not a booked appointment." />
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --card: #151922;
+      --ink: #f4f1ea;
+      --muted: #9aa3b2;
+      --line: #2a3140;
+      --accent: #c8f06c;
+      --danger: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1c2433 0%, var(--bg) 55%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    main {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+    .brand { letter-spacing: 0.16em; text-transform: uppercase; font-size: 12px; color: var(--accent); }
+    h1 { font-size: 34px; line-height: 1.15; margin: 10px 0 8px; }
+    .lede { color: var(--muted); margin: 0 0 28px; }
+    form, .result {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #0f131a;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font: inherit;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consent {
+      display: flex; gap: 10px; align-items: flex-start;
+      margin: 16px 0; color: var(--muted); font-size: 14px;
+    }
+    .consent input { width: auto; margin-top: 3px; }
+    button {
+      width: 100%;
+      border: 0;
+      background: var(--accent);
+      color: #111;
+      font-weight: 700;
+      padding: 13px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    button[disabled] { opacity: 0.6; cursor: wait; }
+    .note { font-size: 12px; color: var(--muted); margin-top: 12px; }
+    .error { color: var(--danger); margin-top: 10px; }
+    .hidden { display: none; }
+    a { color: var(--accent); }
+    @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand">Zaptu</div>
+    <h1>Need a house cleaner?</h1>
+    <p class="lede">Tell us where and how to reach you. A local provider will call. This is not a confirmed booking.</p>
+
+    <form id="lead-form">
+      <label for="customer_name">Name</label>
+      <input id="customer_name" name="customer_name" required minlength="2" autocomplete="name" />
+
+      <div class="row">
+        <div>
+          <label for="customer_phone">Phone</label>
+          <input id="customer_phone" name="customer_phone" required inputmode="tel" autocomplete="tel" placeholder="3055550100" />
+        </div>
+        <div>
+          <label for="zip_code">ZIP</label>
+          <input id="zip_code" name="zip_code" required inputmode="numeric" pattern="[0-9]{5}" placeholder="33139" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="service_type">Service</label>
+          <select id="service_type" name="service_type">
+            <option value="house_cleaning">House cleaning</option>
+            <option value="deep_cleaning">Deep clean</option>
+            <option value="move_in_out_cleaning">Move-in / move-out</option>
+            <option value="recurring_cleaning">Recurring</option>
+            <option value="pest_control">Pest control</option>
+          </select>
+        </div>
+        <div>
+          <label for="bedrooms">Bedrooms</label>
+          <input id="bedrooms" name="bedrooms" type="number" min="0" max="20" placeholder="2" />
+        </div>
+      </div>
+
+      <label for="notes">Notes (optional)</label>
+      <textarea id="notes" name="notes" rows="3" maxlength="2000" placeholder="Pets, gate code, preferred day…"></textarea>
+
+      <label class="consent">
+        <input type="checkbox" id="consent_to_contact" name="consent_to_contact" required />
+        <span>I agree that a provider or Zaptu partner may call or text me about this request.</span>
+      </label>
+
+      <button type="submit" id="submit">Request a provider</button>
+      <p class="error hidden" id="error"></p>
+      <p class="note">US residential only. We share your details with buyers who pay for qualified leads. We do not promise a specific company or time.</p>
+    </form>
+
+    <div class="result hidden" id="result"></div>
+  </main>
+  <script>
+    const form = document.getElementById("lead-form");
+    const errorEl = document.getElementById("error");
+    const resultEl = document.getElementById("result");
+    const button = document.getElementById("submit");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorEl.classList.add("hidden");
+      button.disabled = true;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const payload = {
+        service_type: data.service_type,
+        zip_code: data.zip_code,
+        customer_name: data.customer_name,
+        customer_phone: data.customer_phone,
+        consent_to_contact: true,
+        notes: data.notes || null,
+        bedrooms: data.bedrooms ? Number(data.bedrooms) : null,
+        source_agent: "zaptu-web",
+      };
+      try {
+        const res = await fetch("/v1/intake", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const body = await res.json();
+        if (!res.ok) {
+          throw new Error(body.detail || body.error || "Request failed");
+        }
+        form.classList.add("hidden");
+        resultEl.classList.remove("hidden");
+        resultEl.innerHTML = `
+          <h2>Request sent</h2>
+          <p>${body.message || "A provider should contact you shortly."}</p>
+          <p class="note">Reference: <code>${body.lead_id}</code> · status: ${body.status}</p>
+        `;
+      } catch (err) {
+        errorEl.textContent = err.message || String(err);
+        errorEl.classList.remove("hidden");
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
