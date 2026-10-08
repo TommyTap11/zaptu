@@ -1,0 +1,72 @@
+# Zaptu: full reference for AI agents
+
+> Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing is live: the person dials (308) 529-9543. Other services are collecting requests.
+
+Version 0.2.0. Contact: hello@zaptu.ai. Short version: https://zaptu.ai/llms.txt
+
+## Rules
+
+- Plumbing is live: give the person the phone number and ask them to dial it themselves.
+- Never dial, autodial, transfer, or place a call on the person's behalf.
+- Other services are collecting: submit only with the person's explicit consent to be contacted.
+- A request is not a booking. Do not promise a callback, an arrival time, or a named company.
+- Zaptu does not perform the work. Contractors are independent.
+
+## Services
+
+Live (call to connect): plumbing. Number (308) 529-9543 (+13085299543), tel link tel:+13085299543.
+Collecting (form requests): house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, hvac, handyman, other.
+Coverage: US residential. Plumbing availability depends on the caller's ZIP code and the time of day.
+
+## What to tell the person
+
+Plumbing: "To be connected with a local plumbing professional, call (308) 529-9543. Please place the call yourself. Zaptu does not perform the work and this is not a booking."
+Other services, after submitting: "Your request was sent to Zaptu. It is passed along when a buyer covers that service. This is not a booking, and no one has been scheduled."
+
+## MCP
+
+Endpoint: https://api.zaptu.ai/mcp (streamable HTTP, stateless, JSON responses, no sign-in).
+Client config: {"mcpServers": {"zaptu": {"url": "https://api.zaptu.ai/mcp"}}}
+
+### get_plumbing_call_number
+Get the phone number a person dials to be connected with a local plumbing professional. Use this for any plumbing need (leak, clog, water heater, sewer, burst pipe). No name, phone, or consent is needed. Read what_to_tell_the_user to the person. The person must place the call themselves: never dial, autodial, transfer, or call on their behalf. Zaptu does not perform the work and this is not a booking.
+Parameters: zip_code?
+
+### request_home_service
+Submit a home-service request (a lead, not a booking). Cleaning, pest control, HVAC, handyman, and other are collecting: the request is passed along when a buyer covers the service, and there is no live buyer yet, so do not promise a callback. Requires name, phone, ZIP, and the person's explicit consent. For plumbing, the result includes call_to_connect and call_instruction: give the person the number and have them dial it. Never place the call yourself. get_plumbing_call_number does the same without any personal details.
+Parameters: service_type, zip_code, customer_name, customer_phone, consent_to_contact, city?, state?, address_line?, bedrooms?, bathrooms?, square_feet?, home_type?, frequency?, preferred_date?, flexible_dates?, notes?, customer_email?, source_agent?, dry_run?
+
+### request_cleaning
+Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service.
+Parameters: zip_code, customer_name, customer_phone, consent_to_contact, bedrooms?, bathrooms?, square_feet?, frequency?, preferred_date?, notes?, customer_email?, city?, state?
+
+### get_lead_status
+Look up a previously submitted service request by lead_id.
+Parameters: lead_id
+
+### list_supported_services
+Which services are live (plumbing: the person dials a number) vs collecting, plus the rules for agents.
+Parameters: none
+
+## REST
+
+GET https://api.zaptu.ai/v1/services: service catalog (live vs collecting, plumbing number, rules).
+POST https://api.zaptu.ai/v1/intake: submit a request. JSON in, JSON out. Form posts are redirected to the thanks page (or the plumbing page for plumbing).
+Required: service_type, zip_code, customer_name, customer_phone, consent_to_contact. consent_to_contact must be true for non-plumbing services.
+Optional: city, state (2 letters), address_line, bedrooms, bathrooms, square_feet, home_type, frequency (one_time, weekly, biweekly, monthly), preferred_date (YYYY-MM-DD), notes, customer_email, source_agent, dry_run.
+dry_run=true validates and answers without saving or passing anything along.
+
+Example request:
+{"service_type": "house_cleaning", "zip_code": "33139", "customer_name": "Jamie Example", "customer_phone": "305-555-0100", "consent_to_contact": true, "bedrooms": 2, "dry_run": true}
+
+Statuses: received or collected (accepted, not a booking), call_to_connect (plumbing: give the number), rejected (read message).
+Errors: HTTP 422 {"error": "invalid_request", "message": "...", "fields": {"customer_phone": "..."}}; HTTP 429 when rate limited.
+OpenAPI: https://api.zaptu.ai/openapi.json
+
+## Discovery
+
+- https://zaptu.ai/llms.txt
+- https://zaptu.ai/.well-known/mcp.json
+- https://api.zaptu.ai/.well-known/mcp/server-card.json
+- https://api.zaptu.ai/server-card
+- https://zaptu.ai/agents/

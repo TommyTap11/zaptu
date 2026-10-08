@@ -3,53 +3,143 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Zaptu agent connector</title>
-  <meta name="description" content="How AI assistants request local services through Zaptu. Required fields, tools, and the rule that this is a lead, not a booking. Plumbing is call-to-connect — never dial for the user." />
+  <title>Zaptu for AI agents — MCP server and API</title>
+  <meta name="description" content="How AI assistants use Zaptu: plumbing is live and the person dials (308) 529-9543; other services are collecting. MCP server, REST intake, OpenAPI, and the rules. Never dial for the user." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://zaptu.ai/agents/" />
   <!-- seo:og -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Zaptu" />
-  <meta property="og:title" content="Zaptu agent connector" />
-  <meta property="og:description" content="How AI assistants request local services through Zaptu. Required fields, tools, and the rule that this is a lead, not a booking. Plumbing is call-to-connect — never dial for the user." />
+  <meta property="og:title" content="Zaptu for AI agents — MCP server and API" />
+  <meta property="og:description" content="How AI assistants use Zaptu: plumbing is live and the person dials (308) 529-9543; other services are collecting. MCP server, REST intake, OpenAPI, and the rules. Never dial for the user." />
   <meta property="og:url" content="https://zaptu.ai/agents/" />
   <meta property="og:image" content="https://zaptu.ai/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Zaptu agent connector" />
-  <meta name="twitter:description" content="How AI assistants request local services through Zaptu. Required fields, tools, and the rule that this is a lead, not a booking. Plumbing is call-to-connect — never dial for the user." />
+  <meta name="twitter:title" content="Zaptu for AI agents — MCP server and API" />
+  <meta name="twitter:description" content="How AI assistants use Zaptu: plumbing is live and the person dials (308) 529-9543; other services are collecting. MCP server, REST intake, OpenAPI, and the rules. Never dial for the user." />
   <meta name="twitter:image" content="https://zaptu.ai/og-image.png" />
   <!-- /seo:og -->
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+  <link rel="alternate" type="application/json" href="https://api.zaptu.ai/openapi.json" title="OpenAPI" />
+  <!-- seo:icons -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#07080b" />
+  <!-- /seo:icons -->
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <header>
     <a class="brand" href="/">Zaptu</a>
-    <nav><a href="/llms.txt">llms.txt</a><a href="/how-it-works/">How it works</a></nav>
+    <nav aria-label="Main">
+      <a href="/plumbing/">Plumbing</a>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/agents/" aria-current="page">For agents</a>
+    </nav>
   </header>
-  <main>
-    <h1>Agent connector</h1>
-    <p class="lede">Use this when a person wants a local service. Collect consent before you submit. Do not invent a company or arrival time. For plumbing, give them the call_to_connect number and have them dial it — never place the call yourself.</p>
-    <pre>service_type
-zip_code
-customer_name
-customer_phone
-consent_to_contact=true
+  <main class="doc">
+    <p class="eyebrow">For AI agents</p>
+    <h1>Zaptu for AI agents</h1>
+    <p class="lede">Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing is live: the person calls a number. Other services are collecting requests.</p>
 
-Optional: bedrooms, notes, preferred_date, city, state, source_agent
+    <section>
+      <h2>The short version</h2>
+      <ol>
+        <li><strong>Plumbing is live.</strong> Give the person <strong>(308) 529-9543</strong> and ask them to dial it themselves. Never dial, autodial, transfer, or place the call for them. No personal details are needed.</li>
+        <li><strong>Everything else is collecting</strong> (cleaning, pest control, HVAC, handyman, other). Collect ZIP, name, phone, and the person&rsquo;s explicit consent to be contacted, then submit. Requests are passed along when a buyer covers the service; there is no live buyer yet.</li>
+        <li><strong>A request is not a booking.</strong> Do not promise a callback, an arrival time, or a named company. Use the <code>message</code> field from the response when you tell the person what happened.</li>
+      </ol>
+    </section>
 
-Tools: request_home_service, request_cleaning, get_lead_status, list_supported_services
+    <section>
+      <h2>Services</h2>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">service_type</th><th scope="col">Status</th><th scope="col">What to do</th></tr></thead>
+        <tbody>
+          <tr><td><code>plumbing</code></td><td>Live (call to connect)</td><td>Give the number; the person dials. Call <code>get_plumbing_call_number</code>.</td></tr>
+          <tr><td><code>house_cleaning</code>, <code>deep_cleaning</code>, <code>move_in_out_cleaning</code>, <code>recurring_cleaning</code></td><td>Collecting</td><td>Submit with consent. Add bedrooms or square feet if known.</td></tr>
+          <tr><td><code>pest_control</code></td><td>Collecting</td><td>Submit with consent.</td></tr>
+          <tr><td><code>hvac</code>, <code>handyman</code>, <code>other</code></td><td>Collecting</td><td>Submit with consent. Describe the job in <code>notes</code>.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>US residential only. The live list is always at <a href="https://api.zaptu.ai/v1/services">api.zaptu.ai/v1/services</a>.</p>
+    </section>
 
-Plumbing: response includes call_to_connect (+13085299543 / (308) 529-9543).
-Read the number aloud. The person must dial. Do not autodial or transfer.
+    <section>
+      <h2>What to tell the person</h2>
+      <p><strong>Plumbing:</strong></p>
+      <pre>Call (308) 529-9543 to be connected with a local plumbing professional.
+Please place the call yourself. Zaptu does not perform the work and this is not a booking.</pre>
+      <p><strong>Other services, after you submit:</strong></p>
+      <pre>Your request was sent to Zaptu. It is passed along when a buyer covers that service.
+This is not a booking, and no one has been scheduled.</pre>
+    </section>
 
-Form: https://zaptu.ai/
-Plumbing page: https://zaptu.ai/plumbing</pre>
+    <section>
+      <h2>Connect over MCP</h2>
+      <p>Streamable HTTP, stateless, no sign-in: <code>https://api.zaptu.ai/mcp</code></p>
+      <pre>{
+  "mcpServers": {
+    "zaptu": { "url": "https://api.zaptu.ai/mcp" }
+  }
+}</pre>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Tool</th><th scope="col">Use it for</th></tr></thead>
+        <tbody>
+          <tr><td><code>get_plumbing_call_number</code></td><td>Plumbing. Returns the number, a tel link, and <code>what_to_tell_the_user</code>. Read-only; no personal details.</td></tr>
+          <tr><td><code>request_home_service</code></td><td>Submit a request for any service. Needs <code>service_type</code>, <code>zip_code</code>, <code>customer_name</code>, <code>customer_phone</code>, <code>consent_to_contact=true</code>. Add <code>dry_run=true</code> to test.</td></tr>
+          <tr><td><code>request_cleaning</code></td><td>Shortcut for house cleaning.</td></tr>
+          <tr><td><code>get_lead_status</code></td><td>Look up a request by <code>lead_id</code>.</td></tr>
+          <tr><td><code>list_supported_services</code></td><td>Live vs collecting services and the rules.</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>REST API</h2>
+      <p>OpenAPI: <a href="https://api.zaptu.ai/openapi.json">api.zaptu.ai/openapi.json</a>. CORS is open, no key needed.</p>
+      <pre>curl -s https://api.zaptu.ai/v1/intake \
+  -H 'Content-Type: application/json' \
+  -d '{"service_type":"house_cleaning","zip_code":"33139",
+       "customer_name":"Jamie Example","customer_phone":"305-555-0100",
+       "consent_to_contact":true,"bedrooms":2,"dry_run":true}'</pre>
+      <p><code>dry_run</code> validates and answers without saving or passing anything along. Leave it out for a real request.</p>
+      <p>Plumbing response (abridged):</p>
+      <pre>{
+  "status": "call_to_connect",
+  "call_to_connect": "+13085299543",
+  "call_to_connect_display": "(308) 529-9543",
+  "call_instruction": "Give the person this phone number and ask them to place the call themselves. ..."
+}</pre>
+      <p>Errors return HTTP 422 with a readable <code>message</code> and a <code>fields</code> map, for example <code>{"error": "invalid_request", "message": "Phone must be a 10-digit US number, like 305-555-0100.", "fields": {"customer_phone": "..."}}</code>. Too many requests returns 429.</p>
+    </section>
+
+    <section>
+      <h2>Discovery files</h2>
+      <ul>
+        <li><a href="/llms.txt">llms.txt</a> and <a href="/llms-full.txt">llms-full.txt</a></li>
+        <li><a href="/.well-known/mcp.json">/.well-known/mcp.json</a></li>
+        <li><a href="https://api.zaptu.ai/.well-known/mcp/server-card.json">Server card</a> (tools and schemas)</li>
+        <li><a href="https://api.zaptu.ai/openapi.json">OpenAPI</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Contact</h2>
+      <p>Questions about the connector: <a href="mailto:hello@zaptu.ai">hello@zaptu.ai</a>.</p>
+    </section>
   </main>
   <footer>
     <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
-    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/privacy/">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>
+    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/how-it-works/">How it works</a> · <a href="/agents/">For agents</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:hello@zaptu.ai">Contact</a></p>
   </footer>
 </body>
 </html>

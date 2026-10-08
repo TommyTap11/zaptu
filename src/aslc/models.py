@@ -169,3 +169,4 @@ class LeadResponse(BaseModel):
     call_to_connect: str | None = None  # E.164, e.g. +13085299543
     call_to_connect_display: str | None = None  # e.g. (308) 529-9543
     call_instruction: str | None = None
+    dry_run: bool = False

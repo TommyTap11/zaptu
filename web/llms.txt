@@ -1,44 +1,42 @@
 # Zaptu
 
-Zaptu is the request hub between AI personal assistants and local services.
-A request is a lead. Do not tell the user a company is booked or a time is confirmed.
-Do not promise that a provider will call back.
-Zaptu connects people with independent local contractors and does not perform the work.
+> Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing is live: the person dials (308) 529-9543. Other services are collecting requests.
 
-Site: https://zaptu.ai/
-Agents: https://zaptu.ai/agents
-Plumbing (call-to-connect): https://zaptu.ai/plumbing
-Sitemap: https://zaptu.ai/sitemap.xml
+## Rules for AI agents
 
-## Required fields
-service_type, zip_code, customer_name, customer_phone, consent_to_contact=true
+- Plumbing (live): give the person (308) 529-9543 (+13085299543) and ask them to place the call themselves. Never dial, autodial, transfer, or place the call on their behalf. No personal details are needed.
+- Everything else (collecting): house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, hvac, handyman, other. Submit only with the person's explicit consent to be contacted. Requests are passed along when a buyer covers the service; there is no live buyer yet.
+- A request is not a booking. Do not promise a callback, an arrival time, or a named company.
+- Required fields for a request: service_type, zip_code, customer_name, customer_phone, consent_to_contact=true.
 
-## service_type
-house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, plumbing, hvac, handyman, other
+What to say for plumbing: "Call (308) 529-9543 to be connected with a local plumbing professional. Please place the call yourself. Zaptu does not perform the work and this is not a booking."
 
-## Routing
-Call-to-connect LIVE (consumer dials; agent must NOT dial): plumbing → (308) 529-9543 / +13085299543.
-Collecting (accepted; passed along when a buyer covers the service — no live form buyer yet): cleaning types, pest_control, hvac, handyman, other.
+## Connect
 
-## Plumbing rule
-When service_type is plumbing, the API/MCP response includes call_to_connect.
-Give the person the number and ask them to place the call themselves.
-Never autodial, transfer, or place the call on their behalf.
+- [MCP server](https://api.zaptu.ai/mcp): streamable HTTP, stateless, no sign-in. Tools: get_plumbing_call_number, request_home_service, request_cleaning, get_lead_status, list_supported_services
+- [Service catalog (JSON)](https://api.zaptu.ai/v1/services): live vs collecting, the plumbing number, and the rules
+- [Request intake](https://api.zaptu.ai/v1/intake): POST JSON; add "dry_run": true to validate without saving
+- [OpenAPI](https://api.zaptu.ai/openapi.json)
+- [MCP discovery](https://zaptu.ai/.well-known/mcp.json) and [server card](https://api.zaptu.ai/.well-known/mcp/server-card.json)
 
-## Tools when MCP is hosted
-request_home_service, request_cleaning, get_lead_status, list_supported_services
-Human form: POST https://api.zaptu.ai/v1/intake
-MCP: https://api.zaptu.ai/mcp
+## Docs
+
+- [Agent guide](https://zaptu.ai/agents/): tools, examples, errors
+- [Full agent reference](https://zaptu.ai/llms-full.txt)
+- [How it works](https://zaptu.ai/how-it-works/)
+- [Plumbing](https://zaptu.ai/plumbing/): call to connect
+- [Privacy](https://zaptu.ai/privacy/)
+- Contact: hello@zaptu.ai
 
 ## Plumbing city pages
 Same call-to-connect number (308) 529-9543 on every page; the person dials.
-- Atlanta, GA: https://zaptu.ai/plumbing/atlanta-ga/
-- Boston, MA: https://zaptu.ai/plumbing/boston-ma/
-- Dallas, TX: https://zaptu.ai/plumbing/dallas-tx/
-- Denver, CO: https://zaptu.ai/plumbing/denver-co/
-- Fort Lauderdale, FL: https://zaptu.ai/plumbing/fort-lauderdale-fl/
-- Las Vegas, NV: https://zaptu.ai/plumbing/las-vegas-nv/
-- Los Angeles, CA: https://zaptu.ai/plumbing/los-angeles-ca/
-- Miami, FL: https://zaptu.ai/plumbing/miami-fl/
-- Phoenix, AZ: https://zaptu.ai/plumbing/phoenix-az/
-- San Diego, CA: https://zaptu.ai/plumbing/san-diego-ca/
+- [Plumber in Atlanta, GA](https://zaptu.ai/plumbing/atlanta-ga/)
+- [Plumber in Boston, MA](https://zaptu.ai/plumbing/boston-ma/)
+- [Plumber in Dallas, TX](https://zaptu.ai/plumbing/dallas-tx/)
+- [Plumber in Denver, CO](https://zaptu.ai/plumbing/denver-co/)
+- [Plumber in Fort Lauderdale, FL](https://zaptu.ai/plumbing/fort-lauderdale-fl/)
+- [Plumber in Las Vegas, NV](https://zaptu.ai/plumbing/las-vegas-nv/)
+- [Plumber in Los Angeles, CA](https://zaptu.ai/plumbing/los-angeles-ca/)
+- [Plumber in Miami, FL](https://zaptu.ai/plumbing/miami-fl/)
+- [Plumber in Phoenix, AZ](https://zaptu.ai/plumbing/phoenix-az/)
+- [Plumber in San Diego, CA](https://zaptu.ai/plumbing/san-diego-ca/)

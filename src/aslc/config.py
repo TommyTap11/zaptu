@@ -75,7 +75,7 @@ class Settings:
         default_factory=lambda: int(os.getenv("RATE_LIMIT_PER_MINUTE", "30"))
     )
     thanks_url: str = field(
-        default_factory=lambda: os.getenv("THANKS_URL", "https://zaptu.ai/thanks")
+        default_factory=lambda: os.getenv("THANKS_URL", "https://zaptu.ai/thanks/")
     )
 
 

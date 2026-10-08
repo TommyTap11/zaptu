@@ -3,40 +3,81 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Zaptu — local services for AI assistants</title>
-  <meta name="description" content="Zaptu connects people with independent local contractors for cleaning, pest control, plumbing, HVAC, and handyman requests. Not a booking. Zaptu does not perform the work." />
+  <title>Zaptu — get connected with a local home-service pro</title>
+  <meta name="description" content="Call to be connected with a local plumbing professional, or send a request for cleaning, pest control, HVAC, or handyman work. Zaptu connects you with independent contractors and does not perform the work." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://zaptu.ai/" />
   <!-- seo:og -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Zaptu" />
-  <meta property="og:title" content="Zaptu — local services for AI assistants" />
-  <meta property="og:description" content="Zaptu connects people with independent local contractors for cleaning, pest control, plumbing, HVAC, and handyman requests. Not a booking. Zaptu does not perform the work." />
+  <meta property="og:title" content="Zaptu — get connected with a local home-service pro" />
+  <meta property="og:description" content="Call to be connected with a local plumbing professional, or send a request for cleaning, pest control, HVAC, or handyman work. Zaptu connects you with independent contractors and does not perform the work." />
   <meta property="og:url" content="https://zaptu.ai/" />
   <meta property="og:image" content="https://zaptu.ai/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Zaptu — local services for AI assistants" />
-  <meta name="twitter:description" content="Zaptu connects people with independent local contractors for cleaning, pest control, plumbing, HVAC, and handyman requests. Not a booking. Zaptu does not perform the work." />
+  <meta name="twitter:title" content="Zaptu — get connected with a local home-service pro" />
+  <meta name="twitter:description" content="Call to be connected with a local plumbing professional, or send a request for cleaning, pest control, HVAC, or handyman work. Zaptu connects you with independent contractors and does not perform the work." />
   <meta name="twitter:image" content="https://zaptu.ai/og-image.png" />
   <!-- /seo:og -->
+  <!-- seo:icons -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#07080b" />
+  <!-- /seo:icons -->
   <link rel="stylesheet" href="/style.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://zaptu.ai/#org",
+      "name": "Zaptu",
+      "url": "https://zaptu.ai/",
+      "logo": "https://zaptu.ai/icon-512.png",
+      "email": "hello@zaptu.ai",
+      "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://zaptu.ai/#website",
+      "name": "Zaptu",
+      "url": "https://zaptu.ai/",
+      "publisher": { "@id": "https://zaptu.ai/#org" }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <header>
-    <a class="brand" href="/">ZAPTU</a>
-    <nav>
+    <a class="brand" href="/">Zaptu</a>
+    <nav aria-label="Main">
+      <a href="/plumbing/">Plumbing</a>
       <a href="/how-it-works/">How it works</a>
       <a href="/agents/">For agents</a>
-      <a href="/llms.txt">llms.txt</a>
     </nav>
   </header>
   <main>
-    <p class="eyebrow">Services for assistants</p>
+    <p class="eyebrow">Local home services</p>
     <h1>Get connected with a local pro.</h1>
-    <p class="lede">Start self-serve in a minute. Assistants and people use the same request. We connect you with independent local contractors — we do not perform the work, and this is never a confirmed appointment.</p>
+    <p class="lede">Call to be connected with a local plumbing professional, or send a request for other home services. We connect you with independent local contractors — we do not perform the work, and this is never a confirmed appointment.</p>
+    <div class="hero-call">
+      <a class="btn-call" href="tel:+13085299543">Plumbing: call (308) 529-9543</a>
+      <p><strong>You place the call.</strong> It connects you with a local plumbing professional. Not a booking by Zaptu.</p>
+    </div>
     <div class="plans">
+      <a class="plan live" href="/plumbing/">
+        <span class="tag">Live</span>
+        <h2>Plumbing</h2>
+        <p>Call to be connected with a local plumbing professional.</p>
+        <ul><li>You place the call</li><li>Leaks, clogs, water heaters, sewer lines</li><li>Not a booking by Zaptu</li></ul>
+        <span class="btn">Call for plumbing</span>
+      </a>
       <a class="plan" href="/cleaning/">
         <span class="tag">Collecting</span>
         <h2>Cleaning</h2>
@@ -51,13 +92,6 @@
         <ul><li>Homeowner or tenant</li><li>Passed along when a buyer is live</li><li>Not a booked visit</li></ul>
         <span class="btn ghost">Request pest</span>
       </a>
-      <a class="plan" href="/plumbing/">
-        <span class="tag">Live</span>
-        <h2>Plumbing</h2>
-        <p>Call to be connected with a local plumbing professional.</p>
-        <ul><li>You place the call</li><li>Tracking number on the plumbing page</li><li>Not a booking by Zaptu</li></ul>
-        <span class="btn">Call for plumbing</span>
-      </a>
       <a class="plan" href="/hvac/">
         <span class="tag">Collecting</span>
         <h2>HVAC</h2>
@@ -67,7 +101,7 @@
       </a>
     </div>
 
-<!-- cities:start -->
+    <!-- cities:start -->
     <section class="home-cities">
       <h2><a href="/plumbing/">Plumbing by city</a></h2>
       <p>Call to be connected with a local plumbing professional. City pages:</p>
@@ -86,24 +120,21 @@
     </section>
     <!-- cities:end -->
 
-    <!-- Form posts to the API once api.zaptu.ai is live.
-     Tradeoff: with action pointing off-site, Netlify Forms will NOT store submissions.
-     Backup options: (a) restore action='/thanks' until API is live, or
-     (b) dual-write via a Netlify Function. form-name + honeypot kept for compatibility. -->
-    <form id="request" action='https://api.zaptu.ai/v1/intake' method='POST' name='service-request'>
+    <form id="request" action="https://api.zaptu.ai/v1/intake" method="post" name="service-request">
       <input type="hidden" name="form-name" value="service-request" />
-      <p class="hp"><label>Do not fill <input name="bot-field" /></label></p>
+      <p class="hp" aria-hidden="true"><label>Do not fill <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
       <h2>Send a request</h2>
+      <p class="hint">For cleaning, pest control, HVAC, handyman, and other home services. Plumbing? <a href="tel:+13085299543">Call (308) 529-9543</a> instead.</p>
       <label for="customer_name">Name</label>
-      <input id="customer_name" name="customer_name" required minlength="2" autocomplete="name" />
+      <input id="customer_name" name="customer_name" required minlength="2" maxlength="120" autocomplete="name" />
       <div class="row">
         <div>
           <label for="customer_phone">Phone</label>
-          <input id="customer_phone" name="customer_phone" required inputmode="tel" placeholder="3055550100" />
+          <input id="customer_phone" name="customer_phone" type="tel" required minlength="10" autocomplete="tel-national" inputmode="tel" placeholder="305-555-0100" />
         </div>
         <div>
           <label for="zip_code">ZIP</label>
-          <input id="zip_code" name="zip_code" required pattern="[0-9]{5}" placeholder="33139" />
+          <input id="zip_code" name="zip_code" required pattern="[0-9]{5}" maxlength="5" inputmode="numeric" autocomplete="postal-code" placeholder="33139" />
         </div>
       </div>
       <div class="row">
@@ -113,29 +144,59 @@
             <option value="house_cleaning">House cleaning</option>
             <option value="deep_cleaning">Deep clean</option>
             <option value="move_in_out_cleaning">Move-in / move-out</option>
-            <option value="recurring_cleaning">Recurring</option>
+            <option value="recurring_cleaning">Recurring cleaning</option>
             <option value="pest_control">Pest control</option>
-            <option value="plumbing">Plumbing (prefer Call on plumbing page)</option>
             <option value="hvac">HVAC</option>
             <option value="handyman">Handyman</option>
             <option value="other">Other</option>
           </select>
         </div>
         <div>
-          <label for="bedrooms">Bedrooms, if cleaning</label>
-          <input id="bedrooms" name="bedrooms" type="number" min="0" max="20" />
+          <label for="bedrooms">Bedrooms (cleaning only)</label>
+          <input id="bedrooms" name="bedrooms" type="number" min="0" max="20" inputmode="numeric" />
         </div>
       </div>
-      <label for="notes">What they need</label>
+      <label for="notes">What do you need?</label>
       <textarea id="notes" name="notes" rows="3" maxlength="2000"></textarea>
-      <label class="consent"><input type="checkbox" name="consent_to_contact" value="yes" required /><span>I agree a provider or Zaptu partner may call or text about this request.</span></label>
+      <label class="consent" for="consent_to_contact"><input type="checkbox" id="consent_to_contact" name="consent_to_contact" value="yes" required /><span>I agree a provider or Zaptu partner may call or text about this request.</span></label>
       <button type="submit">Send request</button>
-      <p class="note">US residential. We pass your request along when a buyer covers that service — this is not a booking. For plumbing, use the <a href="/plumbing/">call-to-connect number</a>. <a href="/privacy/">Privacy</a> · <a href="/handyman/">Handyman</a></p>
+      <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+      <p class="note">US residential. We pass your request along when a buyer covers that service — this is not a booking. <a href="/privacy/">Privacy</a> · <a href="/handyman/">Handyman</a></p>
     </form>
+    <p class="note">Building an AI assistant? Read the <a href="/agents/">agent guide</a>.</p>
   </main>
   <footer>
     <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
-    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/privacy/">Privacy</a> · <a href="/agents/">Agents</a> · <a href="/sitemap.xml">Sitemap</a></p>
+    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/how-it-works/">How it works</a> · <a href="/agents/">For agents</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:hello@zaptu.ai">Contact</a></p>
   </footer>
+  <script>
+(function () {
+  var f = document.getElementById("request");
+  if (!f || !window.fetch || !window.URLSearchParams) return;
+  var q = new URLSearchParams(location.search), sel = f.service_type, st = document.getElementById("form-status");
+  var want = q.get("service");
+  if (want) for (var i = 0; i < sel.options.length; i++) if (sel.options[i].value === want) sel.value = want;
+  f.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var data = {};
+    new FormData(f).forEach(function (v, k) { data[k] = v; });
+    data.consent_to_contact = f.consent_to_contact.checked;
+    if (q.get("dry_run") === "1") data.dry_run = true;
+    var btn = f.querySelector("button[type=submit]");
+    btn.disabled = true; st.textContent = "Sending...";
+    [].forEach.call(f.querySelectorAll("[aria-invalid]"), function (el) { el.removeAttribute("aria-invalid"); });
+    fetch(f.action, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (x.ok && x.j.status !== "rejected") { location.href = x.j.status === "call_to_connect" ? "/plumbing/" : "/thanks/"; return; }
+        var fields = (x.j && x.j.fields) || {};
+        Object.keys(fields).forEach(function (k) { if (f[k] && f[k].setAttribute) f[k].setAttribute("aria-invalid", "true"); });
+        st.textContent = (x.j && x.j.message) || "Something went wrong. Please try again.";
+        btn.disabled = false;
+      })
+      .catch(function () { st.textContent = "Could not reach the server. Check your connection and try again, or email hello@zaptu.ai."; btn.disabled = false; });
+  });
+})();
+  </script>
 </body>
 </html>

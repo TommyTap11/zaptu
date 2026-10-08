@@ -11,7 +11,7 @@ from .validation import is_call_to_connect, is_collected_only, is_monetizable, v
 # Honest copy only — promise contact, never a booked job / invented provider / ETA.
 NEXT_STEPS_RECEIVED = [
     "Your request was received.",
-    "We pass it along when a buyer covers that service — that is not guaranteed yet.",
+    "We pass it along when a buyer covers that service. There is no live buyer yet.",
     "This is a contact request, not a confirmed appointment. Do not promise a callback.",
 ]
 
@@ -34,9 +34,46 @@ NEXT_STEPS_REJECTED = [
 ]
 
 
-async def submit_request(req: ServiceRequest) -> LeadResponse:
+DRY_RUN_NOTE = "Dry run: nothing was saved or passed along."
+
+
+async def submit_request(req: ServiceRequest, *, dry_run: bool = False) -> LeadResponse:
+    """Run the intake pipeline. dry_run=True validates and answers without storing or forwarding."""
     problems = validate_request(req)
     lead = LeadRecord(request=req, validation_notes=problems, status=LeadStatus.validated)
+
+    def save(record: LeadRecord) -> None:
+        if not dry_run:
+            append_lead(record)
+
+    def respond(**kwargs) -> LeadResponse:
+        resp = LeadResponse(**kwargs)
+        if dry_run:
+            resp.message = f"{DRY_RUN_NOTE} {resp.message}"
+            resp.dry_run = True
+        return resp
+
+    # Pay-per-call: the person dials the tracking number. Nobody contacts them, so this
+    # does not depend on consent_to_contact. Plumbing form leads are never forwarded.
+    if is_call_to_connect(req):
+        campaign = get_call_to_connect(req.service_type)
+        assert campaign is not None
+        lead.status = LeadStatus.call_to_connect
+        lead.public_message = (
+            f"For {req.service_type} in ZIP {req.zip_code}, give the person "
+            f"{campaign.display} and ask them to call that number themselves. "
+            "Do not place the call for them. This is not a booking by Zaptu."
+        )
+        save(lead)
+        return respond(
+            lead_id=lead.id,
+            status=lead.status,
+            message=lead.public_message,
+            next_steps=NEXT_STEPS_CALL_TO_CONNECT,
+            call_to_connect=campaign.phone_e164,
+            call_to_connect_display=campaign.display,
+            call_instruction=campaign.instruction,
+        )
 
     # Hard reject (no consent / bad ZIP / past date).
     if any(p.startswith("Customer must consent") for p in problems) or any(
@@ -47,34 +84,12 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
             "Request not accepted. "
             + (" ".join(problems) if problems else "Validation failed.")
         )
-        append_lead(lead)
-        return LeadResponse(
+        save(lead)
+        return respond(
             lead_id=lead.id,
             status=lead.status,
             message=lead.public_message,
             next_steps=NEXT_STEPS_REJECTED,
-        )
-
-    # Pay-per-call: return tracking number; do not forward form leads.
-    if is_call_to_connect(req):
-        campaign = get_call_to_connect(req.service_type)
-        assert campaign is not None
-        lead.status = LeadStatus.call_to_connect
-        lead.public_message = (
-            f"For {req.service_type} in ZIP {req.zip_code}, give the person "
-            f"{campaign.display} and ask them to call that number themselves. "
-            "Do not place the call for them. This is not a booking by Zaptu."
-        )
-        # Never forward plumbing (or other call-to-connect) form leads elsewhere.
-        append_lead(lead)
-        return LeadResponse(
-            lead_id=lead.id,
-            status=lead.status,
-            message=lead.public_message,
-            next_steps=NEXT_STEPS_CALL_TO_CONNECT,
-            call_to_connect=campaign.phone_e164,
-            call_to_connect_display=campaign.display,
-            call_instruction=campaign.instruction,
         )
 
     # Non-routable verticals: collect and hold.
@@ -84,8 +99,8 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
             f"Request received for {req.service_type} in ZIP {req.zip_code}. "
             "Collected, not yet routed."
         )
-        append_lead(lead)
-        return LeadResponse(
+        save(lead)
+        return respond(
             lead_id=lead.id,
             status=lead.status,
             message=lead.public_message,
@@ -98,8 +113,8 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
             "Request received but not forwarded. "
             + (" ".join(problems) if problems else "Service is not currently monetized.")
         )
-        append_lead(lead)
-        return LeadResponse(
+        save(lead)
+        return respond(
             lead_id=lead.id,
             status=lead.status,
             message=lead.public_message,
@@ -109,7 +124,7 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
     results = []
     forwarded = False
     payout_hint = None
-    for forwarder in active_forwarders():
+    for forwarder in ([] if dry_run else active_forwarders()):
         result = await forwarder.send(lead)
         results.append(result)
         lead.forward_targets.append(forwarder.name)
@@ -139,8 +154,8 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
             "This is a contact request, not a confirmed appointment."
         )
 
-    append_lead(lead)
-    return LeadResponse(
+    save(lead)
+    return respond(
         lead_id=lead.id,
         status=lead.status,
         message=lead.public_message,

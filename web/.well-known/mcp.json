@@ -1,20 +1,52 @@
 {
   "name": "zaptu",
   "title": "Zaptu",
-  "description": "Request local home services for an AI assistant. Lead only, not a booking. Plumbing returns a call_to_connect number the consumer must dial; agents must not place the call.",
+  "version": "0.2.0",
+  "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing returns a phone number the person dials; agents must not place the call.",
   "website": "https://zaptu.ai/",
+  "docs": "https://zaptu.ai/agents/",
   "llms": "https://zaptu.ai/llms.txt",
-  "docs": "https://zaptu.ai/agents",
+  "llms_full": "https://zaptu.ai/llms-full.txt",
+  "contact": "hello@zaptu.ai",
   "transport": "streamable-http",
   "mcp_url": "https://api.zaptu.ai/mcp",
-  "mcp_path": "/mcp",
+  "authentication": {
+    "required": false
+  },
   "api_base": "https://api.zaptu.ai",
   "intake": "https://api.zaptu.ai/v1/intake",
+  "services": "https://api.zaptu.ai/v1/services",
+  "openapi": "https://api.zaptu.ai/openapi.json",
+  "server_card": "https://api.zaptu.ai/.well-known/mcp/server-card.json",
+  "live": {
+    "plumbing": {
+      "call_to_connect": "+13085299543",
+      "display": "(308) 529-9543",
+      "rule": "Give the person this phone number and ask them to place the call themselves. Do not dial, autodial, transfer, or place the call on their behalf. This must be a live inbound call from the consumer."
+    }
+  },
+  "collecting": [
+    "house_cleaning",
+    "deep_cleaning",
+    "move_in_out_cleaning",
+    "recurring_cleaning",
+    "pest_control",
+    "hvac",
+    "handyman",
+    "other"
+  ],
   "required_fields": [
     "service_type",
     "zip_code",
     "customer_name",
     "customer_phone",
     "consent_to_contact"
+  ],
+  "rules": [
+    "Plumbing is live: give the person the phone number and ask them to dial it themselves.",
+    "Never dial, autodial, transfer, or place a call on the person's behalf.",
+    "Other services are collecting: submit only with the person's explicit consent to be contacted.",
+    "A request is not a booking. Do not promise a callback, an arrival time, or a named company.",
+    "Zaptu does not perform the work. Contractors are independent."
   ]
 }
