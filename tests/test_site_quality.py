@@ -118,3 +118,26 @@ def test_agent_files_follow_copy_rules(path):
     hits = [b for b in BANNED if re.search(b, text)]
     assert not hits, f"{rel(path)}: {hits}"
     assert "campaign" not in text and "11864" not in text and "22691" not in text
+
+
+def test_mcp_registry_http_auth_proof():
+    """Public-key proof for MCP Registry HTTP domain auth (private key lives outside the repo)."""
+    proof = (WEB / ".well-known" / "mcp-registry-auth").read_text().strip()
+    assert re.fullmatch(r"v=MCPv1; k=ed25519; p=[A-Za-z0-9+/]{43}=", proof), proof
+    headers = (WEB / "_headers").read_text()
+    block = headers.split("/.well-known/mcp-registry-auth", 1)[1].split("\n\n", 1)[0]
+    assert "Content-Type: text/plain" in block
+    assert "/.well-known/*" not in headers  # a wildcard JSON rule would also hit the proof file
+    root = WEB.parent
+    assert not list(root.rglob("*.pem")) or all(".venv" in p.parts for p in root.rglob("*.pem"))
+
+
+def test_registry_server_json():
+    data = json.loads((WEB.parent / "server.json").read_text())
+    assert data["name"] == "ai.zaptu/zaptu"
+    assert data["$schema"].endswith("/2025-12-11/server.schema.json")
+    assert data["remotes"] == [{"type": "streamable-http", "url": "https://api.zaptu.ai/mcp"}]
+    assert "repository" not in data
+    assert len(data["description"]) <= 100
+    text = data["description"].lower()
+    assert not [b for b in BANNED if re.search(b, text)]

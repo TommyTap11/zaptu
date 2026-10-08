@@ -2,7 +2,7 @@
   "name": "ai.zaptu/zaptu",
   "title": "Zaptu",
   "version": "0.2.0",
-  "description": "Connect people with independent local home-service pros. Plumbing: the person dials.",
+  "description": "Connect people with independent local home-service contractors. For plumbing, the person dials.",
   "websiteUrl": "https://zaptu.ai/",
   "remotes": [
     {
