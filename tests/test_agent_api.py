@@ -109,6 +109,11 @@ def test_mcp_get_is_405_and_cors_preflight_open(client):
     assert r.headers["access-control-allow-origin"] == "*"
     r = client.options("/v1/intake", headers={"Origin": "https://agent.example", "Access-Control-Request-Method": "POST"})
     assert r.headers["access-control-allow-origin"] == "*"
+    r = client.options("/v1/intake", headers={"Origin": "https://zaptu.ai", "Access-Control-Request-Method": "POST",
+                                              "Access-Control-Request-Headers": "content-type",
+                                              "Access-Control-Request-Private-Network": "true"})
+    assert r.status_code == 200
+    assert r.headers["access-control-allow-private-network"] == "true"
 
 
 # --- REST + discovery ------------------------------------------------------
