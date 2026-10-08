@@ -6,3 +6,4 @@ data/*.jsonl
 .env
 *.pyc
 .DS_Store
+.netlify/
