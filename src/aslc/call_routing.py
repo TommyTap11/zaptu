@@ -20,7 +20,7 @@ class CallToConnectCampaign:
     instruction: str
 
 
-# The Client Connector — Affiliate Plumbing campaign 11864 (Referral Id 22691).
+# The Client Connector plumbing campaign.
 # Exclusive to Client Connector. Consumer-initiated live inbound calls only.
 _AGENT_INSTRUCTION = (
     "Give the person this phone number and ask them to place the call themselves. "

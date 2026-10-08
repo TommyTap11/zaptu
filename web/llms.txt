@@ -8,7 +8,6 @@ Zaptu connects people with independent local contractors and does not perform th
 Site: https://zaptu.ai/
 Agents: https://zaptu.ai/agents
 Plumbing (call-to-connect): https://zaptu.ai/plumbing
-Source: https://github.com/TommyTap11/zaptu
 Sitemap: https://zaptu.ai/sitemap.xml
 
 ## Required fields
