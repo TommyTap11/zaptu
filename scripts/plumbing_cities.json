@@ -1,0 +1,322 @@
+{
+  "min_required": 100.0,
+  "cities": [
+    {
+      "city": "Miami",
+      "state": "Florida",
+      "abbr": "FL",
+      "slug": "miami-fl",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 102,
+      "zips_ge_100": 97,
+      "buyers": 3,
+      "zip_areas": [
+        "331",
+        "332",
+        "33010-33018",
+        "33030-33035",
+        "33054-33056"
+      ],
+      "nearby_covered_areas": [
+        "Hialeah",
+        "Homestead",
+        "Miami Beach",
+        "Opa Locka",
+        "Key Biscayne",
+        "North Miami Beach"
+      ]
+    },
+    {
+      "city": "Fort Lauderdale",
+      "state": "Florida",
+      "abbr": "FL",
+      "slug": "fort-lauderdale-fl",
+      "median_min": 100.5,
+      "max_min": 100.5,
+      "zips": 48,
+      "zips_ge_100": 48,
+      "buyers": 3,
+      "zip_areas": [
+        "333",
+        "33004-33009",
+        "33019-33029",
+        "33060-33077"
+      ],
+      "nearby_covered_areas": [
+        "Pompano Beach",
+        "Hollywood",
+        "Hallandale",
+        "Dania"
+      ]
+    },
+    {
+      "city": "Denver",
+      "state": "Colorado",
+      "abbr": "CO",
+      "slug": "denver-co",
+      "median_min": 172.0,
+      "max_min": 172.0,
+      "zips": 76,
+      "zips_ge_100": 58,
+      "buyers": 2,
+      "zip_areas": [
+        "800",
+        "801",
+        "802"
+      ],
+      "nearby_covered_areas": [
+        "Aurora",
+        "Littleton",
+        "Westminster",
+        "Castle Rock",
+        "Broomfield",
+        "Commerce City",
+        "Parker",
+        "Arvada",
+        "Dupont",
+        "Eldorado Springs",
+        "Lafayette",
+        "Louisville"
+      ]
+    },
+    {
+      "city": "Atlanta",
+      "state": "Georgia",
+      "abbr": "GA",
+      "slug": "atlanta-ga",
+      "median_min": 125.0,
+      "max_min": 125.0,
+      "zips": 107,
+      "zips_ge_100": 107,
+      "buyers": 3,
+      "zip_areas": [
+        "300",
+        "303"
+      ],
+      "nearby_covered_areas": [
+        "Marietta",
+        "Decatur",
+        "Norcross",
+        "Lawrenceville",
+        "Alpharetta",
+        "Duluth",
+        "Stone Mountain",
+        "Conyers",
+        "Covington",
+        "Cumming",
+        "Roswell",
+        "Smyrna"
+      ]
+    },
+    {
+      "city": "Dallas",
+      "state": "Texas",
+      "abbr": "TX",
+      "slug": "dallas-tx",
+      "median_min": 100.0,
+      "max_min": 100.5,
+      "zips": 123,
+      "zips_ge_100": 105,
+      "buyers": 3,
+      "zip_areas": [
+        "750",
+        "751",
+        "752",
+        "753"
+      ],
+      "nearby_covered_areas": [
+        "Irving",
+        "Plano",
+        "Garland",
+        "Mesquite",
+        "Grand Prairie",
+        "Richardson",
+        "Carrollton",
+        "Lewisville",
+        "Flower Mound",
+        "Rowlett",
+        "Frisco",
+        "Mc Kinney"
+      ]
+    },
+    {
+      "city": "Phoenix",
+      "state": "Arizona",
+      "abbr": "AZ",
+      "slug": "phoenix-az",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 79,
+      "zips_ge_100": 76,
+      "buyers": 2,
+      "zip_areas": [
+        "850",
+        "852",
+        "853"
+      ],
+      "nearby_covered_areas": [
+        "Mesa",
+        "Scottsdale",
+        "Glendale",
+        "Chandler",
+        "Gilbert",
+        "Tempe",
+        "Peoria",
+        "Surprise",
+        "Sun City",
+        "Fountain Hills",
+        "Avondale",
+        "Buckeye"
+      ]
+    },
+    {
+      "city": "Los Angeles",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "los-angeles-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 99,
+      "zips_ge_100": 92,
+      "buyers": 3,
+      "zip_areas": [
+        "900",
+        "902",
+        "903",
+        "904",
+        "905",
+        "906",
+        "910",
+        "911",
+        "912",
+        "913",
+        "914",
+        "915",
+        "916"
+      ],
+      "nearby_covered_areas": [
+        "Pasadena",
+        "Glendale",
+        "Van Nuys",
+        "Burbank",
+        "Inglewood",
+        "Santa Monica",
+        "Torrance",
+        "Whittier",
+        "Northridge",
+        "North Hollywood",
+        "Canoga Park",
+        "Santa Clarita"
+      ]
+    },
+    {
+      "city": "Las Vegas",
+      "state": "Nevada",
+      "abbr": "NV",
+      "slug": "las-vegas-nv",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 76,
+      "zips_ge_100": 76,
+      "buyers": 2,
+      "zip_areas": [
+        "889",
+        "890",
+        "891"
+      ],
+      "nearby_covered_areas": [
+        "Henderson",
+        "North Las Vegas",
+        "The Lakes",
+        "Boulder City",
+        "Indian Springs",
+        "Jean",
+        "Coyote Springs",
+        "Blue Diamond",
+        "Bunkerville",
+        "Logandale",
+        "Moapa",
+        "Cal Nev Ari"
+      ]
+    },
+    {
+      "city": "Boston",
+      "state": "Massachusetts",
+      "abbr": "MA",
+      "slug": "boston-ma",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 55,
+      "zips_ge_100": 41,
+      "buyers": 3,
+      "zip_areas": [
+        "021",
+        "022",
+        "024"
+      ],
+      "nearby_covered_areas": [
+        "Cambridge",
+        "Quincy",
+        "Weymouth",
+        "Waltham",
+        "Somerville",
+        "Watertown",
+        "Medford",
+        "Braintree",
+        "Lexington",
+        "Brookline",
+        "Arlington",
+        "Mattapan"
+      ]
+    },
+    {
+      "city": "San Diego",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "san-diego-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 82,
+      "zips_ge_100": 76,
+      "buyers": 4,
+      "zip_areas": [
+        "919",
+        "920",
+        "921"
+      ],
+      "nearby_covered_areas": [
+        "Chula Vista",
+        "Escondido",
+        "Oceanside",
+        "Carlsbad",
+        "La Jolla",
+        "La Mesa",
+        "Spring Valley",
+        "El Cajon",
+        "San Marcos",
+        "Vista",
+        "Bonita",
+        "Lemon Grove"
+      ]
+    }
+  ],
+  "rejected": [
+    {
+      "city": "Houston",
+      "state": "TX",
+      "median_min": 25.0,
+      "zips": 182,
+      "zips_ge_100": 34,
+      "in_top_paying": false,
+      "by_city": {
+        "City": "Houston",
+        "State": "Texas",
+        "zips": "182",
+        "maxMin": "100.0",
+        "medMin": "25.0",
+        "buyers": "3"
+      }
+    }
+  ]
+}

@@ -30,3 +30,16 @@ Never autodial, transfer, or place the call on their behalf.
 request_home_service, request_cleaning, get_lead_status, list_supported_services
 Human form: POST https://api.zaptu.ai/v1/intake
 MCP: https://api.zaptu.ai/mcp
+
+## Plumbing city pages
+Same call-to-connect number (308) 529-9543 on every page; the person dials.
+- Atlanta, GA: https://zaptu.ai/plumbing/atlanta-ga/
+- Boston, MA: https://zaptu.ai/plumbing/boston-ma/
+- Dallas, TX: https://zaptu.ai/plumbing/dallas-tx/
+- Denver, CO: https://zaptu.ai/plumbing/denver-co/
+- Fort Lauderdale, FL: https://zaptu.ai/plumbing/fort-lauderdale-fl/
+- Las Vegas, NV: https://zaptu.ai/plumbing/las-vegas-nv/
+- Los Angeles, CA: https://zaptu.ai/plumbing/los-angeles-ca/
+- Miami, FL: https://zaptu.ai/plumbing/miami-fl/
+- Phoenix, AZ: https://zaptu.ai/plumbing/phoenix-az/
+- San Diego, CA: https://zaptu.ai/plumbing/san-diego-ca/
