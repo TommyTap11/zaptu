@@ -194,7 +194,10 @@
         st.textContent = (x.j && x.j.message) || "Something went wrong. Please try again.";
         btn.disabled = false;
       })
-      .catch(function () { st.textContent = "Sending..."; f.submit(); });  // network/CORS failure: fall back to a normal form post
+      .catch(function () {  // network/CORS failure: fall back to a normal form post
+        if (data.dry_run) { var h = document.createElement("input"); h.type = "hidden"; h.name = "dry_run"; h.value = "1"; f.appendChild(h); }
+        st.textContent = "Sending..."; f.submit();
+      });
   });
 })();
   </script>
