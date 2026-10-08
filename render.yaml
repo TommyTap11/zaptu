@@ -1,8 +1,13 @@
+# Render Blueprint for Zaptu API.
+# Starter ($7/mo) recommended — always-on. Free plan sleeps and has no persistent disk.
+# Disk is OPTIONAL: without it, leads.jsonl is ephemeral; accepted leads are also
+# logged to stdout as structured JSON (phone masked). Add a disk later if you want
+# durable file storage, or switch to Postgres.
 services:
   - type: web
     name: zaptu
     runtime: python
-    plan: free
+    plan: starter
     buildCommand: pip install -r requirements.txt
     startCommand: python src/aslc/server.py
     healthCheckPath: /health
@@ -11,12 +16,20 @@ services:
         value: src
       - key: HOST
         value: 0.0.0.0
+      - key: ZAPTU_MOCK_FORWARDER
+        value: "0"
       - key: MOCK_FORWARDING
-        value: "true"
+        value: "false"
       - key: REQUIRE_CONSENT
         value: "true"
-      - key: DATA_DIR
-        value: /var/data
+      - key: ZAPTU_DATA_DIR
+        value: ./data
+      - key: PUBLIC_BASE_URL
+        value: https://api.zaptu.ai
+      - key: CORS_ORIGINS
+        value: https://zaptu.ai,https://www.zaptu.ai
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "30"
       - key: API_TOKEN
         generateValue: true
       - key: LEAD_WEBHOOK_URL

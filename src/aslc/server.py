@@ -2,9 +2,10 @@
 
 Exposes:
   GET  /health
+  POST /v1/intake   (public: JSON or form-urlencoded)
   POST /v1/leads
   GET  /v1/leads/{lead_id}
-  MCP  /mcp   (streamable HTTP)
+  MCP  /mcp       (streamable HTTP)
 """
 
 from __future__ import annotations
@@ -12,12 +13,16 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
+from collections import defaultdict, deque
 from pathlib import Path
-from typing import Annotated, Literal
+from threading import Lock
+from typing import Annotated, Any, Literal
+from urllib.parse import parse_qs
 
-from pydantic import Field
+from pydantic import Field, ValidationError
 from starlette.requests import Request
-from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, Response
+from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 
 # Allow `python src/aslc/server.py` without installing the package.
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,31 +32,32 @@ if str(SRC) not in sys.path:
 
 from mcp.server.mcpserver import MCPServer  # noqa: E402
 
-from aslc.config import settings  # noqa: E402
-from aslc.models import ServiceRequest  # noqa: E402
+from aslc import config  # noqa: E402
+from aslc.models import ALL_SERVICE_TYPES, ServiceRequest  # noqa: E402
 from aslc.service import lookup_lead, submit_request  # noqa: E402
 from aslc.storage import list_leads  # noqa: E402
-from aslc.validation import SUPPORTED_SERVICES  # noqa: E402
+from aslc.validation import COLLECTED_ONLY_SERVICES, ROUTABLE_SERVICES, SUPPORTED_SERVICES  # noqa: E402
 
 INSTRUCTIONS = """
-You help a person book a local home service (starting with house cleaning).
+You help a person request a local home service (starting with house cleaning).
 
-When a user wants a cleaner, maid, deep clean, move-in/move-out clean, or pest control:
+When a user wants a cleaner, maid, deep clean, move-in/move-out clean, pest control,
+plumbing, HVAC, handyman, or other home service:
 1. Collect ZIP code, phone number, name, and consent to be called.
 2. Collect bedrooms or square footage if they know it, plus preferred date if they have one.
 3. Call request_home_service (or request_cleaning).
 4. Tell the user what happened using the tool result. Do not invent a booked appointment —
-   this system sends a lead or call, it does not dispatch a specific named company yet.
+   this system sends a contact request / lead, it does not dispatch a named company yet.
 5. Never submit without explicit consent_to_contact=true from the user.
 """.strip()
 
 mcp = MCPServer(
     name="zaptu",
     title="Zaptu",
-    version="0.1.0",
+    version="0.1.1",
     instructions=INSTRUCTIONS,
     website_url="https://zaptu.ai",
-    log_level=settings.log_level,  # type: ignore[arg-type]
+    log_level=config.settings.log_level,  # type: ignore[arg-type]
 )
 
 
@@ -60,22 +66,125 @@ def _unauthorized() -> JSONResponse:
 
 
 def _token_ok(request: Request) -> bool:
-    if not settings.api_token:
+    if not config.settings.api_token:
         return True
     header = request.headers.get("authorization", "")
     if header.startswith("Bearer "):
-        return header.removeprefix("Bearer ").strip() == settings.api_token
-    return request.headers.get("x-api-token") == settings.api_token
+        return header.removeprefix("Bearer ").strip() == config.settings.api_token
+    return request.headers.get("x-api-token") == config.settings.api_token
 
 
 WEB = ROOT / "web"
 
+# --- Simple per-IP throttle (in-memory; TODO: Redis for multi-instance) ---
+_RATE_LOCK = Lock()
+_RATE_HITS: dict[str, deque[float]] = defaultdict(deque)
 
-def _cors(response: Response) -> Response:
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "content-type, authorization, x-api-token"
+
+def _client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    if request.client:
+        return request.client.host or "unknown"
+    return "unknown"
+
+
+def _rate_limited(ip: str) -> bool:
+    limit = config.settings.rate_limit_per_minute
+    if limit <= 0:
+        return False
+    now = time.time()
+    window = 60.0
+    with _RATE_LOCK:
+        hits = _RATE_HITS[ip]
+        while hits and now - hits[0] > window:
+            hits.popleft()
+        if len(hits) >= limit:
+            return True
+        hits.append(now)
+        return False
+
+
+def _cors(response: Response, request: Request | None = None) -> Response:
+    origin = ""
+    if request is not None:
+        origin = request.headers.get("origin", "")
+    allowed = config.settings.cors_origins
+    if origin in allowed:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+    elif "https://zaptu.ai" in allowed:
+        # Default allowlisted origin when no Origin header (non-browser)
+        response.headers["Access-Control-Allow-Origin"] = "https://zaptu.ai"
+    response.headers["Access-Control-Allow-Headers"] = (
+        "content-type, authorization, x-api-token"
+    )
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return response
+
+
+def _wants_html_redirect(request: Request, body: dict[str, Any]) -> bool:
+    """Form posts (urlencoded / multipart) redirect to /thanks; JSON clients get JSON."""
+    content_type = (request.headers.get("content-type") or "").lower()
+    if "application/json" in content_type:
+        return False
+    if "application/x-www-form-urlencoded" in content_type or "multipart/form-data" in content_type:
+        return True
+    # Explicit override
+    if str(body.get("format", "")).lower() == "json":
+        return False
+    accept = (request.headers.get("accept") or "").lower()
+    if "application/json" in accept and "text/html" not in accept:
+        return False
+    return "application/x-www-form-urlencoded" in content_type
+
+
+async def _parse_intake_body(request: Request) -> dict[str, Any]:
+    content_type = (request.headers.get("content-type") or "").lower()
+    if "application/json" in content_type:
+        data = await request.json()
+        if not isinstance(data, dict):
+            raise ValueError("JSON body must be an object")
+        return data
+
+    if "application/x-www-form-urlencoded" in content_type or "multipart/form-data" in content_type:
+        form = await request.form()
+        data: dict[str, Any] = {}
+        for key in form.keys():
+            data[key] = form.get(key)
+        return data
+
+    # Fallback: try JSON, then urlencoded bytes
+    raw = await request.body()
+    if not raw:
+        return {}
+    try:
+        data = json.loads(raw)
+        if isinstance(data, dict):
+            return data
+    except json.JSONDecodeError:
+        pass
+    parsed = parse_qs(raw.decode("utf-8", errors="replace"), keep_blank_values=True)
+    return {k: v[0] if len(v) == 1 else v for k, v in parsed.items()}
+
+
+def _normalize_intake_payload(body: dict[str, Any]) -> dict[str, Any]:
+    """Map Netlify form fields onto the shared ServiceRequest shape."""
+    data = dict(body)
+    # Drop Netlify / honeypot bookkeeping from the model payload (honeypot checked earlier).
+    data.pop("form-name", None)
+    data.pop("bot-field", None)
+
+    if not data.get("source_agent"):
+        data["source_agent"] = "web"
+
+    # Empty optional strings -> omit
+    for key in list(data.keys()):
+        if data[key] == "":
+            data[key] = None
+
+    return data
 
 
 @mcp.custom_route("/", methods=["GET"])
@@ -90,27 +199,75 @@ async def home(_request: Request) -> Response:
 async def llms(_request: Request) -> Response:
     path = WEB / "llms.txt"
     text = path.read_text(encoding="utf-8") if path.exists() else "Zaptu MCP at /mcp"
-    text = text.replace("{BASE}", settings.public_base_url.rstrip("/"))
+    text = text.replace("{BASE}", config.settings.public_base_url.rstrip("/"))
     return PlainTextResponse(text)
 
 
 @mcp.custom_route("/v1/intake", methods=["OPTIONS"])
-async def intake_options(_request: Request) -> Response:
-    return _cors(Response(status_code=204))
+async def intake_options(request: Request) -> Response:
+    return _cors(Response(status_code=204), request)
 
 
 @mcp.custom_route("/v1/intake", methods=["POST"])
 async def public_intake(request: Request) -> Response:
-    """Public front door used by the website form. Same pipeline as MCP/REST."""
+    """Public front door used by the website form and API clients."""
+    ip = _client_ip(request)
+    if _rate_limited(ip):
+        return _cors(
+            JSONResponse({"error": "rate_limited", "detail": "Too many requests"}, status_code=429),
+            request,
+        )
+
     try:
-        body = await request.json()
-        if not body.get("source_agent"):
-            body["source_agent"] = "web"
-        req = ServiceRequest.model_validate(body)
+        body = await _parse_intake_body(request)
     except Exception as exc:
-        return _cors(JSONResponse({"error": "invalid_request", "detail": str(exc)}, status_code=422))
+        return _cors(
+            JSONResponse({"error": "invalid_request", "detail": str(exc)}, status_code=422),
+            request,
+        )
+
+    # Honeypot: pretend success, do not store.
+    honeypot = body.get("bot-field")
+    if honeypot is not None and str(honeypot).strip() != "":
+        if _wants_html_redirect(request, body):
+            return _cors(RedirectResponse(url=config.settings.thanks_url, status_code=303), request)
+        return _cors(
+            JSONResponse(
+                {
+                    "lead_id": "ignored",
+                    "status": "received",
+                    "message": "Request received and is being routed.",
+                    "next_steps": [],
+                },
+                status_code=202,
+            ),
+            request,
+        )
+
+    payload = _normalize_intake_payload(body)
+    try:
+        req = ServiceRequest.model_validate(payload)
+    except ValidationError as exc:
+        return _cors(
+            JSONResponse(
+                {"error": "invalid_request", "detail": exc.errors()},
+                status_code=422,
+            ),
+            request,
+        )
+    except Exception as exc:
+        return _cors(
+            JSONResponse({"error": "invalid_request", "detail": str(exc)}, status_code=422),
+            request,
+        )
+
     result = await submit_request(req)
-    return _cors(JSONResponse(result.model_dump(mode="json"), status_code=202))
+
+    if _wants_html_redirect(request, body):
+        return _cors(RedirectResponse(url=config.settings.thanks_url, status_code=303), request)
+
+    status_code = 202 if result.status.value != "rejected" else 422
+    return _cors(JSONResponse(result.model_dump(mode="json"), status_code=status_code), request)
 
 
 @mcp.custom_route("/health", methods=["GET"])
@@ -120,6 +277,9 @@ async def health(_request: Request) -> Response:
             "ok": True,
             "service": "zaptu",
             "supported_services": sorted(SUPPORTED_SERVICES),
+            "collected_only": sorted(COLLECTED_ONLY_SERVICES),
+            "mock_forwarding": config.settings.mock_forwarding,
+            "data_dir": str(config.settings.data_dir),
         }
     )
 
@@ -178,6 +338,8 @@ async def request_home_service(
             "pest_control",
             "plumbing",
             "hvac",
+            "handyman",
+            "other",
         ],
         Field(description="Type of local service requested."),
     ],
@@ -207,7 +369,8 @@ async def request_home_service(
     """Submit a qualified local home-service request as a paid lead.
 
     Use this when a person wants house cleaning, a deep clean, move-in/out cleaning,
-    recurring maid service, or pest control. Requires name, phone, ZIP, and consent.
+    recurring maid service, pest control, plumbing, HVAC, handyman, or other.
+    Requires name, phone, ZIP, and consent.
     Returns a confirmation with a lead_id — this is a lead/call request, not a booked job.
     """
     payload = {
@@ -295,11 +458,12 @@ async def get_lead_status(
 
 @mcp.tool(title="List supported services")
 async def list_supported_services() -> str:
-    """Show which home services this connector can currently monetize."""
+    """Show which home services this connector can currently monetize or collect."""
     return json.dumps(
         {
-            "monetized": sorted(SUPPORTED_SERVICES),
-            "accepted_but_logged_only": ["plumbing", "hvac"],
+            "monetized": sorted(ROUTABLE_SERVICES),
+            "accepted_but_logged_only": sorted(COLLECTED_ONLY_SERVICES),
+            "all_service_types": list(ALL_SERVICE_TYPES),
             "coverage": "US residential. Buyer coverage depends on the connected affiliate network.",
             "required_fields": [
                 "service_type",
@@ -314,8 +478,8 @@ async def list_supported_services() -> str:
 
 
 def main() -> None:
-    port = int(os.getenv("PORT", settings.port))
-    host = os.getenv("HOST", settings.host)
+    port = int(os.getenv("PORT", config.settings.port))
+    host = os.getenv("HOST", config.settings.host)
     mcp.run(
         transport="streamable-http",
         host=host,

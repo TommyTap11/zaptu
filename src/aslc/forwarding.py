@@ -2,7 +2,7 @@
 
 MVP ships two adapters:
   - webhook: POST the structured lead to LEAD_WEBHOOK_URL (Zapier, Make, or a network)
-  - mock: simulate a pay-per-call / ping-post network so the product works before contracts
+  - mock: simulate a buyer ONLY when ZAPTU_MOCK_FORWARDER=1 (or MOCK_FORWARDING=true)
 
 Add a real ping/post client (eLocal, Service Direct Earn API, Phonexa) here later.
 """
@@ -13,7 +13,7 @@ from typing import Protocol
 
 import httpx
 
-from .config import settings
+from . import config
 from .models import LeadRecord
 
 
@@ -27,11 +27,16 @@ class WebhookForwarder:
     name = "webhook"
 
     async def send(self, lead: LeadRecord) -> dict:
-        if not settings.webhook_url:
-            return {"target": self.name, "ok": False, "skipped": True, "reason": "LEAD_WEBHOOK_URL not set"}
+        if not config.settings.webhook_url:
+            return {
+                "target": self.name,
+                "ok": False,
+                "skipped": True,
+                "reason": "LEAD_WEBHOOK_URL not set",
+            }
         headers = {"Content-Type": "application/json"}
-        if settings.webhook_token:
-            headers["Authorization"] = f"Bearer {settings.webhook_token}"
+        if config.settings.webhook_token:
+            headers["Authorization"] = f"Bearer {config.settings.webhook_token}"
         payload = {
             "lead_id": lead.id,
             "created_at": lead.created_at.isoformat(),
@@ -58,7 +63,9 @@ class WebhookForwarder:
         }
         try:
             async with httpx.AsyncClient(timeout=12.0) as client:
-                response = await client.post(settings.webhook_url, json=payload, headers=headers)
+                response = await client.post(
+                    config.settings.webhook_url, json=payload, headers=headers
+                )
             return {
                 "target": self.name,
                 "ok": response.is_success,
@@ -70,12 +77,12 @@ class WebhookForwarder:
 
 
 class MockNetworkForwarder:
-    """Stands in for a pay-per-call / ping-post buyer until a contract is live."""
+    """Dev-only stand-in. Disabled unless ZAPTU_MOCK_FORWARDER=1."""
 
     name = "mock_network"
 
     async def send(self, lead: LeadRecord) -> dict:
-        if not settings.mock_forwarding:
+        if not config.settings.mock_forwarding:
             return {"target": self.name, "ok": False, "skipped": True}
         payout = {
             "house_cleaning": 18,
@@ -89,12 +96,15 @@ class MockNetworkForwarder:
             "target": self.name,
             "ok": accepted,
             "accepted": accepted,
-            "estimated_payout_usd": payout,
+            "estimated_payout_usd": payout if accepted else None,
             "mode": "simulated",
-            "note": "Replace with a live network ping/post when an affiliate account is approved.",
+            "note": "Mock forwarder only. Not a real buyer.",
         }
 
 
 def active_forwarders() -> list[Forwarder]:
-    forwarders: list[Forwarder] = [MockNetworkForwarder(), WebhookForwarder()]
+    forwarders: list[Forwarder] = []
+    if config.settings.mock_forwarding:
+        forwarders.append(MockNetworkForwarder())
+    forwarders.append(WebhookForwarder())
     return forwarders

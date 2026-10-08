@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from datetime import date
 
-from .config import settings
+from . import config
 from .models import ServiceRequest
 
-# Cleaning-focused MVP coverage. Expand later with buyer zip files.
-SUPPORTED_SERVICES = {
+# Verticals we currently try to route to a buyer.
+ROUTABLE_SERVICES = {
     "house_cleaning",
     "deep_cleaning",
     "move_in_out_cleaning",
@@ -16,23 +16,34 @@ SUPPORTED_SERVICES = {
     "pest_control",
 }
 
-# Stub: treat these as "thin" markets where mock buyer declines.
+# Accepted by the form / MCP but held until a buyer exists.
+COLLECTED_ONLY_SERVICES = {
+    "plumbing",
+    "hvac",
+    "handyman",
+    "other",
+}
+
+# Back-compat alias used by /health and list_supported_services.
+SUPPORTED_SERVICES = ROUTABLE_SERVICES
+
+# Stub: treat these as "thin" markets where buyers decline.
 THIN_ZIPS = {"00000", "99999"}
 
 
 def validate_request(req: ServiceRequest) -> list[str]:
-    """Return human-readable problems. Empty list means the lead is forwardable."""
+    """Return human-readable problems. Empty-ish list means the lead can proceed."""
     problems: list[str] = []
 
-    if settings.require_consent and not req.consent_to_contact:
+    if config.settings.require_consent and not req.consent_to_contact:
         problems.append(
             "Customer must consent to being contacted about this request (TCPA)."
         )
 
-    if req.service_type not in SUPPORTED_SERVICES:
+    if req.service_type in COLLECTED_ONLY_SERVICES:
         problems.append(
-            f"{req.service_type} is accepted as a request but not yet monetized. "
-            "It will be logged only."
+            f"{req.service_type} is collected, not yet routed. "
+            "It will be held until a buyer covers that vertical."
         )
 
     if req.zip_code in THIN_ZIPS:
@@ -61,4 +72,8 @@ def is_monetizable(req: ServiceRequest, problems: list[str]) -> bool:
     ]
     if hard_blocks:
         return False
-    return req.service_type in SUPPORTED_SERVICES
+    return req.service_type in ROUTABLE_SERVICES
+
+
+def is_collected_only(req: ServiceRequest) -> bool:
+    return req.service_type in COLLECTED_ONLY_SERVICES

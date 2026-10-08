@@ -18,14 +18,28 @@ ServiceType = Literal[
     "pest_control",
     "plumbing",
     "hvac",
+    "handyman",
+    "other",
 ]
+
+ALL_SERVICE_TYPES: tuple[str, ...] = (
+    "house_cleaning",
+    "deep_cleaning",
+    "move_in_out_cleaning",
+    "recurring_cleaning",
+    "pest_control",
+    "plumbing",
+    "hvac",
+    "handyman",
+    "other",
+)
 
 Frequency = Literal["one_time", "weekly", "biweekly", "monthly"]
 HomeType = Literal["apartment", "condo", "townhouse", "single_family", "other"]
 
 
 class ServiceRequest(BaseModel):
-    """A structured home-service request from an AI agent."""
+    """A structured home-service request from an AI agent or the website form."""
 
     service_type: ServiceType = Field(
         description="Kind of service the customer needs."
@@ -92,13 +106,43 @@ class ServiceRequest(BaseModel):
             digits = digits[1:]
         if len(digits) != 10:
             raise ValueError("customer_phone must be a 10-digit US number")
+        # Reject clearly non-US patterns (area code can't start with 0 or 1)
+        if digits[0] in "01" or digits[3] in "01":
+            raise ValueError("customer_phone must be a valid US number")
         return f"+1{digits}"
+
+    @field_validator("bedrooms", "bathrooms", "square_feet", mode="before")
+    @classmethod
+    def empty_str_to_none(cls, value):  # noqa: ANN001
+        if value is None or value == "":
+            return None
+        return value
+
+    @field_validator("consent_to_contact", mode="before")
+    @classmethod
+    def coerce_consent(cls, value):  # noqa: ANN001
+        if isinstance(value, bool):
+            return value
+        if value is None:
+            return False
+        if isinstance(value, (int, float)):
+            return bool(value)
+        cleaned = str(value).strip().lower()
+        return cleaned in {"1", "true", "yes", "on", "y"}
+
+    @field_validator("preferred_date", mode="before")
+    @classmethod
+    def empty_date_to_none(cls, value):  # noqa: ANN001
+        if value is None or value == "":
+            return None
+        return value
 
 
 class LeadStatus(str, Enum):
     received = "received"
     validated = "validated"
     forwarded = "forwarded"
+    collected = "collected"  # accepted form, vertical not yet routed to a buyer
     rejected = "rejected"
     error = "error"
 

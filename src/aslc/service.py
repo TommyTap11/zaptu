@@ -5,24 +5,62 @@ from __future__ import annotations
 from .forwarding import active_forwarders
 from .models import LeadRecord, LeadResponse, LeadStatus, ServiceRequest
 from .storage import append_lead, get_lead
-from .validation import is_monetizable, validate_request
+from .validation import is_collected_only, is_monetizable, validate_request
 
-
-NEXT_STEPS_OK = [
-    "A local provider (or the affiliate network) will attempt to contact the customer.",
-    "Keep the phone nearby for the next 15–30 minutes during business hours.",
-    "If nobody calls, the customer can retry or ask the agent to submit again with more detail.",
+# Honest copy only — promise contact, never a booked job / invented provider / ETA.
+NEXT_STEPS_RECEIVED = [
+    "Your request was received and is being routed.",
+    "If a covering buyer accepts it, they may contact you about this request.",
+    "This is a contact request, not a confirmed appointment.",
 ]
 
-NEXT_STEPS_HELD = [
-    "The request was saved but not sold as a live lead.",
-    "Fix the validation notes and resubmit, or wait until that service type is enabled.",
+NEXT_STEPS_COLLECTED = [
+    "Your request was saved.",
+    "This service type is collected but not yet routed to a buyer.",
+    "We will route it when coverage is live for that vertical.",
+]
+
+NEXT_STEPS_REJECTED = [
+    "The request was not accepted.",
+    "Fix the issues in the message and submit again if appropriate.",
 ]
 
 
 async def submit_request(req: ServiceRequest) -> LeadResponse:
     problems = validate_request(req)
     lead = LeadRecord(request=req, validation_notes=problems, status=LeadStatus.validated)
+
+    # Hard reject (no consent / bad ZIP / past date).
+    if any(p.startswith("Customer must consent") for p in problems) or any(
+        p.startswith("ZIP is not") or p.startswith("preferred_date") for p in problems
+    ):
+        lead.status = LeadStatus.rejected
+        lead.public_message = (
+            "Request not accepted. "
+            + (" ".join(problems) if problems else "Validation failed.")
+        )
+        append_lead(lead)
+        return LeadResponse(
+            lead_id=lead.id,
+            status=lead.status,
+            message=lead.public_message,
+            next_steps=NEXT_STEPS_REJECTED,
+        )
+
+    # Non-routable verticals: collect and hold.
+    if is_collected_only(req):
+        lead.status = LeadStatus.collected
+        lead.public_message = (
+            f"Request received for {req.service_type} in ZIP {req.zip_code}. "
+            "Collected, not yet routed."
+        )
+        append_lead(lead)
+        return LeadResponse(
+            lead_id=lead.id,
+            status=lead.status,
+            message=lead.public_message,
+            next_steps=NEXT_STEPS_COLLECTED,
+        )
 
     if not is_monetizable(req, problems):
         lead.status = LeadStatus.rejected
@@ -35,7 +73,7 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
             lead_id=lead.id,
             status=lead.status,
             message=lead.public_message,
-            next_steps=NEXT_STEPS_HELD,
+            next_steps=NEXT_STEPS_REJECTED,
         )
 
     results = []
@@ -47,19 +85,26 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
         lead.forward_targets.append(forwarder.name)
         if result.get("ok") and not result.get("skipped"):
             forwarded = True
-            if result.get("estimated_payout_usd"):
-                payout_hint = f"~${result['estimated_payout_usd']} if the call/lead qualifies"
+            # Only expose payout hint from a real webhook in production messaging
+            # when mock is on (dev). Never invent provider contact promises.
+            if result.get("estimated_payout_usd") and result.get("mode") == "simulated":
+                payout_hint = (
+                    f"[dev mock] ~${result['estimated_payout_usd']} if the lead qualifies"
+                )
 
     lead.forward_results = results
-    lead.status = LeadStatus.forwarded if forwarded else LeadStatus.error
     if forwarded:
+        lead.status = LeadStatus.forwarded
         lead.public_message = (
-            f"Cleaning/home-service request submitted for ZIP {req.zip_code}. "
-            "A provider should contact the customer shortly."
+            f"Request received for ZIP {req.zip_code} and is being routed. "
+            "This is a contact request, not a confirmed appointment."
         )
     else:
+        # No buyer configured yet — still accept honestly.
+        lead.status = LeadStatus.received
         lead.public_message = (
-            "Request validated but no live buyer accepted it. It has been logged for retry."
+            f"Request received for ZIP {req.zip_code} and is being routed. "
+            "This is a contact request, not a confirmed appointment."
         )
 
     append_lead(lead)
@@ -67,7 +112,7 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
         lead_id=lead.id,
         status=lead.status,
         message=lead.public_message,
-        next_steps=NEXT_STEPS_OK if forwarded else NEXT_STEPS_HELD,
+        next_steps=NEXT_STEPS_RECEIVED,
         estimated_payout_hint=payout_hint,
     )
 
