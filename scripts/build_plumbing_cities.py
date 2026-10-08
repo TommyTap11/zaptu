@@ -164,6 +164,20 @@ ISSUE_PLAN = {
 }
 
 
+SIBLINGS = {
+    "miami-fl": ["fort-lauderdale-fl", "atlanta-ga"],
+    "fort-lauderdale-fl": ["miami-fl", "atlanta-ga"],
+    "atlanta-ga": ["fort-lauderdale-fl", "dallas-tx", "miami-fl"],
+    "dallas-tx": ["denver-co", "atlanta-ga", "phoenix-az"],
+    "denver-co": ["dallas-tx", "phoenix-az", "las-vegas-nv"],
+    "phoenix-az": ["las-vegas-nv", "san-diego-ca", "los-angeles-ca"],
+    "los-angeles-ca": ["san-diego-ca", "las-vegas-nv", "phoenix-az"],
+    "san-diego-ca": ["los-angeles-ca", "phoenix-az", "las-vegas-nv"],
+    "las-vegas-nv": ["los-angeles-ca", "phoenix-az", "denver-co"],
+    "boston-ma": ["atlanta-ga", "miami-fl", "dallas-tx"],
+}
+
+
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
 
@@ -172,7 +186,7 @@ def footer() -> str:
     return (
         "<footer>\n"
         f'    <p class="disclaimer">{DISCLAIMER}</p>\n'
-        '    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/privacy">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>\n'
+        '    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/privacy/">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>\n'
         "  </footer>"
     )
 
@@ -201,6 +215,14 @@ def jsonld(c: dict, url: str, title: str, desc: str) -> str:
                     "containedInPlace": {"@type": "State", "name": c["state"]},
                 },
                 "url": url,
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {"@type": "ListItem", "position": 1, "name": "Zaptu", "item": "https://zaptu.ai/"},
+                    {"@type": "ListItem", "position": 2, "name": "Plumbing", "item": "https://zaptu.ai/plumbing/"},
+                    {"@type": "ListItem", "position": 3, "name": f"{c['city']}, {c['abbr']}", "item": url},
+                ],
             },
         ],
     }
@@ -237,6 +259,18 @@ def city_page(c: dict) -> str:
 {items}
       </ul>
     </section>"""
+    by_slug = {x["slug"]: x for x in DATA["cities"]}
+    sib = "\n".join(
+        f'        <li><a href="/plumbing/{s}/">Plumber in {esc(by_slug[s]["city"])}, {by_slug[s]["abbr"]}</a></li>'
+        for s in SIBLINGS[c["slug"]] if s in by_slug
+    )
+    siblings_html = f"""
+    <section>
+      <h2>Plumbing in other cities</h2>
+      <ul class="city-links">
+{sib}
+      </ul>
+    </section>"""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -256,8 +290,8 @@ def city_page(c: dict) -> str:
     <a class="brand" href="/">Zaptu</a>
     <nav>
       <a href="/plumbing/">Plumbing</a>
-      <a href="/how-it-works">How it works</a>
-      <a href="/privacy">Privacy</a>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/privacy/">Privacy</a>
     </nav>
   </header>
   <main class="city">
@@ -304,7 +338,8 @@ def city_page(c: dict) -> str:
       </ul>
     </section>
 {areas_html}
-    <p class="note"><a href="/plumbing/">All plumbing locations</a> · For other services, <a href="/#">send a request</a>.</p>
+{siblings_html}
+    <p class="note"><a href="/plumbing/">All plumbing locations</a> · For other services, <a href="/#request">send a request</a>.</p>
   </main>
   {footer()}
 </body>
@@ -324,7 +359,7 @@ def index_page(cities: list[dict]) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plumbing — call a local professional | Zaptu</title>
   <meta name="description" content="Need a plumber? Call to be connected with a local plumbing professional. Zaptu connects homeowners with independent contractors and does not perform the work." />
-  <link rel="canonical" href="https://zaptu.ai/plumbing" />
+  <link rel="canonical" href="https://zaptu.ai/plumbing/" />
   <meta name="robots" content="index,follow" />
   <link rel="stylesheet" href="/style.css" />
 </head>
@@ -332,9 +367,9 @@ def index_page(cities: list[dict]) -> str:
   <header>
     <a class="brand" href="/">Zaptu</a>
     <nav>
-      <a href="/how-it-works">How it works</a>
-      <a href="/agents">For agents</a>
-      <a href="/privacy">Privacy</a>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/agents/">For agents</a>
+      <a href="/privacy/">Privacy</a>
     </nav>
   </header>
   <main>
@@ -353,11 +388,11 @@ def index_page(cities: list[dict]) -> str:
 {links}
       </ul>
     </section>
-    <p class="note" style="margin-top:24px">For other services, <a href="/#">send a request</a> on the home page. We pass those requests along when a buyer covers the service.</p>
+    <p class="note" style="margin-top:24px">For other services, <a href="/#request">send a request</a> on the home page. We pass those requests along when a buyer covers the service.</p>
   </main>
   <footer>
     <p class="disclaimer">{DISCLAIMER}</p>
-    <p class="footer-meta">Zaptu · <a href="/privacy">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>
+    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/privacy/">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>
   </footer>
 </body>
 </html>
@@ -374,21 +409,28 @@ def main() -> None:
     (WEB / "plumbing" / "index.html").write_text(index_page(cities), encoding="utf-8")
     print("wrote web/plumbing/index.html")
 
-    # sitemap
-    base = [
-        "", "cleaning", "pest-control", "plumbing", "hvac", "handyman",
-        "how-it-works", "agents", "privacy", "llms.txt",
-    ]
-    urls = [f"https://zaptu.ai/{p}" for p in base]
-    urls += [f"https://zaptu.ai/plumbing/{c['slug']}/" for c in cities]
-    body = "\n".join(f"  <url><loc>{u}</loc></url>" for u in urls)
-    (WEB / "sitemap.xml").write_text(
-        '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        f"{body}\n</urlset>\n",
-        encoding="utf-8",
+    # home page city links (between markers)
+    home = WEB / "index.html"
+    h = home.read_text(encoding="utf-8")
+    start, end = "<!-- cities:start -->", "<!-- cities:end -->"
+    city_links = "\n".join(
+        f'        <li><a href="/plumbing/{c["slug"]}/">{esc(c["city"])}, {c["abbr"]}</a></li>'
+        for c in sorted(cities, key=lambda c: c["city"])
     )
-    print("wrote web/sitemap.xml")
+    block = (
+        f"{start}\n    <section class=\"home-cities\">\n"
+        f'      <h2><a href="/plumbing/">Plumbing by city</a></h2>\n'
+        f"      <p>Call to be connected with a local plumbing professional. City pages:</p>\n"
+        f'      <ul class="city-links">\n{city_links}\n      </ul>\n    </section>\n    {end}'
+    )
+    if start in h:
+        h = h[: h.index(start)] + block + h[h.index(end) + len(end):]
+    else:
+        h = h.replace("    <!-- Form posts to the API", block + "\n\n    <!-- Form posts to the API", 1)
+    home.write_text(h, encoding="utf-8")
+    print("updated web/index.html city links")
+
+    # sitemap.xml is generated by scripts/seo.py
 
     # llms.txt city section
     llms = WEB / "llms.txt"

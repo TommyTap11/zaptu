@@ -125,3 +125,9 @@ footer { padding: 36px 24px 56px; }
 .city-links { columns: 2; padding-left: 18px; }
 .city-links a { color: var(--ink); }
 @media (max-width: 700px) { .areas, .city-links { columns: 1; } }
+.home-cities { margin-top: 32px; }
+.home-cities h2 { font-size: 22px; margin: 0 0 6px; }
+.home-cities h2 a { text-decoration: none; }
+.home-cities p { color: var(--muted); margin: 0 0 8px; }
+.home-cities .city-links { columns: 5; }
+@media (max-width: 900px) { .home-cities .city-links { columns: 2; } }
