@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zaptu agent connector</title>
-  <meta name="description" content="How AI assistants request local services through Zaptu. Required fields, tools, and the rule that this is a lead, not a booking." />
+  <meta name="description" content="How AI assistants request local services through Zaptu. Required fields, tools, and the rule that this is a lead, not a booking. Plumbing is call-to-connect — never dial for the user." />
   <link rel="canonical" href="https://zaptu.ai/agents" />
   <link rel="stylesheet" href="/style.css" />
 </head>
@@ -15,7 +15,7 @@
   </header>
   <main>
     <h1>Agent connector</h1>
-    <p class="lede">Use this when a person wants a local service. Collect consent before you submit. Do not invent a company or arrival time.</p>
+    <p class="lede">Use this when a person wants a local service. Collect consent before you submit. Do not invent a company or arrival time. For plumbing, give them the call_to_connect number and have them dial it — never place the call yourself.</p>
     <pre>service_type
 zip_code
 customer_name
@@ -25,8 +25,17 @@ consent_to_contact=true
 Optional: bedrooms, notes, preferred_date, city, state, source_agent
 
 Tools: request_home_service, request_cleaning, get_lead_status, list_supported_services
+
+Plumbing: response includes call_to_connect (+13085299543 / (308) 529-9543).
+Read the number aloud. The person must dial. Do not autodial or transfer.
+
 Source: https://github.com/TommyTap11/zaptu
-Form: https://zaptu.ai/</pre>
+Form: https://zaptu.ai/
+Plumbing page: https://zaptu.ai/plumbing</pre>
   </main>
+  <footer>
+    <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
+    <p class="footer-meta">Zaptu · <a href="/privacy">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>
+  </footer>
 </body>
 </html>

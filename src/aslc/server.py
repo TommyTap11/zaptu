@@ -36,19 +36,25 @@ from aslc import config  # noqa: E402
 from aslc.models import ALL_SERVICE_TYPES, ServiceRequest  # noqa: E402
 from aslc.service import lookup_lead, submit_request  # noqa: E402
 from aslc.storage import list_leads  # noqa: E402
+from aslc.call_routing import CALL_TO_CONNECT  # noqa: E402
 from aslc.validation import COLLECTED_ONLY_SERVICES, ROUTABLE_SERVICES, SUPPORTED_SERVICES  # noqa: E402
 
 INSTRUCTIONS = """
-You help a person request a local home service (starting with house cleaning).
+You help a person request a local home service.
 
-When a user wants a cleaner, maid, deep clean, move-in/move-out clean, pest control,
+When a user wants a cleaner, deep clean, move-in/move-out clean, pest control,
 plumbing, HVAC, handyman, or other home service:
-1. Collect ZIP code, phone number, name, and consent to be called.
+1. Collect ZIP code, phone number, name, and consent to be contacted.
 2. Collect bedrooms or square footage if they know it, plus preferred date if they have one.
 3. Call request_home_service (or request_cleaning).
-4. Tell the user what happened using the tool result. Do not invent a booked appointment —
-   this system sends a contact request / lead, it does not dispatch a named company yet.
+4. Tell the user what happened using the tool result. Do not invent a booked appointment,
+   and do not promise that a provider will call back — this is a contact request / lead only.
 5. Never submit without explicit consent_to_contact=true from the user.
+6. Plumbing is the only live call-to-connect path: the tool returns call_to_connect /
+   call_to_connect_display. Read the number to the person and ask them to dial it themselves.
+   Never dial, autodial, transfer, or place the call for them — the call must be a live
+   inbound call from the consumer. Cleaning, pest, and other form services are collecting
+   only until a buyer covers them.
 """.strip()
 
 mcp = MCPServer(
@@ -236,7 +242,7 @@ async def public_intake(request: Request) -> Response:
                 {
                     "lead_id": "ignored",
                     "status": "received",
-                    "message": "Request received and is being routed.",
+                    "message": "Request received.",
                     "next_steps": [],
                 },
                 status_code=202,
@@ -278,6 +284,13 @@ async def health(_request: Request) -> Response:
             "service": "zaptu",
             "supported_services": sorted(SUPPORTED_SERVICES),
             "collected_only": sorted(COLLECTED_ONLY_SERVICES),
+            "call_to_connect": sorted(CALL_TO_CONNECT.keys()),
+            "form_routing": "collecting",
+            "note": (
+                "Plumbing is live call-to-connect. Cleaning/pest and other form services "
+                "are accepted and passed along when a buyer webhook covers them — "
+                "no live form buyer yet. Do not promise a provider callback."
+            ),
             "mock_forwarding": config.settings.mock_forwarding,
             "data_dir": str(config.settings.data_dir),
         }
@@ -345,7 +358,7 @@ async def request_home_service(
     ],
     zip_code: Annotated[str, Field(description="US 5-digit ZIP for the job site.")],
     customer_name: Annotated[str, Field(description="Customer's full name.")],
-    customer_phone: Annotated[str, Field(description="US phone number the provider should call.")],
+    customer_phone: Annotated[str, Field(description="US phone number for follow-up contact about this request.")],
     consent_to_contact: Annotated[
         bool,
         Field(description="Must be true. Customer agreed to a call or text about this job."),
@@ -369,9 +382,12 @@ async def request_home_service(
     """Submit a qualified local home-service request as a paid lead.
 
     Use this when a person wants house cleaning, a deep clean, move-in/out cleaning,
-    recurring maid service, pest control, plumbing, HVAC, handyman, or other.
+    recurring cleaning, pest control, plumbing, HVAC, handyman, or other.
     Requires name, phone, ZIP, and consent.
     Returns a confirmation with a lead_id — this is a lead/call request, not a booked job.
+
+    For plumbing, the response includes call_to_connect and call_instruction.
+    Give the person the number and have them dial it; never place the call yourself.
     """
     payload = {
         "service_type": service_type,
@@ -458,13 +474,30 @@ async def get_lead_status(
 
 @mcp.tool(title="List supported services")
 async def list_supported_services() -> str:
-    """Show which home services this connector can currently monetize or collect."""
+    """Show which home services this connector accepts, collects, or call-to-connects."""
     return json.dumps(
         {
+            # Back-compat key: form categories that CAN be forwarded when a buyer webhook exists.
+            # They are not live-routed today — status is collecting.
             "monetized": sorted(ROUTABLE_SERVICES),
+            "form_accepted_collecting": sorted(ROUTABLE_SERVICES),
             "accepted_but_logged_only": sorted(COLLECTED_ONLY_SERVICES),
+            "call_to_connect": {
+                k: {
+                    "phone": v.phone_e164,
+                    "display": v.display,
+                    "instruction": v.instruction,
+                    "network": v.network,
+                    "campaign_id": v.campaign_id,
+                }
+                for k, v in CALL_TO_CONNECT.items()
+            },
             "all_service_types": list(ALL_SERVICE_TYPES),
-            "coverage": "US residential. Buyer coverage depends on the connected affiliate network.",
+            "coverage": (
+                "US residential. Plumbing is live call-to-connect. "
+                "Cleaning/pest form requests are collecting — passed along when a buyer covers them. "
+                "Do not promise a provider will call back."
+            ),
             "required_fields": [
                 "service_type",
                 "zip_code",
@@ -472,6 +505,10 @@ async def list_supported_services() -> str:
                 "customer_phone",
                 "consent_to_contact",
             ],
+            "plumbing_rule": (
+                "For plumbing, return the call_to_connect number and have the person dial it. "
+                "Never dial for them."
+            ),
         },
         indent=2,
     )

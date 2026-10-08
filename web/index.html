@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zaptu — local services for AI assistants</title>
-  <meta name="description" content="Zaptu lets AI assistants request house cleaning, pest control, plumbing, HVAC, and handyman service. A provider contacts the customer. Not a booking." />
+  <meta name="description" content="Zaptu connects people with independent local contractors for cleaning, pest control, plumbing, HVAC, and handyman requests. Not a booking. Zaptu does not perform the work." />
   <link rel="canonical" href="https://zaptu.ai/" />
   <link rel="stylesheet" href="/style.css" />
 </head>
@@ -20,29 +20,29 @@
   </header>
   <main>
     <p class="eyebrow">Services for assistants</p>
-    <h1>Request a local service.<br>A provider calls back.</h1>
-    <p class="lede">Start self-serve in a minute. Assistants and people use the same request. Contact only — never a confirmed appointment.</p>
+    <h1>Get connected with a local pro.</h1>
+    <p class="lede">Start self-serve in a minute. Assistants and people use the same request. We connect you with independent local contractors — we do not perform the work, and this is never a confirmed appointment.</p>
     <div class="plans">
       <a class="plan" href="/cleaning">
-        <span class="tag">Live</span>
+        <span class="tag">Collecting</span>
         <h2>Cleaning</h2>
         <p>One-time, deep, move-in, recurring.</p>
-        <ul><li>US residential</li><li>Routed when a buyer covers the ZIP</li><li>Name, phone, consent required</li></ul>
-        <span class="btn">Request cleaning</span>
+        <ul><li>US residential</li><li>Passed along when a buyer covers the ZIP</li><li>Name, phone, consent required</li></ul>
+        <span class="btn ghost">Request cleaning</span>
       </a>
       <a class="plan" href="/pest-control">
-        <span class="tag">Live</span>
+        <span class="tag">Collecting</span>
         <h2>Pest</h2>
-        <p>Accepted and logged for routing.</p>
-        <ul><li>Homeowner or tenant</li><li>ZIP must be in coverage</li><li>Not a booked visit</li></ul>
-        <span class="btn">Request pest</span>
+        <p>Accepted and held until a buyer covers the area.</p>
+        <ul><li>Homeowner or tenant</li><li>Passed along when a buyer is live</li><li>Not a booked visit</li></ul>
+        <span class="btn ghost">Request pest</span>
       </a>
       <a class="plan" href="/plumbing">
-        <span class="tag">Collecting</span>
+        <span class="tag">Live</span>
         <h2>Plumbing</h2>
-        <p>Saved until a buyer is live.</p>
-        <ul><li>Same form</li><li>Notes for the job</li><li>Held, not sold yet</li></ul>
-        <span class="btn ghost">Send plumbing</span>
+        <p>Call to be connected with a local plumbing professional.</p>
+        <ul><li>You place the call</li><li>Tracking number on the plumbing page</li><li>Not a booking by Zaptu</li></ul>
+        <span class="btn">Call for plumbing</span>
       </a>
       <a class="plan" href="/hvac">
         <span class="tag">Collecting</span>
@@ -82,7 +82,7 @@
             <option value="move_in_out_cleaning">Move-in / move-out</option>
             <option value="recurring_cleaning">Recurring</option>
             <option value="pest_control">Pest control</option>
-            <option value="plumbing">Plumbing</option>
+            <option value="plumbing">Plumbing (prefer Call on plumbing page)</option>
             <option value="hvac">HVAC</option>
             <option value="handyman">Handyman</option>
             <option value="other">Other</option>
@@ -97,9 +97,12 @@
       <textarea id="notes" name="notes" rows="3" maxlength="2000"></textarea>
       <label class="consent"><input type="checkbox" name="consent_to_contact" value="yes" required /><span>I agree a provider or Zaptu partner may call or text about this request.</span></label>
       <button type="submit">Send request</button>
-      <p class="note">US residential. Cleaning and pest are the ones we try to route. <a href="/privacy">Privacy</a> · <a href="/handyman">Handyman</a></p>
+      <p class="note">US residential. We pass your request along when a buyer covers that service — this is not a booking. For plumbing, use the <a href="/plumbing">call-to-connect number</a>. <a href="/privacy">Privacy</a> · <a href="/handyman">Handyman</a></p>
     </form>
   </main>
-  <footer>Zaptu · <a href="/privacy">Privacy</a> · <a href="/agents">Agents</a> · <a href="/sitemap.xml">Sitemap</a></footer>
+  <footer>
+    <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
+    <p class="footer-meta">Zaptu · <a href="/privacy">Privacy</a> · <a href="/agents">Agents</a> · <a href="/sitemap.xml">Sitemap</a></p>
+  </footer>
 </body>
 </html>

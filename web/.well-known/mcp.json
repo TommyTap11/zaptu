@@ -1,7 +1,7 @@
 {
   "name": "zaptu",
   "title": "Zaptu",
-  "description": "Request local home services for an AI assistant. Lead only, not a booking.",
+  "description": "Request local home services for an AI assistant. Lead only, not a booking. Plumbing returns a call_to_connect number the consumer must dial; agents must not place the call.",
   "website": "https://zaptu.ai/",
   "llms": "https://zaptu.ai/llms.txt",
   "docs": "https://zaptu.ai/agents",
