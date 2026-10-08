@@ -5,7 +5,6 @@
   "website": "https://zaptu.ai/",
   "llms": "https://zaptu.ai/llms.txt",
   "docs": "https://zaptu.ai/agents",
-  "repository": "https://github.com/TommyTap11/zaptu",
   "transport": "streamable-http",
   "mcp_url": "https://api.zaptu.ai/mcp",
   "mcp_path": "/mcp",
