@@ -7,15 +7,15 @@
   "docs": "https://zaptu.ai/agents",
   "repository": "https://github.com/TommyTap11/zaptu",
   "transport": "streamable-http",
+  "mcp_url": "https://api.zaptu.ai/mcp",
   "mcp_path": "/mcp",
+  "api_base": "https://api.zaptu.ai",
+  "intake": "https://api.zaptu.ai/v1/intake",
   "required_fields": [
     "service_type",
     "zip_code",
     "customer_name",
     "customer_phone",
     "consent_to_contact"
-  ],
-  "mcp_url": "https://api.zaptu.ai/mcp",
-  "api_base": "https://api.zaptu.ai",
-  "intake": "https://api.zaptu.ai/v1/intake"
+  ]
 }
