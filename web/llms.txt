@@ -1,25 +1,24 @@
 # Zaptu
 
-Zaptu is an agent services hub. Vertical 1 routes US residential home-service requests (house cleaning first) to affiliate / pay-per-call buyers.
+Zaptu is the request hub between AI personal assistants and local services.
+A request is a lead. Do not tell the user a company is booked or a time is confirmed.
 
-This is a lead request, not a booked appointment. Do not invent a company name or arrival time.
-
-## Connect
-
-- MCP (streamable HTTP): {BASE}/mcp
-- REST intake: POST {BASE}/v1/intake
-- Health: GET {BASE}/health
-- Human form: GET {BASE}/
-
-## Tools
-
-- request_cleaning
-- request_home_service
-- get_lead_status
-- list_supported_services
+Site: https://zaptu.ai/
+Agents: https://zaptu.ai/agents
+Source: https://github.com/TommyTap11/zaptu
+Sitemap: https://zaptu.ai/sitemap.xml
 
 ## Required fields
-
 service_type, zip_code, customer_name, customer_phone, consent_to_contact=true
 
-Monetized today: house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control.
+## service_type
+house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, plumbing, hvac, handyman, other
+
+## Routing
+Live to route: cleaning types and pest_control.
+Logged only until a buyer exists: plumbing, hvac, handyman, other.
+
+## Tools when MCP is hosted
+request_home_service, request_cleaning, get_lead_status, list_supported_services
+Human form: POST https://api.zaptu.ai/v1/intake (also https://zaptu.ai/ until cutover)
+MCP: https://api.zaptu.ai/mcp

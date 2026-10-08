@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zaptu agent connector</title>
+  <meta name="description" content="How AI assistants request local services through Zaptu. Required fields, tools, and the rule that this is a lead, not a booking." />
+  <link rel="canonical" href="https://zaptu.ai/agents" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">Zaptu</a>
+    <nav><a href="/llms.txt">llms.txt</a><a href="/how-it-works">How it works</a></nav>
+  </header>
+  <main>
+    <h1>Agent connector</h1>
+    <p class="lede">Use this when a person wants a local service. Collect consent before you submit. Do not invent a company or arrival time.</p>
+    <pre>service_type
+zip_code
+customer_name
+customer_phone
+consent_to_contact=true
+
+Optional: bedrooms, notes, preferred_date, city, state, source_agent
+
+Tools: request_home_service, request_cleaning, get_lead_status, list_supported_services
+Source: https://github.com/TommyTap11/zaptu
+Form: https://zaptu.ai/</pre>
+  </main>
+</body>
+</html>

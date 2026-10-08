@@ -1,0 +1,21 @@
+{
+  "name": "zaptu",
+  "title": "Zaptu",
+  "description": "Request local home services for an AI assistant. Lead only, not a booking.",
+  "website": "https://zaptu.ai/",
+  "llms": "https://zaptu.ai/llms.txt",
+  "docs": "https://zaptu.ai/agents",
+  "repository": "https://github.com/TommyTap11/zaptu",
+  "transport": "streamable-http",
+  "mcp_path": "/mcp",
+  "required_fields": [
+    "service_type",
+    "zip_code",
+    "customer_name",
+    "customer_phone",
+    "consent_to_contact"
+  ],
+  "mcp_url": "https://api.zaptu.ai/mcp",
+  "api_base": "https://api.zaptu.ai",
+  "intake": "https://api.zaptu.ai/v1/intake"
+}
