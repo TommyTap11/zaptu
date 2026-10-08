@@ -663,6 +663,9 @@ def create_app(host: str = "0.0.0.0") -> Starlette:
         allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
         allow_headers=["*"],
         expose_headers=["Mcp-Session-Id", "Mcp-Protocol-Version"],
+        # Public, credential-free API: also answer Chrome Private Network Access preflights
+        # (sent when a visitor's DNS maps api.zaptu.ai to a private address, e.g. split DNS).
+        allow_private_network=True,
         max_age=86400,
     )
     return app
