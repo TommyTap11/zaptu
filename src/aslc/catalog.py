@@ -22,7 +22,7 @@ CONTACT_EMAIL = "hello@zaptu.ai"
 REGISTRY_NAME = "ai.zaptu/zaptu"  # reverse-DNS name for MCP registries (domain-owned)
 PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26"]
 
-SHORT_DESCRIPTION = "Connect people with independent local home-service pros. Plumbing: the person dials."
+SHORT_DESCRIPTION = "Connect people with independent local home-service contractors. For plumbing, the person dials."
 
 ABOUT = (
     "Zaptu connects people with independent local home-service contractors. "
@@ -295,6 +295,6 @@ def registry_server_json() -> dict[str, Any]:
         "title": "Zaptu",
         "description": SHORT_DESCRIPTION,
         "version": VERSION,
-        "websiteUrl": f"{SITE}/",
+        "websiteUrl": SITE,
         "remotes": [{"type": "streamable-http", "url": MCP_URL}],
     }
