@@ -21,25 +21,32 @@
   <meta name="twitter:image" content="https://zaptu.ai/og-image.png" />
   <!-- /seo:og -->
   <meta name="robots" content="index,follow" />
+  <!-- seo:icons -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#07080b" />
+  <!-- /seo:icons -->
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <header>
     <a class="brand" href="/">Zaptu</a>
-    <nav>
+    <nav aria-label="Main">
+      <a href="/plumbing/">Plumbing</a>
       <a href="/how-it-works/">How it works</a>
       <a href="/agents/">For agents</a>
-      <a href="/privacy/">Privacy</a>
     </nav>
   </header>
   <main>
     <h1>HVAC</h1>
     <p class="lede">Collected and stored. Not sold yet. Include the problem in notes: no cool, no heat, leaking unit. We pass the request along when a buyer covers this service.</p>
-    <p><a href="/#request">Send a request</a></p>
+    <p><a class="btn-call" href="/?service=hvac#request">Send a request</a></p>
   </main>
   <footer>
     <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
-    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/privacy/">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>
+    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/how-it-works/">How it works</a> · <a href="/agents/">For agents</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:hello@zaptu.ai">Contact</a></p>
   </footer>
 </body>
 </html>

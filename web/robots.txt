@@ -1,13 +1,24 @@
+# Zaptu welcomes search engines and AI assistants.
+# Agent guide: https://zaptu.ai/llms.txt  MCP: https://api.zaptu.ai/mcp
 User-agent: *
 Allow: /
 
 User-agent: GPTBot
 Allow: /
 
+User-agent: OAI-SearchBot
+Allow: /
+
 User-agent: ChatGPT-User
 Allow: /
 
-User-agent: Google-Extended
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
 Allow: /
 
 User-agent: anthropic-ai
@@ -16,5 +27,31 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 Sitemap: https://zaptu.ai/sitemap.xml
-Llms: https://zaptu.ai/llms.txt

@@ -17,6 +17,27 @@ WEB = ROOT / "web"
 BASE = "https://zaptu.ai"
 OG_IMAGE = f"{BASE}/og-image.png"
 NOINDEX = {"thanks"}  # path segments that should not be indexed
+CONTACT_EMAIL = "hello@zaptu.ai"
+
+NAV = [("/plumbing/", "Plumbing"), ("/how-it-works/", "How it works"), ("/agents/", "For agents")]
+FOOTER_LINKS = [
+    ("/plumbing/", "Plumbing"),
+    ("/how-it-works/", "How it works"),
+    ("/agents/", "For agents"),
+    ("/privacy/", "Privacy"),
+    (f"mailto:{CONTACT_EMAIL}", "Contact"),
+]
+ICONS = "\n".join(
+    [
+        "  <!-- seo:icons -->",
+        '  <link rel="icon" href="/favicon.ico" sizes="32x32" />',
+        '  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />',
+        '  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />',
+        '  <link rel="manifest" href="/site.webmanifest" />',
+        '  <meta name="theme-color" content="#07080b" />',
+        "  <!-- /seo:icons -->",
+    ]
+)
 
 # Pages that lack a description get one here (keyed by URL path).
 FALLBACK_DESCRIPTIONS = {
@@ -47,6 +68,30 @@ def fix_internal_links(text: str, known: set[str]) -> str:
         return f'href="{path}{("#" + frag) if frag else ""}"'
 
     return re.sub(r'href="(/[^"]*)"', repl, text)
+
+
+def header_html(current: str) -> str:
+    links = "\n".join(
+        f'      <a href="{href}"' + (' aria-current="page"' if href == current else "") + f">{label}</a>"
+        for href, label in NAV
+    )
+    return f'<header>\n    <a class="brand" href="/">Zaptu</a>\n    <nav aria-label="Main">\n{links}\n    </nav>\n  </header>'
+
+
+def footer_meta_html() -> str:
+    return '<p class="footer-meta">Zaptu · ' + " · ".join(f'<a href="{h}">{t}</a>' for h, t in FOOTER_LINKS) + "</p>"
+
+
+def apply_chrome(text: str, current: str) -> str:
+    """Shared header nav, footer links, and icon/manifest tags on every page."""
+    if "<header>" in text:
+        text = re.sub(r"<header>.*?</header>", lambda _m: header_html(current), text, count=1, flags=re.S)
+    else:
+        text = text.replace("<body>\n", "<body>\n  " + header_html(current) + "\n", 1)
+    text = re.sub(r'<p class="footer-meta">.*?</p>', lambda _m: footer_meta_html(), text, count=1, flags=re.S)
+    text = re.sub(r"\n  <!-- seo:icons -->.*?<!-- /seo:icons -->", "", text, flags=re.S)
+    text = text.replace('  <link rel="stylesheet" href="/style.css" />', ICONS + '\n  <link rel="stylesheet" href="/style.css" />', 1)
+    return text
 
 
 def process(page: Path, known: set[str]) -> None:
@@ -98,6 +143,7 @@ def process(page: Path, known: set[str]) -> None:
     text = re.sub(r'(<link rel="canonical" href="[^"]*" />)', r"\1\n" + og.replace("\\", "\\\\"), text, count=1)
 
     text = fix_internal_links(text, known)
+    text = apply_chrome(text, path)
 
     # footer link to /plumbing/
     if 'class="footer-meta"' in text and 'href="/plumbing/">Plumbing</a>' not in text.split('class="footer-meta"')[1]:
@@ -119,6 +165,9 @@ def main() -> None:
     known = {url_path(p) for p in pages}
     for p in pages:
         process(p, known)
+    not_found = WEB / "404.html"
+    if not_found.exists():
+        not_found.write_text(apply_chrome(not_found.read_text(encoding="utf-8"), ""), encoding="utf-8")
 
     entries = []
     for p in pages:

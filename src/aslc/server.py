@@ -1,11 +1,17 @@
 """MCP + HTTP entrypoint.
 
 Exposes:
+  GET  /                    JSON index for agents (browsers are redirected to https://zaptu.ai/)
   GET  /health
-  POST /v1/intake   (public: JSON or form-urlencoded)
-  POST /v1/leads
-  GET  /v1/leads/{lead_id}
-  MCP  /mcp       (streamable HTTP)
+  GET  /v1/services         live vs collecting services, plumbing number, agent rules
+  POST /v1/intake           public: JSON or form-urlencoded; add dry_run=true to validate only
+  GET  /openapi.json
+  GET  /.well-known/mcp.json, /.well-known/mcp/server-card.json, /server-card
+  GET  /llms.txt, /llms-full.txt, /robots.txt
+  POST /v1/leads, GET /v1/leads/{lead_id}   (token)
+  MCP  /mcp                 streamable HTTP, stateless, no auth
+
+CORS is open (no credentials) so browser-based agent clients can call the public API.
 """
 
 from __future__ import annotations
@@ -22,7 +28,10 @@ from urllib.parse import parse_qs
 
 from pydantic import Field, ValidationError
 from starlette.requests import Request
-from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
+from starlette.applications import Starlette
+from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 # Allow `python src/aslc/server.py` without installing the package.
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,36 +40,37 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from mcp.server.mcpserver import MCPServer  # noqa: E402
+from mcp.types import ToolAnnotations  # noqa: E402
 
-from aslc import config  # noqa: E402
+from aslc import catalog, config  # noqa: E402
 from aslc.models import ALL_SERVICE_TYPES, ServiceRequest  # noqa: E402
 from aslc.service import lookup_lead, submit_request  # noqa: E402
 from aslc.storage import list_leads  # noqa: E402
 from aslc.call_routing import CALL_TO_CONNECT  # noqa: E402
-from aslc.validation import COLLECTED_ONLY_SERVICES, ROUTABLE_SERVICES, SUPPORTED_SERVICES  # noqa: E402
+from aslc.validation import COLLECTED_ONLY_SERVICES, SUPPORTED_SERVICES  # noqa: E402
 
 INSTRUCTIONS = """
-You help a person request a local home service.
+Zaptu connects people with independent local home-service contractors.
+Zaptu does not perform the work and does not book appointments.
 
-When a user wants a cleaner, deep clean, move-in/move-out clean, pest control,
-plumbing, HVAC, handyman, or other home service:
-1. Collect ZIP code, phone number, name, and consent to be contacted.
-2. Collect bedrooms or square footage if they know it, plus preferred date if they have one.
-3. Call request_home_service (or request_cleaning).
-4. Tell the user what happened using the tool result. Do not invent a booked appointment,
-   and do not promise that a provider will call back — this is a contact request / lead only.
-5. Never submit without explicit consent_to_contact=true from the user.
-6. Plumbing is the only live call-to-connect path: the tool returns call_to_connect /
-   call_to_connect_display. Read the number to the person and ask them to dial it themselves.
-   Never dial, autodial, transfer, or place the call for them — the call must be a live
-   inbound call from the consumer. Cleaning, pest, and other form services are collecting
-   only until a buyer covers them.
+PLUMBING (live): call get_plumbing_call_number. Tell the person, for example:
+"Call (308) 529-9543 to be connected with a local plumbing professional."
+The person must dial it themselves. Never dial, autodial, transfer, or place the call
+for them. No name, phone, or consent is needed for this.
+
+EVERYTHING ELSE (collecting: cleaning, pest control, HVAC, handyman, other):
+collect ZIP, name, phone, and the person's explicit consent to be contacted, then call
+request_home_service. These requests are passed along when a buyer covers the service;
+there is no live buyer yet. Do not promise a callback, an arrival time, or a named company.
+
+Use the tool result's message when you tell the person what happened.
+list_supported_services returns the full catalog.
 """.strip()
 
 mcp = MCPServer(
     name="zaptu",
     title="Zaptu",
-    version="0.1.1",
+    version=catalog.VERSION,
     instructions=INSTRUCTIONS,
     website_url="https://zaptu.ai",
     log_level=config.settings.log_level,  # type: ignore[arg-type]
@@ -112,21 +122,8 @@ def _rate_limited(ip: str) -> bool:
         return False
 
 
-def _cors(response: Response, request: Request | None = None) -> Response:
-    origin = ""
-    if request is not None:
-        origin = request.headers.get("origin", "")
-    allowed = config.settings.cors_origins
-    if origin in allowed:
-        response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Vary"] = "Origin"
-    elif "https://zaptu.ai" in allowed:
-        # Default allowlisted origin when no Origin header (non-browser)
-        response.headers["Access-Control-Allow-Origin"] = "https://zaptu.ai"
-    response.headers["Access-Control-Allow-Headers"] = (
-        "content-type, authorization, x-api-token"
-    )
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+def _cors(response: Response, _request: Request | None = None) -> Response:
+    """CORS headers are added by CORSMiddleware in create_app(); kept for call-site clarity."""
     return response
 
 
@@ -193,87 +190,218 @@ def _normalize_intake_payload(body: dict[str, Any]) -> dict[str, Any]:
     return data
 
 
+FIELD_LABELS = {
+    "service_type": "Service",
+    "zip_code": "ZIP",
+    "customer_name": "Name",
+    "customer_phone": "Phone",
+    "consent_to_contact": "Consent",
+}
+
+FIELD_MESSAGES = {
+    "customer_phone": "Phone must be a 10-digit US number, like 305-555-0100.",
+    "zip_code": "ZIP must be a 5-digit US ZIP code.",
+    "customer_name": "Please enter a name (at least 2 characters).",
+    "service_type": "Pick a service: " + ", ".join(ALL_SERVICE_TYPES) + ".",
+    "state": "State must be a 2-letter code, like FL.",
+    "preferred_date": "Preferred date must look like YYYY-MM-DD.",
+    "bedrooms": "Bedrooms must be a whole number from 0 to 20.",
+    "bathrooms": "Bathrooms must be a number from 0 to 20.",
+    "square_feet": "Square feet must be a whole number from 100 to 50000.",
+    "notes": "Notes must be 2000 characters or fewer.",
+}
+
+TRUTHY = {"1", "true", "yes", "on", "y"}
+
+
+def _friendly_errors(exc: ValidationError) -> dict[str, str]:
+    """Readable, JSON-safe messages keyed by field (pydantic ctx objects are not serializable)."""
+    out: dict[str, str] = {}
+    for err in exc.errors():
+        field = str(err["loc"][0]) if err.get("loc") else "request"
+        if err.get("type") == "missing":
+            msg = f"{FIELD_LABELS.get(field, field)} is required."
+        else:
+            msg = FIELD_MESSAGES.get(field) or str(err.get("msg", "Invalid value.")).removeprefix("Value error, ")
+        out.setdefault(field, msg)
+    return out
+
+
+def _error_page(messages: list[str], status_code: int = 422) -> HTMLResponse:
+    """Plain HTML error for no-JS form posts, with a way back to the form."""
+    items = "".join(f"<li>{_esc(m)}</li>" for m in messages)
+    body = f"""<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" /><title>Request not sent | Zaptu</title>
+<link rel="stylesheet" href="{catalog.SITE}/style.css" /></head>
+<body><main><p class="eyebrow">Zaptu</p><h1>Request not sent</h1>
+<p class="lede">Please fix this and send it again:</p><ul class="errors">{items}</ul>
+<p><a class="btn-call" href="javascript:history.back()">Go back to the form</a></p>
+<p class="note"><a href="{catalog.SITE}/#request">Start a new request</a> &middot; Plumbing? <a href="{catalog.SITE}/plumbing/">Call to connect</a> &middot; <a href="mailto:{catalog.CONTACT_EMAIL}">{catalog.CONTACT_EMAIL}</a></p>
+</main></body></html>"""
+    return HTMLResponse(body, status_code=status_code)
+
+
+def _esc(text: str) -> str:
+    import html
+
+    return html.escape(str(text), quote=True)
+
+
+def _json(data: Any, status_code: int = 200, cache: str | None = None) -> JSONResponse:
+    resp = JSONResponse(data, status_code=status_code)
+    if cache:
+        resp.headers["Cache-Control"] = cache
+    return resp
+
+
+def _wants_html(request: Request) -> bool:
+    accept = (request.headers.get("accept") or "").lower()
+    return "text/html" in accept
+
+
 @mcp.custom_route("/", methods=["GET"])
-async def home(_request: Request) -> Response:
-    page = WEB / "index.html"
-    if page.exists():
-        return FileResponse(page, media_type="text/html")
-    return PlainTextResponse("Zaptu lead router. POST /v1/intake or connect MCP at /mcp")
+async def home(request: Request) -> Response:
+    """Browsers go to the website; agents and curl get a small JSON index."""
+    if _wants_html(request):
+        return RedirectResponse(url=f"{catalog.SITE}/", status_code=301)
+    return _json(
+        {
+            "name": "Zaptu API",
+            "about": catalog.ABOUT,
+            "version": catalog.VERSION,
+            "mcp": catalog.MCP_URL,
+            "services": f"{catalog.API}/v1/services",
+            "intake": f"{catalog.API}/v1/intake",
+            "openapi": f"{catalog.API}/openapi.json",
+            "server_card": f"{catalog.API}/.well-known/mcp/server-card.json",
+            "docs": f"{catalog.SITE}/agents/",
+            "llms": f"{catalog.SITE}/llms.txt",
+            "plumbing": catalog.plumbing_answer()["what_to_tell_the_user"],
+            "rules": catalog.AGENT_RULES,
+            "contact": catalog.CONTACT_EMAIL,
+        }
+    )
+
+
+def _web_text(name: str, fallback: str) -> str:
+    path = WEB / name
+    text = path.read_text(encoding="utf-8") if path.exists() else fallback
+    return text.replace("{BASE}", config.settings.public_base_url.rstrip("/"))
 
 
 @mcp.custom_route("/llms.txt", methods=["GET"])
 async def llms(_request: Request) -> Response:
-    path = WEB / "llms.txt"
-    text = path.read_text(encoding="utf-8") if path.exists() else "Zaptu MCP at /mcp"
-    text = text.replace("{BASE}", config.settings.public_base_url.rstrip("/"))
-    return PlainTextResponse(text)
+    return PlainTextResponse(_web_text("llms.txt", "Zaptu MCP at /mcp"))
 
 
-@mcp.custom_route("/v1/intake", methods=["OPTIONS"])
-async def intake_options(request: Request) -> Response:
-    return _cors(Response(status_code=204), request)
+@mcp.custom_route("/llms-full.txt", methods=["GET"])
+async def llms_full(_request: Request) -> Response:
+    return PlainTextResponse(_web_text("llms-full.txt", "See https://zaptu.ai/agents/"))
+
+
+@mcp.custom_route("/robots.txt", methods=["GET"])
+async def robots(_request: Request) -> Response:
+    return PlainTextResponse("User-agent: *\nAllow: /\n\nSitemap: https://zaptu.ai/sitemap.xml\n")
+
+
+@mcp.custom_route("/favicon.ico", methods=["GET"])
+async def favicon(_request: Request) -> Response:
+    return RedirectResponse(url=f"{catalog.SITE}/favicon.ico", status_code=301)
+
+
+@mcp.custom_route("/v1/services", methods=["GET"])
+async def services(_request: Request) -> Response:
+    return _json(catalog.services_catalog(), cache="public, max-age=300")
+
+
+@mcp.custom_route("/openapi.json", methods=["GET"])
+async def openapi(_request: Request) -> Response:
+    return _json(catalog.openapi_spec(), cache="public, max-age=300")
+
+
+@mcp.custom_route("/.well-known/mcp.json", methods=["GET"])
+async def well_known_mcp(_request: Request) -> Response:
+    return _json(catalog.mcp_manifest(), cache="public, max-age=300")
+
+
+async def _tool_list() -> list[dict[str, Any]]:
+    tools = await mcp.list_tools()
+    return [t.model_dump(mode="json", by_alias=True, exclude_none=True) for t in tools]
+
+
+async def build_server_card() -> dict[str, Any]:
+    return catalog.server_card(await _tool_list(), INSTRUCTIONS)
+
+
+@mcp.custom_route("/.well-known/mcp/server-card.json", methods=["GET"])
+async def server_card(_request: Request) -> Response:
+    return _json(await build_server_card(), cache="public, max-age=300")
+
+
+@mcp.custom_route("/server-card", methods=["GET"])
+async def server_card_v1(_request: Request) -> Response:
+    resp = _json(catalog.server_card_v1(), cache="public, max-age=300")
+    resp.headers["Content-Type"] = "application/mcp-server-card+json"
+    return resp
+
+
+@mcp.custom_route("/.well-known/mcp-server-card", methods=["GET"])
+async def server_card_v1_well_known(request: Request) -> Response:
+    return await server_card_v1(request)
 
 
 @mcp.custom_route("/v1/intake", methods=["POST"])
 async def public_intake(request: Request) -> Response:
     """Public front door used by the website form and API clients."""
     ip = _client_ip(request)
+    content_type = (request.headers.get("content-type") or "").lower()
+    is_form = "application/x-www-form-urlencoded" in content_type or "multipart/form-data" in content_type
+
     if _rate_limited(ip):
-        return _cors(
-            JSONResponse({"error": "rate_limited", "detail": "Too many requests"}, status_code=429),
-            request,
-        )
+        if is_form:
+            return _error_page(["Too many requests from this connection. Please wait a minute and try again."], 429)
+        return _json({"error": "rate_limited", "message": "Too many requests. Wait a minute and try again."}, 429)
 
     try:
         body = await _parse_intake_body(request)
-    except Exception as exc:
-        return _cors(
-            JSONResponse({"error": "invalid_request", "detail": str(exc)}, status_code=422),
-            request,
-        )
+    except Exception:
+        if is_form:
+            return _error_page(["We could not read that request. Please try again."])
+        return _json({"error": "invalid_request", "message": "Body must be a JSON object or a form post."}, 422)
 
     # Honeypot: pretend success, do not store.
     honeypot = body.get("bot-field")
     if honeypot is not None and str(honeypot).strip() != "":
         if _wants_html_redirect(request, body):
-            return _cors(RedirectResponse(url=config.settings.thanks_url, status_code=303), request)
-        return _cors(
-            JSONResponse(
-                {
-                    "lead_id": "ignored",
-                    "status": "received",
-                    "message": "Request received.",
-                    "next_steps": [],
-                },
-                status_code=202,
-            ),
-            request,
-        )
+            return RedirectResponse(url=config.settings.thanks_url, status_code=303)
+        return _json({"lead_id": "ignored", "status": "received", "message": "Request received.", "next_steps": []}, 202)
 
+    dry_run = str(body.pop("dry_run", "") or request.query_params.get("dry_run", "")).strip().lower() in TRUTHY
     payload = _normalize_intake_payload(body)
+    payload.pop("format", None)
     try:
         req = ServiceRequest.model_validate(payload)
     except ValidationError as exc:
-        return _cors(
-            JSONResponse(
-                {"error": "invalid_request", "detail": exc.errors()},
-                status_code=422,
-            ),
-            request,
-        )
-    except Exception as exc:
-        return _cors(
-            JSONResponse({"error": "invalid_request", "detail": str(exc)}, status_code=422),
-            request,
-        )
+        fields = _friendly_errors(exc)
+        if _wants_html_redirect(request, body):
+            return _error_page(list(fields.values()))
+        return _json({"error": "invalid_request", "message": " ".join(fields.values()), "fields": fields}, 422)
 
-    result = await submit_request(req)
+    result = await submit_request(req, dry_run=dry_run)
 
     if _wants_html_redirect(request, body):
-        return _cors(RedirectResponse(url=config.settings.thanks_url, status_code=303), request)
+        if result.status.value == "rejected":
+            return _error_page([result.message])
+        if result.status.value == "call_to_connect":
+            return RedirectResponse(url=f"{catalog.SITE}/plumbing/", status_code=303)
+        return RedirectResponse(url=config.settings.thanks_url, status_code=303)
 
-    status_code = 202 if result.status.value != "rejected" else 422
-    return _cors(JSONResponse(result.model_dump(mode="json"), status_code=status_code), request)
+    if result.status.value == "rejected":
+        status_code = 422
+    else:
+        status_code = 200 if dry_run else 202
+    return _json(result.model_dump(mode="json"), status_code)
 
 
 @mcp.custom_route("/health", methods=["GET"])
@@ -282,6 +410,7 @@ async def health(_request: Request) -> Response:
         {
             "ok": True,
             "service": "zaptu",
+            "version": catalog.VERSION,
             "supported_services": sorted(SUPPORTED_SERVICES),
             "collected_only": sorted(COLLECTED_ONLY_SERVICES),
             "call_to_connect": sorted(CALL_TO_CONNECT.keys()),
@@ -292,7 +421,6 @@ async def health(_request: Request) -> Response:
                 "no live form buyer yet. Do not promise a provider callback."
             ),
             "mock_forwarding": config.settings.mock_forwarding,
-            "data_dir": str(config.settings.data_dir),
         }
     )
 
@@ -340,7 +468,27 @@ async def get_lead_http(request: Request) -> Response:
     return JSONResponse(json.loads(row.model_dump_json()))
 
 
-@mcp.tool(title="Request a home service")
+READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False)
+SUBMIT = ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=False, open_world_hint=True)
+
+
+@mcp.tool(title="Get the plumbing call-to-connect number", annotations=READ_ONLY)
+async def get_plumbing_call_number(
+    zip_code: Annotated[
+        str | None, Field(description="Optional US ZIP of the job site. Not required.")
+    ] = None,
+) -> str:
+    """Get the phone number a person dials to be connected with a local plumbing professional.
+
+    Use this for any plumbing need (leak, clog, water heater, sewer, burst pipe).
+    No name, phone, or consent is needed. Read what_to_tell_the_user to the person.
+    The person must place the call themselves: never dial, autodial, transfer, or
+    call on their behalf. Zaptu does not perform the work and this is not a booking.
+    """
+    return json.dumps(catalog.plumbing_answer(zip_code), indent=2)
+
+
+@mcp.tool(title="Request a home service", annotations=SUBMIT)
 async def request_home_service(
     service_type: Annotated[
         Literal[
@@ -354,17 +502,17 @@ async def request_home_service(
             "handyman",
             "other",
         ],
-        Field(description="Type of local service requested."),
+        Field(description="Type of local service requested. For plumbing, prefer get_plumbing_call_number."),
     ],
     zip_code: Annotated[str, Field(description="US 5-digit ZIP for the job site.")],
     customer_name: Annotated[str, Field(description="Customer's full name.")],
     customer_phone: Annotated[str, Field(description="US phone number for follow-up contact about this request.")],
     consent_to_contact: Annotated[
         bool,
-        Field(description="Must be true. Customer agreed to a call or text about this job."),
+        Field(description="Must be true for non-plumbing services: the person agreed to a call or text about this request."),
     ],
     city: str | None = None,
-    state: str | None = None,
+    state: Annotated[str | None, Field(description="2-letter US state code.")] = None,
     address_line: str | None = None,
     bedrooms: int | None = None,
     bathrooms: float | None = None,
@@ -375,19 +523,20 @@ async def request_home_service(
         default=None, description="Preferred date as YYYY-MM-DD, if any."
     ),
     flexible_dates: bool = True,
-    notes: str | None = None,
+    notes: Annotated[str | None, Field(description="What the person needs, in their words.")] = None,
     customer_email: str | None = None,
-    source_agent: str | None = "mcp",
+    source_agent: Annotated[str | None, Field(description="Your agent or product name.")] = "mcp",
+    dry_run: Annotated[bool, Field(description="Validate only; nothing is saved or passed along.")] = False,
 ) -> str:
-    """Submit a qualified local home-service request as a paid lead.
+    """Submit a home-service request (a lead, not a booking).
 
-    Use this when a person wants house cleaning, a deep clean, move-in/out cleaning,
-    recurring cleaning, pest control, plumbing, HVAC, handyman, or other.
-    Requires name, phone, ZIP, and consent.
-    Returns a confirmation with a lead_id — this is a lead/call request, not a booked job.
+    Cleaning, pest control, HVAC, handyman, and other are collecting: the request is
+    passed along when a buyer covers the service, and there is no live buyer yet, so do
+    not promise a callback. Requires name, phone, ZIP, and the person's explicit consent.
 
-    For plumbing, the response includes call_to_connect and call_instruction.
-    Give the person the number and have them dial it; never place the call yourself.
+    For plumbing, the result includes call_to_connect and call_instruction: give the
+    person the number and have them dial it. Never place the call yourself.
+    get_plumbing_call_number does the same without any personal details.
     """
     payload = {
         "service_type": service_type,
@@ -409,17 +558,21 @@ async def request_home_service(
         "consent_to_contact": consent_to_contact,
         "source_agent": source_agent,
     }
-    req = ServiceRequest.model_validate(payload)
-    result = await submit_request(req)
+    try:
+        req = ServiceRequest.model_validate(payload)
+    except ValidationError as exc:
+        fields = _friendly_errors(exc)
+        return json.dumps({"error": "invalid_request", "message": " ".join(fields.values()), "fields": fields}, indent=2)
+    result = await submit_request(req, dry_run=dry_run)
     return result.model_dump_json(indent=2)
 
 
-@mcp.tool(title="Request house cleaning")
+@mcp.tool(title="Request house cleaning", annotations=SUBMIT)
 async def request_cleaning(
     zip_code: Annotated[str, Field(description="US 5-digit ZIP for the home.")],
     customer_name: Annotated[str, Field(description="Customer's full name.")],
     customer_phone: Annotated[str, Field(description="US phone number.")],
-    consent_to_contact: Annotated[bool, Field(description="Customer consented to a follow-up call.")],
+    consent_to_contact: Annotated[bool, Field(description="Must be true: the person agreed to a call or text about this request.")],
     bedrooms: int | None = None,
     bathrooms: float | None = None,
     square_feet: int | None = None,
@@ -430,7 +583,7 @@ async def request_cleaning(
     city: str | None = None,
     state: str | None = None,
 ) -> str:
-    """Shortcut for residential house cleaning. Same pipeline as request_home_service."""
+    """Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service."""
     return await request_home_service(
         service_type="house_cleaning" if frequency == "one_time" else "recurring_cleaning",
         zip_code=zip_code,
@@ -450,14 +603,14 @@ async def request_cleaning(
     )
 
 
-@mcp.tool(title="Check lead status")
+@mcp.tool(title="Check lead status", annotations=READ_ONLY)
 async def get_lead_status(
     lead_id: Annotated[str, Field(description="ID returned by request_home_service.")],
 ) -> str:
     """Look up a previously submitted service request by lead_id."""
     row = lookup_lead(lead_id)
     if not row:
-        return json.dumps({"error": "not_found", "lead_id": lead_id})
+        return json.dumps({"error": "not_found", "lead_id": lead_id, "message": "No request with that lead_id."})
     return json.dumps(
         {
             "lead_id": row.id,
@@ -472,59 +625,55 @@ async def get_lead_status(
     )
 
 
-@mcp.tool(title="List supported services")
+@mcp.tool(title="List supported services", annotations=READ_ONLY)
 async def list_supported_services() -> str:
-    """Show which home services this connector accepts, collects, or call-to-connects."""
-    return json.dumps(
-        {
-            # Back-compat key: form categories that CAN be forwarded when a buyer webhook exists.
-            # They are not live-routed today — status is collecting.
-            "monetized": sorted(ROUTABLE_SERVICES),
-            "form_accepted_collecting": sorted(ROUTABLE_SERVICES),
-            "accepted_but_logged_only": sorted(COLLECTED_ONLY_SERVICES),
-            "call_to_connect": {
-                k: {
-                    "phone": v.phone_e164,
-                    "display": v.display,
-                    "instruction": v.instruction,
-                    "network": v.network,
-                    "campaign_id": v.campaign_id,
-                }
-                for k, v in CALL_TO_CONNECT.items()
-            },
-            "all_service_types": list(ALL_SERVICE_TYPES),
-            "coverage": (
-                "US residential. Plumbing is live call-to-connect. "
-                "Cleaning/pest form requests are collecting — passed along when a buyer covers them. "
-                "Do not promise a provider will call back."
-            ),
-            "required_fields": [
-                "service_type",
-                "zip_code",
-                "customer_name",
-                "customer_phone",
-                "consent_to_contact",
-            ],
-            "plumbing_rule": (
-                "For plumbing, return the call_to_connect number and have the person dial it. "
-                "Never dial for them."
-            ),
-        },
-        indent=2,
-    )
+    """Which services are live (plumbing: the person dials a number) vs collecting, plus the rules for agents."""
+    return json.dumps(catalog.services_catalog(), indent=2)
 
 
-def main() -> None:
-    port = int(os.getenv("PORT", config.settings.port))
-    host = os.getenv("HOST", config.settings.host)
-    mcp.run(
-        transport="streamable-http",
-        host=host,
-        port=port,
+class _StatelessGetGuard:
+    """Stateless server: no standalone SSE stream, so GET /mcp answers 405 (allowed by the spec)."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http" and scope["method"] == "GET" and scope["path"].rstrip("/") == "/mcp":
+            resp = JSONResponse(
+                {"error": "method_not_allowed", "message": "POST JSON-RPC to /mcp. See https://zaptu.ai/agents/"},
+                status_code=405,
+                headers={"Allow": "POST"},
+            )
+            await resp(scope, receive, send)
+            return
+        await self.app(scope, receive, send)
+
+
+def create_app(host: str = "0.0.0.0") -> Starlette:
+    app = mcp.streamable_http_app(
         streamable_http_path="/mcp",
         stateless_http=True,
         json_response=True,
+        host=host,
     )
+    app.add_middleware(_StatelessGetGuard)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+        expose_headers=["Mcp-Session-Id", "Mcp-Protocol-Version"],
+        max_age=86400,
+    )
+    return app
+
+
+def main() -> None:
+    import uvicorn
+
+    port = int(os.getenv("PORT", config.settings.port))
+    host = os.getenv("HOST", config.settings.host)
+    uvicorn.run(create_app(host=host), host=host, port=port, log_level=config.settings.log_level.lower())
 
 
 if __name__ == "__main__":

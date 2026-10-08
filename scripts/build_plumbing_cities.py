@@ -438,7 +438,7 @@ def main() -> None:
     marker = "## Plumbing city pages"
     if marker in text:
         text = text[: text.index(marker)].rstrip() + "\n"
-    lines = [f"- {c['city']}, {c['abbr']}: https://zaptu.ai/plumbing/{c['slug']}/" for c in sorted(cities, key=lambda c: c["city"])]
+    lines = [f"- [Plumber in {c['city']}, {c['abbr']}](https://zaptu.ai/plumbing/{c['slug']}/)" for c in sorted(cities, key=lambda c: c["city"])]
     text = text.rstrip() + "\n\n" + marker + "\nSame call-to-connect number (308) 529-9543 on every page; the person dials.\n" + "\n".join(lines) + "\n"
     llms.write_text(text, encoding="utf-8")
     print("updated web/llms.txt")

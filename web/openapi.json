@@ -1,0 +1,516 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Zaptu API",
+    "version": "0.2.0",
+    "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing returns a phone number the person must dial themselves; never dial for them. Other services are collecting: requests are accepted and passed along when a buyer covers the service. A request is not a booking. Add \"dry_run\": true to validate without saving anything.",
+    "contact": {
+      "email": "hello@zaptu.ai",
+      "url": "https://zaptu.ai/agents/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.zaptu.ai"
+    }
+  ],
+  "externalDocs": {
+    "url": "https://zaptu.ai/agents/",
+    "description": "Agent guide"
+  },
+  "paths": {
+    "/v1/services": {
+      "get": {
+        "operationId": "listServices",
+        "summary": "Which services are live vs collecting, the plumbing number, and agent rules",
+        "responses": {
+          "200": {
+            "description": "Service catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/intake": {
+      "post": {
+        "operationId": "submitServiceRequest",
+        "summary": "Submit a home-service request (lead, not a booking)",
+        "description": "JSON clients get JSON back. HTML form posts (application/x-www-form-urlencoded) are redirected to the thanks page, or to the plumbing page for plumbing. For plumbing the response includes call_to_connect: give the person the number and have them dial it. consent_to_contact must be true for non-plumbing services.",
+        "parameters": [
+          {
+            "name": "dry_run",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Validate only. Nothing is stored or passed along."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ServiceRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "dry_run": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Validate only. Nothing is stored or passed along."
+                      }
+                    }
+                  }
+                ]
+              },
+              "example": {
+                "service_type": "house_cleaning",
+                "zip_code": "33139",
+                "customer_name": "Jamie Example",
+                "customer_phone": "305-555-0100",
+                "consent_to_contact": true,
+                "bedrooms": 2,
+                "dry_run": true
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ServiceRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "dry_run": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Validate only. Nothing is stored or passed along."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted (received, collected, or call_to_connect)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "dry_run result; nothing stored",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadResponse"
+                }
+              }
+            }
+          },
+          "303": {
+            "description": "Form post redirect to the thanks page or plumbing page"
+          },
+          "422": {
+            "description": "Invalid or rejected request with a readable message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Service health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ServiceRequest": {
+        "description": "A structured home-service request from an AI agent or the website form.",
+        "properties": {
+          "service_type": {
+            "description": "Kind of service the customer needs.",
+            "enum": [
+              "house_cleaning",
+              "deep_cleaning",
+              "move_in_out_cleaning",
+              "recurring_cleaning",
+              "pest_control",
+              "plumbing",
+              "hvac",
+              "handyman",
+              "other"
+            ],
+            "title": "Service Type",
+            "type": "string"
+          },
+          "zip_code": {
+            "description": "US 5-digit ZIP code where the work will happen.",
+            "title": "Zip Code",
+            "type": "string"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "City name, if known.",
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Two-letter US state code, if known.",
+            "title": "State"
+          },
+          "address_line": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Street address. Optional at intake; required by some buyers later.",
+            "title": "Address Line"
+          },
+          "bedrooms": {
+            "anyOf": [
+              {
+                "maximum": 20,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bedrooms"
+          },
+          "bathrooms": {
+            "anyOf": [
+              {
+                "maximum": 20,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bathrooms"
+          },
+          "square_feet": {
+            "anyOf": [
+              {
+                "maximum": 50000,
+                "minimum": 100,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Square Feet"
+          },
+          "home_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "apartment",
+                  "condo",
+                  "townhouse",
+                  "single_family",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Home Type"
+          },
+          "frequency": {
+            "default": "one_time",
+            "enum": [
+              "one_time",
+              "weekly",
+              "biweekly",
+              "monthly"
+            ],
+            "title": "Frequency",
+            "type": "string"
+          },
+          "preferred_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Preferred service date (YYYY-MM-DD).",
+            "title": "Preferred Date"
+          },
+          "flexible_dates": {
+            "default": true,
+            "title": "Flexible Dates",
+            "type": "boolean"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "customer_name": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Customer Name",
+            "type": "string"
+          },
+          "customer_phone": {
+            "description": "US phone number. Digits, dashes, or +1 are accepted.",
+            "title": "Customer Phone",
+            "type": "string"
+          },
+          "customer_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Customer Email"
+          },
+          "consent_to_contact": {
+            "description": "True if the customer consented to be called or texted about this request (TCPA).",
+            "title": "Consent To Contact",
+            "type": "boolean"
+          },
+          "source_agent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Agent or product that originated the request, e.g. muse.",
+            "title": "Source Agent"
+          }
+        },
+        "required": [
+          "service_type",
+          "zip_code",
+          "customer_name",
+          "customer_phone",
+          "consent_to_contact"
+        ],
+        "title": "ServiceRequest",
+        "type": "object"
+      },
+      "LeadResponse": {
+        "properties": {
+          "lead_id": {
+            "title": "Lead Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LeadStatus"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "next_steps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Next Steps",
+            "type": "array"
+          },
+          "estimated_payout_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Estimated Payout Hint"
+          },
+          "call_to_connect": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Call To Connect"
+          },
+          "call_to_connect_display": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Call To Connect Display"
+          },
+          "call_instruction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Call Instruction"
+          },
+          "dry_run": {
+            "default": false,
+            "title": "Dry Run",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "lead_id",
+          "status",
+          "message",
+          "next_steps"
+        ],
+        "title": "LeadResponse",
+        "type": "object"
+      },
+      "LeadStatus": {
+        "enum": [
+          "received",
+          "validated",
+          "forwarded",
+          "collected",
+          "call_to_connect",
+          "rejected",
+          "error"
+        ],
+        "title": "LeadStatus",
+        "type": "string"
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "invalid_request"
+          },
+          "message": {
+            "type": "string",
+            "example": "Phone must be a 10-digit US number."
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "error",
+          "message"
+        ]
+      }
+    }
+  }
+}

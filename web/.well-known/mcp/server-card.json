@@ -1,0 +1,557 @@
+{
+  "name": "ai.zaptu/zaptu",
+  "title": "Zaptu",
+  "version": "0.2.0",
+  "description": "Connect people with independent local home-service pros. Plumbing: the person dials.",
+  "websiteUrl": "https://zaptu.ai/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.zaptu.ai/mcp",
+      "supportedProtocolVersions": [
+        "2025-11-25",
+        "2025-06-18",
+        "2025-03-26"
+      ]
+    }
+  ],
+  "serverInfo": {
+    "name": "zaptu",
+    "title": "Zaptu",
+    "version": "0.2.0",
+    "websiteUrl": "https://zaptu.ai/"
+  },
+  "protocolVersion": "2025-11-25",
+  "transport": {
+    "type": "streamable-http",
+    "url": "https://api.zaptu.ai/mcp",
+    "endpoint": "/mcp"
+  },
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "authentication": {
+    "required": false
+  },
+  "instructions": "Zaptu connects people with independent local home-service contractors.\nZaptu does not perform the work and does not book appointments.\n\nPLUMBING (live): call get_plumbing_call_number. Tell the person, for example:\n\"Call (308) 529-9543 to be connected with a local plumbing professional.\"\nThe person must dial it themselves. Never dial, autodial, transfer, or place the call\nfor them. No name, phone, or consent is needed for this.\n\nEVERYTHING ELSE (collecting: cleaning, pest control, HVAC, handyman, other):\ncollect ZIP, name, phone, and the person's explicit consent to be contacted, then call\nrequest_home_service. These requests are passed along when a buyer covers the service;\nthere is no live buyer yet. Do not promise a callback, an arrival time, or a named company.\n\nUse the tool result's message when you tell the person what happened.\nlist_supported_services returns the full catalog.",
+  "documentationUrl": "https://zaptu.ai/agents/",
+  "iconUrl": "https://zaptu.ai/icon-512.png",
+  "contact": "hello@zaptu.ai",
+  "tools": [
+    {
+      "name": "get_plumbing_call_number",
+      "title": "Get the plumbing call-to-connect number",
+      "description": "Get the phone number a person dials to be connected with a local plumbing professional.\n\n    Use this for any plumbing need (leak, clog, water heater, sewer, burst pipe).\n    No name, phone, or consent is needed. Read what_to_tell_the_user to the person.\n    The person must place the call themselves: never dial, autodial, transfer, or\n    call on their behalf. Zaptu does not perform the work and this is not a booking.\n    ",
+      "inputSchema": {
+        "properties": {
+          "zip_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional US ZIP of the job site. Not required.",
+            "title": "Zip Code"
+          }
+        },
+        "title": "get_plumbing_call_numberArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_plumbing_call_numberOutput",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "request_home_service",
+      "title": "Request a home service",
+      "description": "Submit a home-service request (a lead, not a booking).\n\n    Cleaning, pest control, HVAC, handyman, and other are collecting: the request is\n    passed along when a buyer covers the service, and there is no live buyer yet, so do\n    not promise a callback. Requires name, phone, ZIP, and the person's explicit consent.\n\n    For plumbing, the result includes call_to_connect and call_instruction: give the\n    person the number and have them dial it. Never place the call yourself.\n    get_plumbing_call_number does the same without any personal details.\n    ",
+      "inputSchema": {
+        "properties": {
+          "service_type": {
+            "description": "Type of local service requested. For plumbing, prefer get_plumbing_call_number.",
+            "enum": [
+              "house_cleaning",
+              "deep_cleaning",
+              "move_in_out_cleaning",
+              "recurring_cleaning",
+              "pest_control",
+              "plumbing",
+              "hvac",
+              "handyman",
+              "other"
+            ],
+            "title": "Service Type",
+            "type": "string"
+          },
+          "zip_code": {
+            "description": "US 5-digit ZIP for the job site.",
+            "title": "Zip Code",
+            "type": "string"
+          },
+          "customer_name": {
+            "description": "Customer's full name.",
+            "title": "Customer Name",
+            "type": "string"
+          },
+          "customer_phone": {
+            "description": "US phone number for follow-up contact about this request.",
+            "title": "Customer Phone",
+            "type": "string"
+          },
+          "consent_to_contact": {
+            "description": "Must be true for non-plumbing services: the person agreed to a call or text about this request.",
+            "title": "Consent To Contact",
+            "type": "boolean"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "2-letter US state code.",
+            "title": "State"
+          },
+          "address_line": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Address Line"
+          },
+          "bedrooms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bedrooms"
+          },
+          "bathrooms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bathrooms"
+          },
+          "square_feet": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Square Feet"
+          },
+          "home_type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "apartment",
+                  "condo",
+                  "townhouse",
+                  "single_family",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Home Type"
+          },
+          "frequency": {
+            "default": "one_time",
+            "enum": [
+              "one_time",
+              "weekly",
+              "biweekly",
+              "monthly"
+            ],
+            "title": "Frequency",
+            "type": "string"
+          },
+          "preferred_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Preferred date as YYYY-MM-DD, if any.",
+            "title": "Preferred Date"
+          },
+          "flexible_dates": {
+            "default": true,
+            "title": "Flexible Dates",
+            "type": "boolean"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "What the person needs, in their words.",
+            "title": "Notes"
+          },
+          "customer_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Customer Email"
+          },
+          "source_agent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "mcp",
+            "description": "Your agent or product name.",
+            "title": "Source Agent"
+          },
+          "dry_run": {
+            "default": false,
+            "description": "Validate only; nothing is saved or passed along.",
+            "title": "Dry Run",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "service_type",
+          "zip_code",
+          "customer_name",
+          "customer_phone",
+          "consent_to_contact"
+        ],
+        "title": "request_home_serviceArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "request_home_serviceOutput",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "request_cleaning",
+      "title": "Request house cleaning",
+      "description": "Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service.",
+      "inputSchema": {
+        "properties": {
+          "zip_code": {
+            "description": "US 5-digit ZIP for the home.",
+            "title": "Zip Code",
+            "type": "string"
+          },
+          "customer_name": {
+            "description": "Customer's full name.",
+            "title": "Customer Name",
+            "type": "string"
+          },
+          "customer_phone": {
+            "description": "US phone number.",
+            "title": "Customer Phone",
+            "type": "string"
+          },
+          "consent_to_contact": {
+            "description": "Must be true: the person agreed to a call or text about this request.",
+            "title": "Consent To Contact",
+            "type": "boolean"
+          },
+          "bedrooms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bedrooms"
+          },
+          "bathrooms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Bathrooms"
+          },
+          "square_feet": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Square Feet"
+          },
+          "frequency": {
+            "default": "one_time",
+            "enum": [
+              "one_time",
+              "weekly",
+              "biweekly",
+              "monthly"
+            ],
+            "title": "Frequency",
+            "type": "string"
+          },
+          "preferred_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Preferred Date"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "customer_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Customer Email"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "City"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "State"
+          }
+        },
+        "required": [
+          "zip_code",
+          "customer_name",
+          "customer_phone",
+          "consent_to_contact"
+        ],
+        "title": "request_cleaningArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "request_cleaningOutput",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_lead_status",
+      "title": "Check lead status",
+      "description": "Look up a previously submitted service request by lead_id.",
+      "inputSchema": {
+        "properties": {
+          "lead_id": {
+            "description": "ID returned by request_home_service.",
+            "title": "Lead Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lead_id"
+        ],
+        "title": "get_lead_statusArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "get_lead_statusOutput",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_supported_services",
+      "title": "List supported services",
+      "description": "Which services are live (plumbing: the person dials a number) vs collecting, plus the rules for agents.",
+      "inputSchema": {
+        "properties": {},
+        "title": "list_supported_servicesArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "list_supported_servicesOutput",
+        "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}

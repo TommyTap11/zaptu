@@ -24,20 +24,7 @@ def client(tmp_path, monkeypatch):
 
     from aslc import server
 
-    app = None
-    for attr in ("streamable_http_app", "sse_app", "app"):
-        obj = getattr(server.mcp, attr, None)
-        if callable(obj):
-            try:
-                app = obj()
-                break
-            except TypeError:
-                continue
-        elif obj is not None:
-            app = obj
-            break
-    if app is None:
-        raise RuntimeError("Could not obtain Starlette app from MCPServer")
+    app = server.create_app(host="0.0.0.0")
     return TestClient(app)
 
 
@@ -68,7 +55,7 @@ def test_json_intake(client):
     body = r.json()
     assert body["status"] in {"received", "forwarded"}
     assert "pass it along" in body["message"].lower() or "received" in body["message"].lower()
-    assert r.headers.get("access-control-allow-origin") == "https://zaptu.ai"
+    assert r.headers.get("access-control-allow-origin") == "*"
 
 
 def test_form_intake_redirects(client):
