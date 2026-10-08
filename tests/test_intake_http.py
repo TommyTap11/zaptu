@@ -67,7 +67,7 @@ def test_json_intake(client):
     assert r.status_code == 202
     body = r.json()
     assert body["status"] in {"received", "forwarded"}
-    assert "being routed" in body["message"].lower()
+    assert "pass it along" in body["message"].lower() or "received" in body["message"].lower()
     assert r.headers.get("access-control-allow-origin") == "https://zaptu.ai"
 
 

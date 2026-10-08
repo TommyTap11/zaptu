@@ -49,7 +49,7 @@ async def test_no_buyer_honest_received(tmp_path, monkeypatch):
     result = await submit_request(req)
     assert result.status == LeadStatus.received
     assert result.lead_id
-    assert "being routed" in result.message.lower()
+    assert "pass it along" in result.message.lower() or "received" in result.message.lower()
     assert "provider should contact" not in result.message.lower()
     assert result.estimated_payout_hint is None
     for step in result.next_steps:

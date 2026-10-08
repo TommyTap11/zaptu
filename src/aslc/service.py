@@ -10,9 +10,9 @@ from .validation import is_call_to_connect, is_collected_only, is_monetizable, v
 
 # Honest copy only — promise contact, never a booked job / invented provider / ETA.
 NEXT_STEPS_RECEIVED = [
-    "Your request was received and is being routed.",
-    "If a covering buyer accepts it, they may contact you about this request.",
-    "This is a contact request, not a confirmed appointment.",
+    "Your request was received.",
+    "We pass it along when a buyer covers that service — that is not guaranteed yet.",
+    "This is a contact request, not a confirmed appointment. Do not promise a callback.",
 ]
 
 NEXT_STEPS_COLLECTED = [
@@ -126,14 +126,16 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
     if forwarded:
         lead.status = LeadStatus.forwarded
         lead.public_message = (
-            f"Request received for ZIP {req.zip_code} and is being routed. "
+            f"Request received for ZIP {req.zip_code}. "
+            "We pass it along when a buyer covers that service. "
             "This is a contact request, not a confirmed appointment."
         )
     else:
         # No buyer configured yet — still accept honestly.
         lead.status = LeadStatus.received
         lead.public_message = (
-            f"Request received for ZIP {req.zip_code} and is being routed. "
+            f"Request received for ZIP {req.zip_code}. "
+            "We pass it along when a buyer covers that service. "
             "This is a contact request, not a confirmed appointment."
         )
 

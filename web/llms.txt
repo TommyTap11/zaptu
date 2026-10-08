@@ -2,6 +2,7 @@
 
 Zaptu is the request hub between AI personal assistants and local services.
 A request is a lead. Do not tell the user a company is booked or a time is confirmed.
+Do not promise that a provider will call back.
 Zaptu connects people with independent local contractors and does not perform the work.
 
 Site: https://zaptu.ai/
@@ -17,9 +18,8 @@ service_type, zip_code, customer_name, customer_phone, consent_to_contact=true
 house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, plumbing, hvac, handyman, other
 
 ## Routing
-Live to route (form / webhook): cleaning types and pest_control.
-Call-to-connect (consumer dials; agent must NOT dial): plumbing → (308) 529-9543 / +13085299543.
-Logged only until a buyer exists: hvac, handyman, other.
+Call-to-connect LIVE (consumer dials; agent must NOT dial): plumbing → (308) 529-9543 / +13085299543.
+Collecting (accepted; passed along when a buyer covers the service — no live form buyer yet): cleaning types, pest_control, hvac, handyman, other.
 
 ## Plumbing rule
 When service_type is plumbing, the API/MCP response includes call_to_connect.
@@ -28,5 +28,5 @@ Never autodial, transfer, or place the call on their behalf.
 
 ## Tools when MCP is hosted
 request_home_service, request_cleaning, get_lead_status, list_supported_services
-Human form: POST https://api.zaptu.ai/v1/intake (also https://zaptu.ai/ until cutover)
+Human form: POST https://api.zaptu.ai/v1/intake
 MCP: https://api.zaptu.ai/mcp
