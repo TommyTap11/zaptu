@@ -60,7 +60,7 @@ def test_city_page_call_and_schema(page):
     assert len(blocks) == 1
     data = json.loads(blocks[0])
     types = {n["@type"] for n in data["@graph"]}
-    assert types == {"WebPage", "Service"}
+    assert types == {"WebPage", "Service", "BreadcrumbList"}
     assert "LocalBusiness" not in blocks[0]
     assert "address" not in blocks[0]
     assert "aggregateRating" not in blocks[0]
