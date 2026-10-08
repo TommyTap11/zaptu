@@ -143,6 +143,7 @@ class LeadStatus(str, Enum):
     validated = "validated"
     forwarded = "forwarded"
     collected = "collected"  # accepted form, vertical not yet routed to a buyer
+    call_to_connect = "call_to_connect"  # return tracking number; consumer dials
     rejected = "rejected"
     error = "error"
 
@@ -164,3 +165,7 @@ class LeadResponse(BaseModel):
     message: str
     next_steps: list[str]
     estimated_payout_hint: str | None = None
+    # Present for call-to-connect verticals (e.g. plumbing). Agent must NOT dial.
+    call_to_connect: str | None = None  # E.164, e.g. +13085299543
+    call_to_connect_display: str | None = None  # e.g. (308) 529-9543
+    call_instruction: str | None = None

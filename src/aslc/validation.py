@@ -5,9 +5,10 @@ from __future__ import annotations
 from datetime import date
 
 from . import config
+from .call_routing import is_call_to_connect_service
 from .models import ServiceRequest
 
-# Verticals we currently try to route to a buyer.
+# Verticals we currently try to route to a buyer (form / webhook).
 ROUTABLE_SERVICES = {
     "house_cleaning",
     "deep_cleaning",
@@ -17,8 +18,8 @@ ROUTABLE_SERVICES = {
 }
 
 # Accepted by the form / MCP but held until a buyer exists.
+# Plumbing is call-to-connect (see call_routing), not collected-only.
 COLLECTED_ONLY_SERVICES = {
-    "plumbing",
     "hvac",
     "handyman",
     "other",
@@ -40,7 +41,13 @@ def validate_request(req: ServiceRequest) -> list[str]:
             "Customer must consent to being contacted about this request (TCPA)."
         )
 
-    if req.service_type in COLLECTED_ONLY_SERVICES:
+    if is_call_to_connect_service(req.service_type):
+        problems.append(
+            f"{req.service_type} uses call-to-connect. "
+            "Return the tracking number; the consumer places the call. "
+            "Do not forward as a form lead."
+        )
+    elif req.service_type in COLLECTED_ONLY_SERVICES:
         problems.append(
             f"{req.service_type} is collected, not yet routed. "
             "It will be held until a buyer covers that vertical."
@@ -72,8 +79,16 @@ def is_monetizable(req: ServiceRequest, problems: list[str]) -> bool:
     ]
     if hard_blocks:
         return False
+    if is_call_to_connect_service(req.service_type):
+        return False
     return req.service_type in ROUTABLE_SERVICES
 
 
 def is_collected_only(req: ServiceRequest) -> bool:
+    if is_call_to_connect_service(req.service_type):
+        return False
     return req.service_type in COLLECTED_ONLY_SERVICES
+
+
+def is_call_to_connect(req: ServiceRequest) -> bool:
+    return is_call_to_connect_service(req.service_type)

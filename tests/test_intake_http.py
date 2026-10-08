@@ -139,3 +139,32 @@ def test_handyman_form_accepted(client):
     )
     assert r.status_code == 202
     assert r.json()["status"] == "collected"
+
+
+def test_plumbing_call_to_connect(client):
+    r = client.post(
+        "/v1/intake",
+        json={
+            "service_type": "plumbing",
+            "zip_code": "33139",
+            "customer_name": "Tom C",
+            "customer_phone": "3055550100",
+            "consent_to_contact": True,
+            "notes": "water heater",
+        },
+    )
+    assert r.status_code == 202
+    body = r.json()
+    assert body["status"] == "call_to_connect"
+    assert body["call_to_connect"] == "+13085299543"
+    assert body["call_to_connect_display"] == "(308) 529-9543"
+    assert "dial" in body["call_instruction"].lower() or "place the call" in body["call_instruction"].lower()
+    assert "plumbing" in body["message"].lower() or "308" in body["message"]
+
+
+def test_health_lists_call_to_connect(client):
+    r = client.get("/health")
+    assert r.status_code == 200
+    body = r.json()
+    assert "plumbing" in body["call_to_connect"]
+    assert "plumbing" not in body["collected_only"]

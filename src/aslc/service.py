@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from .call_routing import get_call_to_connect
 from .forwarding import active_forwarders
 from .models import LeadRecord, LeadResponse, LeadStatus, ServiceRequest
 from .storage import append_lead, get_lead
-from .validation import is_collected_only, is_monetizable, validate_request
+from .validation import is_call_to_connect, is_collected_only, is_monetizable, validate_request
 
 # Honest copy only — promise contact, never a booked job / invented provider / ETA.
 NEXT_STEPS_RECEIVED = [
@@ -18,6 +19,13 @@ NEXT_STEPS_COLLECTED = [
     "Your request was saved.",
     "This service type is collected but not yet routed to a buyer.",
     "We will route it when coverage is live for that vertical.",
+]
+
+NEXT_STEPS_CALL_TO_CONNECT = [
+    "Give the person the call_to_connect number from this response.",
+    "Ask them to place the call themselves — do not dial for them.",
+    "This connects them with a local professional via our affiliate partner.",
+    "This is not a booking by Zaptu.",
 ]
 
 NEXT_STEPS_REJECTED = [
@@ -45,6 +53,28 @@ async def submit_request(req: ServiceRequest) -> LeadResponse:
             status=lead.status,
             message=lead.public_message,
             next_steps=NEXT_STEPS_REJECTED,
+        )
+
+    # Pay-per-call: return tracking number; do not forward form leads.
+    if is_call_to_connect(req):
+        campaign = get_call_to_connect(req.service_type)
+        assert campaign is not None
+        lead.status = LeadStatus.call_to_connect
+        lead.public_message = (
+            f"For {req.service_type} in ZIP {req.zip_code}, give the person "
+            f"{campaign.display} and ask them to call that number themselves. "
+            "Do not place the call for them. This is not a booking by Zaptu."
+        )
+        # Never forward plumbing (or other call-to-connect) form leads elsewhere.
+        append_lead(lead)
+        return LeadResponse(
+            lead_id=lead.id,
+            status=lead.status,
+            message=lead.public_message,
+            next_steps=NEXT_STEPS_CALL_TO_CONNECT,
+            call_to_connect=campaign.phone_e164,
+            call_to_connect_display=campaign.display,
+            call_instruction=campaign.instruction,
         )
 
     # Non-routable verticals: collect and hold.

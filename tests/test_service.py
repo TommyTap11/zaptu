@@ -134,3 +134,28 @@ async def test_stdout_lead_log_masks_phone(tmp_path, monkeypatch, capsys):
 def test_mask_phone():
     assert mask_phone("+13055550100").endswith("0100")
     assert "555" not in mask_phone("+13055550100") or "*" in mask_phone("+13055550100")
+
+
+@pytest.mark.asyncio
+async def test_plumbing_call_to_connect(tmp_path, monkeypatch):
+    _reload_settings(monkeypatch, tmp_path, ZAPTU_MOCK_FORWARDER="0", LEAD_WEBHOOK_URL=None)
+    req = ServiceRequest(
+        service_type="plumbing",
+        zip_code="33139",
+        customer_name="Tom C",
+        customer_phone="3055550100",
+        consent_to_contact=True,
+        source_agent="pytest",
+        notes="clogged drain",
+    )
+    result = await submit_request(req)
+    assert result.status == LeadStatus.call_to_connect
+    assert result.call_to_connect == "+13085299543"
+    assert result.call_to_connect_display == "(308) 529-9543"
+    assert result.call_instruction
+    assert "do not" in result.call_instruction.lower()
+    assert "dial" in result.call_instruction.lower() or "place the call" in result.call_instruction.lower()
+    assert "(308) 529-9543" in result.message
+    assert "not a booking" in result.message.lower()
+    # Must not look like a form forward
+    assert result.estimated_payout_hint is None
