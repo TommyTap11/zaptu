@@ -299,6 +299,294 @@
         "Bonita",
         "Lemon Grove"
       ]
+    },
+    {
+      "city": "Boulder",
+      "state": "Colorado",
+      "abbr": "CO",
+      "slug": "boulder-co",
+      "median_min": 172.0,
+      "max_min": 172.0,
+      "zips": 16,
+      "zips_ge_100": 11,
+      "buyers": 2,
+      "zip_areas": [
+        "803",
+        "80025-80027",
+        "80455",
+        "80466",
+        "80481",
+        "80503",
+        "80510",
+        "80540",
+        "80544"
+      ],
+      "nearby_covered_areas": [
+        "Eldorado Springs",
+        "Lafayette",
+        "Louisville",
+        "Jamestown",
+        "Nederland",
+        "Ward",
+        "Longmont",
+        "Allenspark",
+        "Lyons",
+        "Niwot"
+      ]
+    },
+    {
+      "city": "Fort Collins",
+      "state": "Colorado",
+      "abbr": "CO",
+      "slug": "fort-collins-co",
+      "median_min": 172.0,
+      "max_min": 172.0,
+      "zips": 9,
+      "zips_ge_100": 9,
+      "buyers": 2,
+      "zip_areas": [
+        "805"
+      ],
+      "nearby_covered_areas": [
+        "Longmont",
+        "Loveland",
+        "Estes Park",
+        "Allenspark",
+        "Bellvue",
+        "Berthoud",
+        "Drake",
+        "Erie",
+        "Glen Haven",
+        "Hygiene",
+        "Johnstown",
+        "Laporte"
+      ]
+    },
+    {
+      "city": "Fort Worth",
+      "state": "Texas",
+      "abbr": "TX",
+      "slug": "fort-worth-tx",
+      "median_min": 100.5,
+      "max_min": 100.5,
+      "zips": 57,
+      "zips_ge_100": 56,
+      "buyers": 3,
+      "zip_areas": [
+        "760",
+        "761"
+      ],
+      "nearby_covered_areas": [
+        "Arlington",
+        "Bedford",
+        "Azle",
+        "Burleson",
+        "Cleburne",
+        "Euless",
+        "Grapevine",
+        "Hurst",
+        "North Richland Hills",
+        "Aledo",
+        "Alvarado",
+        "Boyd"
+      ]
+    },
+    {
+      "city": "West Palm Beach",
+      "state": "Florida",
+      "abbr": "FL",
+      "slug": "west-palm-beach-fl",
+      "median_min": 100.5,
+      "max_min": 100.5,
+      "zips": 19,
+      "zips_ge_100": 19,
+      "buyers": 3,
+      "zip_areas": [
+        "33401-33426",
+        "33435-33437",
+        "33460-33474",
+        "33480"
+      ],
+      "nearby_covered_areas": [
+        "Boynton Beach",
+        "Lake Worth",
+        "Palm Beach Gardens",
+        "Jupiter",
+        "North Palm Beach",
+        "Boca Raton",
+        "Loxahatchee",
+        "Palm Beach"
+      ]
+    },
+    {
+      "city": "Sacramento",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "sacramento-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 106,
+      "zips_ge_100": 100,
+      "buyers": 3,
+      "zip_areas": [
+        "942",
+        "956",
+        "957",
+        "958"
+      ],
+      "nearby_covered_areas": [
+        "Elk Grove",
+        "Auburn",
+        "Citrus Heights",
+        "Roseville",
+        "Rancho Cordova",
+        "Vacaville",
+        "West Sacramento",
+        "Carmichael",
+        "Davis",
+        "Folsom",
+        "Rocklin",
+        "Woodland"
+      ]
+    },
+    {
+      "city": "San Antonio",
+      "state": "Texas",
+      "abbr": "TX",
+      "slug": "san-antonio-tx",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 89,
+      "zips_ge_100": 85,
+      "buyers": 2,
+      "zip_areas": [
+        "780",
+        "781",
+        "782"
+      ],
+      "nearby_covered_areas": [
+        "New Braunfels",
+        "Universal City",
+        "Atascosa",
+        "Boerne",
+        "Helotes",
+        "Macdona",
+        "Spring Branch",
+        "Von Ormy",
+        "Adkins",
+        "Cibolo",
+        "Converse",
+        "Elmendorf"
+      ]
+    },
+    {
+      "city": "Kansas City",
+      "state": "Missouri",
+      "abbr": "MO",
+      "slug": "kansas-city-mo",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 82,
+      "zips_ge_100": 66,
+      "buyers": 2,
+      "zip_areas": [
+        "640",
+        "641"
+      ],
+      "nearby_covered_areas": [
+        "Independence",
+        "Lees Summit",
+        "Blue Springs",
+        "Liberty",
+        "Belton",
+        "Camden Point",
+        "Excelsior Springs",
+        "Farley",
+        "Grain Valley",
+        "Grandview",
+        "Greenwood",
+        "Holt"
+      ]
+    },
+    {
+      "city": "Oklahoma City",
+      "state": "Oklahoma",
+      "abbr": "OK",
+      "slug": "oklahoma-city-ok",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 82,
+      "zips_ge_100": 75,
+      "buyers": 2,
+      "zip_areas": [
+        "730",
+        "731"
+      ],
+      "nearby_covered_areas": [
+        "Norman",
+        "Edmond",
+        "Arcadia",
+        "Bethany",
+        "Bray",
+        "Choctaw",
+        "Harrah",
+        "Jones",
+        "Luther",
+        "Nicoma Park",
+        "Spencer",
+        "Wheatland"
+      ]
+    },
+    {
+      "city": "San Francisco",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "san-francisco-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 72,
+      "zips_ge_100": 44,
+      "buyers": 2,
+      "zip_areas": [
+        "940",
+        "941"
+      ],
+      "nearby_covered_areas": [
+        "Redwood City",
+        "Daly City",
+        "Burlingame",
+        "Menlo Park",
+        "Belmont",
+        "Brisbane",
+        "Atherton",
+        "Portola Valley",
+        "Millbrae",
+        "Pacifica",
+        "San Bruno",
+        "San Carlos"
+      ]
+    },
+    {
+      "city": "Boca Raton",
+      "state": "Florida",
+      "abbr": "FL",
+      "slug": "boca-raton-fl",
+      "median_min": 100.0,
+      "max_min": 100.5,
+      "zips": 16,
+      "zips_ge_100": 16,
+      "buyers": 3,
+      "zip_areas": [
+        "33427-33434",
+        "33441-33448",
+        "33481-33499"
+      ],
+      "nearby_covered_areas": [
+        "Delray Beach",
+        "Deerfield Beach",
+        "Belle Glade",
+        "South Bay"
+      ]
     }
   ],
   "rejected": [

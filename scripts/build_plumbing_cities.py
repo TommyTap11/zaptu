@@ -178,6 +178,153 @@ SIBLINGS = {
 }
 
 
+# Batch 2 (2026-10-12)
+LOCAL2 = {
+    "boulder-co": {
+        "intro": "Boulder sits right against the foothills, and its cold nights and big temperature swings are hard on pipes in exterior walls, crawl spaces, and garages. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Before a hard freeze, disconnect garden hoses and know where your main shutoff valve is.",
+            "Homes in the foothills and canyons may use a well or septic system. Say which you have when you call.",
+            "Older homes near downtown and the university can have older supply and drain lines, so mention the age of the house if you know it.",
+        ],
+        "focus": "frozen or burst pipes, water heater outages, and leaks in older homes",
+    },
+    "fort-collins-co": {
+        "intro": "Fort Collins winters bring regular freezes, and pipes in crawl spaces, garages, and outside walls feel it first. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Turn off and drain sprinkler lines and outdoor spigots before the first hard freeze.",
+            "A frozen pipe can start leaking hours after it thaws, so keep an eye on nearby walls and ceilings.",
+            "Homes outside town may be on a well or septic system. Mention it on the call.",
+        ],
+        "focus": "frozen pipes, sprinkler and outdoor line problems, and water heater issues",
+    },
+    "fort-worth-tx": {
+        "intro": "Many Fort Worth homes sit on slab foundations over clay soil that swells and shrinks with the weather, so leaks under the slab are a common concern. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "A warm spot on the floor, running-water sounds when everything is off, or a water bill that jumps can point to a slab leak.",
+            "Hard freezes in North Texas are not frequent, but they can catch exposed pipes unprepared. Know where your main shutoff is.",
+            "If several drains slow down at once, say so, since that can point to the main sewer line.",
+        ],
+        "focus": "slab leaks, freeze damage, and main line backups",
+    },
+    "west-palm-beach-fl": {
+        "intro": "West Palm Beach has older bungalows, newer subdivisions, and waterfront condos, and plumbing questions differ for each. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Some properties in Palm Beach County use septic systems. Say whether you are on septic or city sewer.",
+            "Heavy summer rain can push water back up through floor drains. Stop running water until the line is checked.",
+            "Salt air can wear on outdoor fixtures and exposed pipes, so mention any corrosion you see.",
+        ],
+        "focus": "drain backups after storms, septic and sewer questions, and leaking fixtures",
+    },
+    "sacramento-ca": {
+        "intro": "Sacramento has many older neighborhoods with mature trees, and both age and roots can affect supply and sewer lines. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Repeated backups in the same drain often point to roots or a problem in the sewer lateral.",
+            "Hot summers are hard on outdoor plumbing and irrigation lines. Mention any wet patches in the yard.",
+            "If your water heater is being replaced, ask about the earthquake strapping that California requires.",
+        ],
+        "focus": "sewer lateral and root problems, leaks from aging pipes, and water heater replacement",
+    },
+    "san-antonio-tx": {
+        "intro": "San Antonio's water is on the hard side, and many homes sit on slabs over shifting soil, so scale and under-slab leaks come up often. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Mineral buildup can shorten the life of water heaters and clog aerators and shower heads.",
+            "An unexplained rise in the water bill or a damp spot on the floor can be worth mentioning for a home on a slab.",
+            "Occasional hard freezes can affect exposed pipes. Know where your main shutoff valve is.",
+        ],
+        "focus": "water heater scale, slab leaks, and freeze damage",
+    },
+    "kansas-city-mo": {
+        "intro": "Kansas City sees cold winters and stormy springs, so frozen pipes and wet basements are both familiar problems. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "If your home has a sump pump, check that it runs before the spring storm season.",
+            "Pipes along exterior walls and in unheated basements are more likely to freeze on cold nights.",
+            "Older homes may have cast-iron or clay drain lines. Mention the age of the house if you know it.",
+        ],
+        "focus": "frozen pipes, basement drain and sump problems, and sewer line backups",
+    },
+    "oklahoma-city-ok": {
+        "intro": "Oklahoma City weather swings from summer heat to winter ice, and clay soil moves with it, which can stress pipes in and under the house. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Shifting soil can stress slab foundations and buried lines, so mention any new cracks or damp spots.",
+            "During ice storms, open cabinet doors under sinks on outside walls and know where the main shutoff is.",
+            "Repeated backups in more than one drain can point to the main sewer line.",
+        ],
+        "focus": "slab and buried line leaks, freeze damage, and sewer backups",
+    },
+    "san-francisco-ca": {
+        "intro": "San Francisco has a large share of older buildings, including Victorians and multi-unit flats, and pipes that have been in place for decades can leak or clog. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a multi-unit building, a leak can travel between floors. Let neighbors or the building owner know if water is moving.",
+            "Older buildings may have galvanized supply lines or cast-iron drains. Mention the age of the building if you know it.",
+            "If your water heater is being replaced, ask about the earthquake strapping that California requires.",
+        ],
+        "focus": "leaks in older buildings, drain problems, and water heater replacement",
+    },
+    "boca-raton-fl": {
+        "intro": "Boca Raton has many condos and planned communities alongside single-family homes, and who handles a plumbing problem can depend on where it starts. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a condo or HOA community, check whether the association needs to know before work starts.",
+            "Heavy rain can overwhelm drains. If water comes up through a floor drain or shower, stop running water until it is checked.",
+            "Humid, salty air can wear on outdoor fixtures and exposed pipes, so mention any corrosion.",
+        ],
+        "focus": "condo leaks, drain backups after storms, and water heater problems",
+    },
+}
+PLAN2 = {
+    "boulder-co": (["Burst or frozen pipes", "Water heaters", "Leaks", "Clogs and slow drains", "Sewer lines"],
+                 {"Burst or frozen pipes": "In a Boulder cold snap, a faucet that gives no water at all may be frozen rather than broken.",
+                  "Water heaters": "Heavy winter use can expose a water heater that was already struggling."}),
+    "fort-collins-co": (["Burst or frozen pipes", "Leaks", "Water heaters", "Clogs and slow drains", "Sewer lines"],
+                 {"Burst or frozen pipes": "In Fort Collins, sprinkler lines and outdoor spigots left charged are frequent freeze trouble spots.",
+                  "Leaks": "Check crawl spaces and garages after a thaw for water that was not there before."}),
+    "fort-worth-tx": (["Leaks", "Sewer lines", "Burst or frozen pipes", "Water heaters", "Clogs and slow drains"],
+                 {"Leaks": "For Fort Worth homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
+                  "Sewer lines": "Soil movement can stress buried sewer lines, so mention repeat backups."}),
+    "west-palm-beach-fl": (["Clogs and slow drains", "Sewer lines", "Leaks", "Water heaters", "Burst or frozen pipes"],
+                 {"Clogs and slow drains": "In West Palm Beach, drains that back up during a downpour are worth calling about even if they clear afterward.",
+                  "Sewer lines": "Tell the professional whether the home is on septic or connected to city sewer."}),
+    "sacramento-ca": (["Sewer lines", "Leaks", "Water heaters", "Clogs and slow drains", "Burst or frozen pipes"],
+                 {"Sewer lines": "In older Sacramento neighborhoods with large trees, roots are a frequent suspect when backups keep returning.",
+                  "Leaks": "Low pressure together with rusty water in an older home can point to aging supply lines."}),
+    "san-antonio-tx": (["Water heaters", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Sewer lines"],
+                 {"Water heaters": "San Antonio's hard water can leave sediment in the tank; note any rumbling or popping sounds.",
+                  "Leaks": "A slab leak can show up as a damp patch of flooring or a spike in the water bill."}),
+    "kansas-city-mo": (["Burst or frozen pipes", "Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters"],
+                 {"Burst or frozen pipes": "In a Kansas City cold snap, pipes along outside walls and in unheated basements are the usual trouble spots.",
+                  "Sewer lines": "Water coming up through a basement floor drain during heavy rain can point to the sewer line."}),
+    "oklahoma-city-ok": (["Leaks", "Burst or frozen pipes", "Sewer lines", "Water heaters", "Clogs and slow drains"],
+                 {"Leaks": "For Oklahoma City homes on a slab, describe damp spots, warm floors, or a jump in the water bill.",
+                  "Burst or frozen pipes": "During an ice storm, let faucets on outside walls drip and know how to shut off the main."}),
+    "san-francisco-ca": (["Leaks", "Clogs and slow drains", "Water heaters", "Sewer lines", "Burst or frozen pipes"],
+                 {"Leaks": "In San Francisco flats, note whether the leak is inside your unit or coming from above.",
+                  "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
+    "boca-raton-fl": (["Leaks", "Clogs and slow drains", "Water heaters", "Sewer lines", "Burst or frozen pipes"],
+                 {"Leaks": "Condo owners in Boca Raton should note whether the leak is inside the unit or coming from a shared wall or ceiling.",
+                  "Clogs and slow drains": "Drains that back up during a downpour are worth calling about even if they clear afterward."}),
+}
+SIB2 = {
+    "boulder-co": ["denver-co", "fort-collins-co", "phoenix-az"],
+    "fort-collins-co": ["boulder-co", "denver-co", "kansas-city-mo"],
+    "fort-worth-tx": ["dallas-tx", "oklahoma-city-ok", "san-antonio-tx"],
+    "west-palm-beach-fl": ["boca-raton-fl", "fort-lauderdale-fl", "miami-fl"],
+    "sacramento-ca": ["san-francisco-ca", "los-angeles-ca", "las-vegas-nv"],
+    "san-antonio-tx": ["fort-worth-tx", "dallas-tx", "oklahoma-city-ok"],
+    "kansas-city-mo": ["oklahoma-city-ok", "denver-co", "dallas-tx"],
+    "oklahoma-city-ok": ["fort-worth-tx", "kansas-city-mo", "dallas-tx"],
+    "san-francisco-ca": ["sacramento-ca", "los-angeles-ca", "san-diego-ca"],
+    "boca-raton-fl": ["west-palm-beach-fl", "fort-lauderdale-fl", "miami-fl"],
+}
+
+LOCAL.update(LOCAL2)
+ISSUE_PLAN.update(PLAN2)
+SIBLINGS.update(SIB2)
+# Batch 1 pages also link to batch 2 neighbours.
+for _k, _v in {"denver-co": "boulder-co", "dallas-tx": "fort-worth-tx", "fort-lauderdale-fl": "west-palm-beach-fl", "miami-fl": "boca-raton-fl", "los-angeles-ca": "san-francisco-ca", "san-diego-ca": "san-francisco-ca", "atlanta-ga": "kansas-city-mo"}.items():
+    if _v not in SIBLINGS[_k]:
+        SIBLINGS[_k].append(_v)
+
+
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
 
@@ -240,7 +387,8 @@ def city_page(c: dict) -> str:
     )
     order, extra = ISSUE_PLAN[c["slug"]]
     base = dict(ISSUES)
-    warm = c["slug"] in {"miami-fl", "fort-lauderdale-fl", "phoenix-az", "los-angeles-ca", "las-vegas-nv", "san-diego-ca"}
+    warm = c["slug"] in {"miami-fl", "fort-lauderdale-fl", "phoenix-az", "los-angeles-ca", "las-vegas-nv", "san-diego-ca",
+            "west-palm-beach-fl", "boca-raton-fl", "san-francisco-ca"}
     label = lambda t: "Burst pipes" if warm and t == "Burst or frozen pipes" else t
     issues = "\n".join(
         f"        <li><strong>{esc(label(t))}.</strong> {esc(base[t])}" + (f" {esc(extra[t])}" if t in extra else "") + "</li>"
