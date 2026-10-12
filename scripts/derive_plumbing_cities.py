@@ -35,10 +35,19 @@ CANDIDATES = [
     ("Boston", "Massachusetts", "MA", "boston-ma", ["021", "022", "024"]),
     # Substitutes, in order
     ("San Diego", "California", "CA", "san-diego-ca", ["919", "920", "921"]),
+    # Batch 2 (2026-10-12): next highest median Min, then most covered ZIPs.
+    ("Boulder", "Colorado", "CO", "boulder-co", ["803", "80025-80027", "80455", "80466", "80481", "80503", "80510", "80540", "80544"]),
+    ("Fort Collins", "Colorado", "CO", "fort-collins-co", ["805"]),
+    ("Fort Worth", "Texas", "TX", "fort-worth-tx", ["760", "761"]),
+    ("West Palm Beach", "Florida", "FL", "west-palm-beach-fl", ["33401-33426", "33435-33437", "33460-33474", "33480"]),
+    ("Sacramento", "California", "CA", "sacramento-ca", ["942", "956", "957", "958"]),
     ("San Antonio", "Texas", "TX", "san-antonio-tx", ["780", "781", "782"]),
-    ("Boca Raton", "Florida", "FL", "boca-raton-fl", ["334"]),
+    ("Kansas City", "Missouri", "MO", "kansas-city-mo", ["640", "641"]),
+    ("Oklahoma City", "Oklahoma", "OK", "oklahoma-city-ok", ["730", "731"]),
+    ("San Francisco", "California", "CA", "san-francisco-ca", ["940", "941"]),
+    ("Boca Raton", "Florida", "FL", "boca-raton-fl", ["33427-33434", "33441-33448", "33481-33499"]),
 ]
-TARGET = 10
+TARGET = 20
 MAX_AREAS = 12
 
 
