@@ -46,8 +46,13 @@ CANDIDATES = [
     ("Oklahoma City", "Oklahoma", "OK", "oklahoma-city-ok", ["730", "731"]),
     ("San Francisco", "California", "CA", "san-francisco-ca", ["940", "941"]),
     ("Boca Raton", "Florida", "FL", "boca-raton-fl", ["33427-33434", "33441-33448", "33481-33499"]),
+    # Batch 3 (2026-10-13)
+    ("Memphis", "Tennessee", "TN", "memphis-tn", ["381", "375"]),
+    ("Portland", "Oregon", "OR", "portland-or", ["972", "970"]),
+    ("Salt Lake City", "Utah", "UT", "salt-lake-city-ut", ["841"]),
+    ("Baltimore", "Maryland", "MD", "baltimore-md", ["212"]),
 ]
-TARGET = 20
+TARGET = 24
 MAX_AREAS = 12
 
 

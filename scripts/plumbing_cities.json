@@ -587,6 +587,91 @@
         "Belle Glade",
         "South Bay"
       ]
+    },
+    {
+      "city": "Memphis",
+      "state": "Tennessee",
+      "abbr": "TN",
+      "slug": "memphis-tn",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 70,
+      "zips_ge_100": 62,
+      "buyers": 2,
+      "zip_areas": [
+        "381",
+        "375"
+      ],
+      "nearby_covered_areas": [
+        "Germantown"
+      ]
+    },
+    {
+      "city": "Portland",
+      "state": "Oregon",
+      "abbr": "OR",
+      "slug": "portland-or",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 66,
+      "zips_ge_100": 44,
+      "buyers": 2,
+      "zip_areas": [
+        "972",
+        "970"
+      ],
+      "nearby_covered_areas": [
+        "Gresham",
+        "Bridal Veil",
+        "Corbett",
+        "Fairview",
+        "Troutdale"
+      ]
+    },
+    {
+      "city": "Salt Lake City",
+      "state": "Utah",
+      "abbr": "UT",
+      "slug": "salt-lake-city-ut",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 60,
+      "zips_ge_100": 54,
+      "buyers": 2,
+      "zip_areas": [
+        "841"
+      ],
+      "nearby_covered_areas": [
+        "Taylorsville"
+      ]
+    },
+    {
+      "city": "Baltimore",
+      "state": "Maryland",
+      "abbr": "MD",
+      "slug": "baltimore-md",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 50,
+      "zips_ge_100": 46,
+      "buyers": 2,
+      "zip_areas": [
+        "212"
+      ],
+      "nearby_covered_areas": [
+        "Towson",
+        "Gwynn Oak",
+        "Pikesville",
+        "Sparrows Point",
+        "Middle River",
+        "Essex",
+        "Dundalk",
+        "Brooklyn",
+        "Curtis Bay",
+        "Halethorpe",
+        "Catonsville",
+        "Parkville"
+      ]
     }
   ],
   "rejected": [
