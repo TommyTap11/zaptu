@@ -325,6 +325,77 @@ for _k, _v in {"denver-co": "boulder-co", "dallas-tx": "fort-worth-tx", "fort-la
         SIBLINGS[_k].append(_v)
 
 
+# Batch 3 (2026-10-13)
+LOCAL3 = {
+    "memphis-tn": {
+        "intro": "Memphis has many older homes with mature trees, along with humid summers, heavy spring rain, and the occasional winter ice storm, all of which can affect pipes and drains. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Tree roots can work their way into older sewer lines, so repeat backups in the same drain are worth mentioning.",
+            "During an ice storm or hard freeze, open cabinet doors under sinks on outside walls and know where your main shutoff valve is.",
+            "Older homes in established neighborhoods may have older pipe materials. Mention the age of the house if you know it.",
+        ],
+        "focus": "sewer backups and root problems, freeze damage, and leaking fixtures",
+    },
+    "portland-or": {
+        "intro": "Portland's long, wet season puts a steady load on drains, sewer lines, and basements, and older homes with mature trees add their own plumbing questions. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Water in a basement during the rainy months can come from a drain or sewer line, not only from outside. Describe where it appears.",
+            "Roots from large street and yard trees can get into older sewer lines and cause repeat backups.",
+            "Cold snaps and ice storms do happen. Disconnect garden hoses and know where your main shutoff valve is before winter.",
+        ],
+        "focus": "basement drain and sewer problems, root intrusion, and leaks in older homes",
+    },
+    "salt-lake-city-ut": {
+        "intro": "Salt Lake City winters bring regular freezes, and the water in much of the valley is on the hard side, so frozen lines and water heater scale both come up. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Before the first hard freeze, drain sprinkler lines and outdoor spigots and disconnect garden hoses.",
+            "Hard water can leave mineral buildup in water heaters and clog faucet aerators and shower heads.",
+            "Many homes have basements. If water shows up near a floor drain or the water heater, mention where it is coming from.",
+        ],
+        "focus": "frozen pipes, water heater scale and failures, and basement leaks",
+    },
+    "baltimore-md": {
+        "intro": "Baltimore has a large stock of older rowhomes, and shared walls, old drain lines, and cold winters shape a lot of plumbing problems. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a rowhome, a leak can reach the house next door. Let your neighbor know if water may be crossing a shared wall.",
+            "Older homes may have cast-iron or clay drain lines and older supply pipes. Mention the age of the house if you know it.",
+            "On cold nights, pipes along exterior walls and in unheated basements are more exposed. Know where the main shutoff is.",
+        ],
+        "focus": "drain and sewer problems in older homes, frozen pipes, and leaks between rowhomes",
+    },
+}
+PLAN3 = {
+    "memphis-tn": (["Sewer lines", "Clogs and slow drains", "Leaks", "Burst or frozen pipes", "Water heaters"],
+                 {"Sewer lines": "In older Memphis neighborhoods with large trees, roots are a frequent suspect when backups keep returning.",
+                  "Clogs and slow drains": "If more than one drain slows down after heavy rain, say so on the call."}),
+    "portland-or": (["Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters", "Burst or frozen pipes"],
+                 {"Sewer lines": "In Portland's rainy months, water coming up through a basement floor drain can point to the sewer line.",
+                  "Clogs and slow drains": "If a plunger clears it for a day or two and it returns, mention that."}),
+    "salt-lake-city-ut": (["Burst or frozen pipes", "Water heaters", "Leaks", "Clogs and slow drains", "Sewer lines"],
+                 {"Burst or frozen pipes": "In a Salt Lake City cold snap, sprinkler lines and outdoor spigots left charged are frequent trouble spots.",
+                  "Water heaters": "Hard water can leave sediment in the tank; note any rumbling or popping sounds."}),
+    "baltimore-md": (["Clogs and slow drains", "Burst or frozen pipes", "Leaks", "Sewer lines", "Water heaters"],
+                 {"Clogs and slow drains": "Older cast-iron drain lines in Baltimore rowhomes can narrow on the inside over the decades.",
+                  "Burst or frozen pipes": "During a cold snap, pipes in unheated basements and along outside walls are the usual trouble spots."}),
+}
+SIB3 = {
+    "memphis-tn": ["kansas-city-mo", "oklahoma-city-ok", "atlanta-ga"],
+    "portland-or": ["sacramento-ca", "san-francisco-ca", "salt-lake-city-ut"],
+    "salt-lake-city-ut": ["denver-co", "phoenix-az", "las-vegas-nv"],
+    "baltimore-md": ["boston-ma", "atlanta-ga", "memphis-tn"],
+}
+
+LOCAL.update(LOCAL3)
+ISSUE_PLAN.update(PLAN3)
+SIBLINGS.update(SIB3)
+# Earlier pages also link to batch 3 neighbours.
+for _k, _v in [("kansas-city-mo", "memphis-tn"), ("oklahoma-city-ok", "memphis-tn"), ("atlanta-ga", "memphis-tn"),
+               ("sacramento-ca", "portland-or"), ("san-francisco-ca", "portland-or"),
+               ("denver-co", "salt-lake-city-ut"), ("las-vegas-nv", "salt-lake-city-ut"), ("boston-ma", "baltimore-md")]:
+    if _v not in SIBLINGS[_k]:
+        SIBLINGS[_k].append(_v)
+
+
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
 
