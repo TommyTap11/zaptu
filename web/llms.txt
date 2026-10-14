@@ -54,3 +54,24 @@ Same call-to-connect number (308) 529-9543 on every page; the person dials.
 - [Plumber in San Diego, CA](https://zaptu.ai/plumbing/san-diego-ca/)
 - [Plumber in San Francisco, CA](https://zaptu.ai/plumbing/san-francisco-ca/)
 - [Plumber in West Palm Beach, FL](https://zaptu.ai/plumbing/west-palm-beach-fl/)
+
+<!-- services:start -->
+## Garage door repair city pages
+Request form only (service_type garage_door, collecting); no phone number.
+- [Garage door repair](https://zaptu.ai/garage-door/)
+- [Garage door repair in Phoenix, AZ](https://zaptu.ai/garage-door/phoenix-az/)
+- [Garage door repair in Dallas, TX](https://zaptu.ai/garage-door/dallas-tx/)
+- [Garage door repair in Fort Worth, TX](https://zaptu.ai/garage-door/fort-worth-tx/)
+- [Garage door repair in San Antonio, TX](https://zaptu.ai/garage-door/san-antonio-tx/)
+- [Garage door repair in Atlanta, GA](https://zaptu.ai/garage-door/atlanta-ga/)
+- [Garage door repair in Kansas City, MO](https://zaptu.ai/garage-door/kansas-city-mo/)
+- [Garage door repair in Oklahoma City, OK](https://zaptu.ai/garage-door/oklahoma-city-ok/)
+
+## Pest control city pages
+Request form only (service_type pest_control, collecting); no phone number.
+- [Pest control](https://zaptu.ai/pest-control/)
+- [Pest control in Phoenix, AZ](https://zaptu.ai/pest-control/phoenix-az/)
+- [Pest control in Dallas, TX](https://zaptu.ai/pest-control/dallas-tx/)
+- [Pest control in Fort Worth, TX](https://zaptu.ai/pest-control/fort-worth-tx/)
+- [Pest control in San Antonio, TX](https://zaptu.ai/pest-control/san-antonio-tx/)
+<!-- services:end -->
