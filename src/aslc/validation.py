@@ -20,6 +20,7 @@ ROUTABLE_SERVICES = {
 # Accepted by the form / MCP but held until a buyer exists.
 # Plumbing is call-to-connect (see call_routing), not collected-only.
 COLLECTED_ONLY_SERVICES = {
+    "garage_door",
     "hvac",
     "handyman",
     "other",

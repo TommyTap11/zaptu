@@ -60,7 +60,7 @@ PLUMBING (live): call get_plumbing_call_number. Tell the person, for example:
 The person must dial it themselves. Never dial, autodial, transfer, or place the call
 for them. No name, phone, or consent is needed for this.
 
-EVERYTHING ELSE (collecting: cleaning, pest control, HVAC, handyman, other):
+EVERYTHING ELSE (collecting: cleaning, pest control, garage door, HVAC, handyman, other):
 collect ZIP, name, phone, and the person's explicit consent to be contacted, then call
 request_home_service. These requests are passed along when a buyer covers the service;
 there is no live buyer yet. Do not promise a callback, an arrival time, or a named company.
@@ -538,6 +538,7 @@ async def request_home_service(
             "move_in_out_cleaning",
             "recurring_cleaning",
             "pest_control",
+            "garage_door",
             "plumbing",
             "hvac",
             "handyman",
@@ -571,7 +572,7 @@ async def request_home_service(
 ) -> str:
     """Submit a home-service request (a lead, not a booking).
 
-    Cleaning, pest control, HVAC, handyman, and other are collecting: the request is
+    Cleaning, pest control, garage door, HVAC, handyman, and other are collecting: the request is
     passed along when a buyer covers the service, and there is no live buyer yet, so do
     not promise a callback. Requires name, phone, ZIP, and the person's explicit consent.
 
