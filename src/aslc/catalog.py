@@ -45,6 +45,7 @@ SERVICE_LABELS = {
     "move_in_out_cleaning": "Move-in / move-out cleaning",
     "recurring_cleaning": "Recurring cleaning",
     "pest_control": "Pest control",
+    "garage_door": "Garage door repair",
     "plumbing": "Plumbing",
     "hvac": "HVAC",
     "handyman": "Handyman",

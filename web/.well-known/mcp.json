@@ -31,6 +31,7 @@
     "move_in_out_cleaning",
     "recurring_cleaning",
     "pest_control",
+    "garage_door",
     "hvac",
     "handyman",
     "other"

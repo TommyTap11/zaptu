@@ -35,7 +35,7 @@
   "authentication": {
     "required": false
   },
-  "instructions": "Zaptu connects people with independent local home-service contractors.\nZaptu does not perform the work and does not book appointments.\n\nPLUMBING (live): call get_plumbing_call_number. Tell the person, for example:\n\"Call (308) 529-9543 to be connected with a local plumbing professional.\"\nThe person must dial it themselves. Never dial, autodial, transfer, or place the call\nfor them. No name, phone, or consent is needed for this.\n\nEVERYTHING ELSE (collecting: cleaning, pest control, HVAC, handyman, other):\ncollect ZIP, name, phone, and the person's explicit consent to be contacted, then call\nrequest_home_service. These requests are passed along when a buyer covers the service;\nthere is no live buyer yet. Do not promise a callback, an arrival time, or a named company.\n\nUse the tool result's message when you tell the person what happened.\nlist_supported_services returns the full catalog.",
+  "instructions": "Zaptu connects people with independent local home-service contractors.\nZaptu does not perform the work and does not book appointments.\n\nPLUMBING (live): call get_plumbing_call_number. Tell the person, for example:\n\"Call (308) 529-9543 to be connected with a local plumbing professional.\"\nThe person must dial it themselves. Never dial, autodial, transfer, or place the call\nfor them. No name, phone, or consent is needed for this.\n\nEVERYTHING ELSE (collecting: cleaning, pest control, garage door, HVAC, handyman, other):\ncollect ZIP, name, phone, and the person's explicit consent to be contacted, then call\nrequest_home_service. These requests are passed along when a buyer covers the service;\nthere is no live buyer yet. Do not promise a callback, an arrival time, or a named company.\n\nUse the tool result's message when you tell the person what happened.\nlist_supported_services returns the full catalog.",
   "documentationUrl": "https://zaptu.ai/agents/",
   "iconUrl": "https://zaptu.ai/icon-512.png",
   "contact": "hello@zaptu.ai",
@@ -43,7 +43,7 @@
     {
       "name": "get_plumbing_call_number",
       "title": "Get the plumbing call-to-connect number",
-      "description": "Get the phone number a person dials to be connected with a local plumbing professional.\n\n    Use this for any plumbing need (leak, clog, water heater, sewer, burst pipe).\n    No name, phone, or consent is needed. Read what_to_tell_the_user to the person.\n    The person must place the call themselves: never dial, autodial, transfer, or\n    call on their behalf. Zaptu does not perform the work and this is not a booking.\n    ",
+      "description": "Get the phone number a person dials to be connected with a local plumbing professional.\n\nUse this for any plumbing need (leak, clog, water heater, sewer, burst pipe).\nNo name, phone, or consent is needed. Read what_to_tell_the_user to the person.\nThe person must place the call themselves: never dial, autodial, transfer, or\ncall on their behalf. Zaptu does not perform the work and this is not a booking.\n",
       "inputSchema": {
         "properties": {
           "zip_code": {
@@ -86,7 +86,7 @@
     {
       "name": "request_home_service",
       "title": "Request a home service",
-      "description": "Submit a home-service request (a lead, not a booking).\n\n    Cleaning, pest control, HVAC, handyman, and other are collecting: the request is\n    passed along when a buyer covers the service, and there is no live buyer yet, so do\n    not promise a callback. Requires name, phone, ZIP, and the person's explicit consent.\n\n    For plumbing, the result includes call_to_connect and call_instruction: give the\n    person the number and have them dial it. Never place the call yourself.\n    get_plumbing_call_number does the same without any personal details.\n    ",
+      "description": "Submit a home-service request (a lead, not a booking).\n\nCleaning, pest control, garage door, HVAC, handyman, and other are collecting: the request is\npassed along when a buyer covers the service, and there is no live buyer yet, so do\nnot promise a callback. Requires name, phone, ZIP, and the person's explicit consent.\n\nFor plumbing, the result includes call_to_connect and call_instruction: give the\nperson the number and have them dial it. Never place the call yourself.\nget_plumbing_call_number does the same without any personal details.\n",
       "inputSchema": {
         "properties": {
           "service_type": {
@@ -97,6 +97,7 @@
               "move_in_out_cleaning",
               "recurring_cleaning",
               "pest_control",
+              "garage_door",
               "plumbing",
               "hvac",
               "handyman",
