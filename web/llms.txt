@@ -74,4 +74,12 @@ Request form only (service_type pest_control, collecting); no phone number.
 - [Pest control in Dallas, TX](https://zaptu.ai/pest-control/dallas-tx/)
 - [Pest control in Fort Worth, TX](https://zaptu.ai/pest-control/fort-worth-tx/)
 - [Pest control in San Antonio, TX](https://zaptu.ai/pest-control/san-antonio-tx/)
+
+## HVAC repair
+Request form only (service_type hvac, collecting); no phone number. No city pages.
+- [HVAC repair](https://zaptu.ai/hvac/)
+
+## Handyman
+Request form only (service_type handyman, collecting); no phone number. No city pages.
+- [Handyman](https://zaptu.ai/handyman/)
 <!-- services:end -->

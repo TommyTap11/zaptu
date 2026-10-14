@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HVAC requests for AI assistants | Zaptu</title>
-  <meta name="description" content="HVAC requests from AI assistants are collected by Zaptu and held until a buyer is live. Zaptu connects homeowners with independent contractors." />
+  <title>HVAC Repair — Send a Request | Zaptu</title>
+  <meta name="description" content="Send a request to be connected with an independent local HVAC professional. Zaptu does not perform the work and does not book appointments." />
   <link rel="canonical" href="https://zaptu.ai/hvac/" />
   <!-- seo:og -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Zaptu" />
-  <meta property="og:title" content="HVAC requests for AI assistants | Zaptu" />
-  <meta property="og:description" content="HVAC requests from AI assistants are collected by Zaptu and held until a buyer is live. Zaptu connects homeowners with independent contractors." />
+  <meta property="og:title" content="HVAC Repair — Send a Request | Zaptu" />
+  <meta property="og:description" content="Send a request to be connected with an independent local HVAC professional. Zaptu does not perform the work and does not book appointments." />
   <meta property="og:url" content="https://zaptu.ai/hvac/" />
   <meta property="og:image" content="https://zaptu.ai/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="HVAC requests for AI assistants | Zaptu" />
-  <meta name="twitter:description" content="HVAC requests from AI assistants are collected by Zaptu and held until a buyer is live. Zaptu connects homeowners with independent contractors." />
+  <meta name="twitter:title" content="HVAC Repair — Send a Request | Zaptu" />
+  <meta name="twitter:description" content="Send a request to be connected with an independent local HVAC professional. Zaptu does not perform the work and does not book appointments." />
   <meta name="twitter:image" content="https://zaptu.ai/og-image.png" />
   <!-- /seo:og -->
   <meta name="robots" content="index,follow" />
@@ -30,6 +30,79 @@
   <script src="/z.js" defer></script>
   <!-- /seo:icons -->
   <link rel="stylesheet" href="/style.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://zaptu.ai/hvac/",
+      "url": "https://zaptu.ai/hvac/",
+      "name": "HVAC Repair \u2014 Send a Request | Zaptu",
+      "description": "Send a request to be connected with an independent local HVAC professional. Zaptu does not perform the work and does not book appointments.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Zaptu",
+        "url": "https://zaptu.ai/"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does Zaptu do the repair?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is a callback promised?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. A callback depends on whether a participating provider covers the ZIP code on the request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who checks licensing and insurance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What should the notes say about the system?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Say whether the problem is heating, cooling, or both. Add the system type if known, such as central air, a furnace, a heat pump, a ductless mini-split, or a boiler. Add the approximate age and what the system is doing, such as not turning on, blowing warm air, short cycling, leaking water, or making a noise or a smell. Note whether anyone in the home is vulnerable to heat or cold."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Zaptu",
+          "item": "https://zaptu.ai/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "HVAC repair",
+          "item": "https://zaptu.ai/hvac/"
+        }
+      ]
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <header>
@@ -40,14 +113,134 @@
       <a href="/agents/">For agents</a>
     </nav>
   </header>
-  <main>
-    <h1>HVAC</h1>
-    <p class="lede">Collected and stored. Not sold yet. Include the problem in notes: no cool, no heat, leaking unit. We pass the request along when a buyer covers this service.</p>
-    <p><a class="btn-call" href="/?service=hvac#request">Send a request</a></p>
+  <main class="service-hub">
+    <h1>HVAC repair</h1>
+    <p class="lede">No cooling, no heat, a leak at the indoor unit, or a system that makes a new noise? Send a request to be connected with an independent local HVAC professional. A request is not a booking. Zaptu does not perform HVAC work and does not send a named company.</p>
+    <form id="request" class="request-form" action="https://api.zaptu.ai/v1/intake" method="post" name="service-request">
+      <p class="hp" aria-hidden="true"><label>Do not fill <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+      <h2>Send a request</h2>
+      <p class="hint">HVAC repair. Your request is passed along when a participating provider covers your ZIP code. It is not a booking.</p>
+      <input type="hidden" name="service_type" value="hvac" />
+      <label for="customer_name">Name</label>
+      <input id="customer_name" name="customer_name" required minlength="2" maxlength="120" autocomplete="name" />
+      <div class="row">
+        <div>
+          <label for="customer_phone">Phone</label>
+          <input id="customer_phone" name="customer_phone" type="tel" required minlength="10" autocomplete="tel-national" inputmode="tel" />
+        </div>
+        <div>
+          <label for="zip_code">ZIP</label>
+          <input id="zip_code" name="zip_code" required pattern="[0-9]{5}" maxlength="5" inputmode="numeric" autocomplete="postal-code" />
+        </div>
+      </div>
+      <label for="notes">What is going on?</label>
+      <textarea id="notes" name="notes" rows="3" maxlength="2000"></textarea>
+      <label class="consent" for="consent_to_contact"><input type="checkbox" id="consent_to_contact" name="consent_to_contact" value="yes" required /><span>I agree a provider or Zaptu partner may call or text about this request.</span></label>
+      <button type="submit">Send request</button>
+      <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+      <p class="note">US residential. <a href="/privacy/">Privacy</a></p>
+    </form>
+    <section>
+      <h2>What this covers</h2>
+      <p>An HVAC request describes a heating or cooling problem at a home. That can be no cooling, no heat, a thermostat that does not match the system, weak airflow, a water leak at the indoor unit, a frozen coil, a heat pump, a ductless mini-split, ductwork, or a question about an older system. Zaptu records the request and passes it along when a participating independent provider covers the ZIP code. Zaptu does not perform HVAC work, does not send a named company, and does not set a price or choose between repair and replacement.</p>
+      <ul>
+        <li><strong>No cooling, or an air conditioner blowing warm air.</strong> The system runs but the air from the vents stays warm, the outdoor unit is quiet, or the home never catches up on a hot day. Note which rooms stay warm and whether the outdoor unit is spinning.</li>
+        <li><strong>No heat, or a furnace or heat pump that will not start.</strong> The thermostat is set to heat and the system stays silent, clicks and stops, or blows air that is not warm. Say whether this is a furnace, a heat pump, or a boiler if that is known.</li>
+        <li><strong>Thermostat problems.</strong> The display is blank, the setpoint does not match what the system does, or a schedule seems to fight the setting. A blank display can be dead batteries or a tripped breaker, which is worth a look before the request.</li>
+        <li><strong>Weak airflow, uneven rooms, or strange noises and smells.</strong> Some rooms are much warmer or cooler than others, airflow at a vent is weak, or the system rattles, squeals, or gives off a dusty or burning smell. Describe the sound or the smell and which rooms are affected.</li>
+        <li><strong>Water leaking from the indoor unit, or a frozen coil.</strong> Water on the floor near the air handler, a drain pan that overflows, or ice on the refrigerant line or the indoor coil. Ice often shows up with weak airflow. Switch the system off if water is near electrical parts.</li>
+        <li><strong>Heat pumps and ductless mini-splits.</strong> A heat pump that will not switch between heat and cool, a mini-split head that drips, or a room unit that runs but does not change the room temperature. Name how many heads are in the home and which ones are affected.</li>
+        <li><strong>Ductwork and vents.</strong> Ducts that have come loose in an attic, a crawl space, or a basement, vents that will not open, or rooms that never get air while other rooms are fine. Say where the ducts run.</li>
+        <li><strong>Seasonal maintenance, or a system near the end of its life.</strong> A system that is old, needs a seasonal check, or raises a repair-versus-replacement question. Share the approximate age and what has already failed. Zaptu does not set a price and does not choose repair or replacement.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What to include in your request</h2>
+      <p>Add the details below in the notes field. A participating provider can use them to understand the request. They do not set an appointment, and Zaptu does not perform the work.</p>
+      <ul>
+        <li>Whether the problem is heating, cooling, or both.</li>
+        <li>The system type if known: central air, furnace, heat pump, ductless mini-split, or boiler.</li>
+        <li>The approximate age of the equipment.</li>
+        <li>What it is doing: not turning on, blowing warm air, short cycling, leaking water, or a noise or smell.</li>
+        <li>Whether anyone in the home is vulnerable to heat or cold.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What happens after you send a request</h2>
+      <ol>
+        <li>Zaptu records your request and passes it along when a participating independent provider covers your ZIP code.</li>
+        <li>If a provider takes the request, they contact you by phone or text to talk through the problem.</li>
+        <li>You and the provider agree on timing, the work, and any costs directly. Zaptu is not part of that agreement.</li>
+      </ol>
+      <p>A request is not a booking, and a callback is not promised. Zaptu does not perform the work and does not send a named company.</p>
+    </section>
+    <section>
+      <h2>Before someone follows up</h2>
+      <ul>
+        <li>If there is a smell of gas, leave the home right away and call the gas utility or 911 from outside. Do not stay inside to look for the source.</li>
+        <li>If a carbon monoxide alarm sounds, get everyone out, including pets, and call 911 from outside.</li>
+        <li>If there is a burning smell, or water near the unit, switch the system off at the thermostat or at the breaker.</li>
+        <li>A few checks come first: thermostat mode and batteries, the breaker, and whether the filter is packed with dust. Mention what was already checked.</li>
+        <li>In extreme heat or cold, take care of people who are vulnerable to the temperature before worrying about the equipment.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Common questions</h2>
+      <dl>
+        <dt>Does Zaptu do the repair?</dt>
+        <dd>No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices.</dd>
+        <dt>Is a callback promised?</dt>
+        <dd>No. A callback depends on whether a participating provider covers the ZIP code on the request.</dd>
+        <dt>Who checks licensing and insurance?</dt>
+        <dd>The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work.</dd>
+        <dt>What should the notes say about the system?</dt>
+        <dd>Say whether the problem is heating, cooling, or both. Add the system type if known, such as central air, a furnace, a heat pump, a ductless mini-split, or a boiler. Add the approximate age and what the system is doing, such as not turning on, blowing warm air, short cycling, leaking water, or making a noise or a smell. Note whether anyone in the home is vulnerable to heat or cold.</dd>
+      </dl>
+    </section>
+    <section>
+      <h2>Other home services</h2>
+      <ul class="city-links">
+        <li><a href="/plumbing/">Plumbing</a></li>
+        <li><a href="/garage-door/">Garage door repair</a></li>
+        <li><a href="/pest-control/">Pest control</a></li>
+        <li><a href="/handyman/">Handyman</a></li>
+        <li><a href="/how-it-works/">How it works</a></li>
+      </ul>
+    </section>
   </main>
   <footer>
     <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
     <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/how-it-works/">How it works</a> · <a href="/agents/">For agents</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:hello@zaptu.ai">Contact</a></p>
   </footer>
+  <script>
+(function () {
+  var f = document.getElementById("request");
+  if (!f || !window.fetch || !window.URLSearchParams) return;
+  var q = new URLSearchParams(location.search), st = document.getElementById("form-status");
+  f.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var data = {};
+    new FormData(f).forEach(function (v, k) { data[k] = v; });
+    data.consent_to_contact = f.consent_to_contact.checked;
+    if (q.get("dry_run") === "1") data.dry_run = true;
+    var btn = f.querySelector("button[type=submit]");
+    btn.disabled = true; st.textContent = "Sending...";
+    [].forEach.call(f.querySelectorAll("[aria-invalid]"), function (el) { el.removeAttribute("aria-invalid"); });
+    fetch(f.action, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (x.ok && x.j.status !== "rejected") { location.href = "/thanks/"; return; }
+        var fields = (x.j && x.j.fields) || {};
+        Object.keys(fields).forEach(function (k) { if (f[k] && f[k].setAttribute) f[k].setAttribute("aria-invalid", "true"); });
+        st.textContent = (x.j && x.j.message) || "Something went wrong. Please try again.";
+        btn.disabled = false;
+      })
+      .catch(function () {
+        if (data.dry_run) { var h = document.createElement("input"); h.type = "hidden"; h.name = "dry_run"; h.value = "1"; f.appendChild(h); }
+        st.textContent = "Sending..."; f.submit();
+      });
+  });
+})();
+  </script>
 </body>
 </html>
