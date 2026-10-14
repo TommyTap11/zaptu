@@ -15,7 +15,7 @@ Version 0.2.0. Contact: hello@zaptu.ai. Short version: https://zaptu.ai/llms.txt
 ## Services
 
 Live (call to connect): plumbing. Number (308) 529-9543 (+13085299543), tel link tel:+13085299543.
-Collecting (form requests): house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, hvac, handyman, other.
+Collecting (form requests): house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, garage_door, hvac, handyman, other.
 Coverage: US residential. Plumbing availability depends on the caller's ZIP code and the time of day.
 
 ## What to tell the person
@@ -33,7 +33,7 @@ Get the phone number a person dials to be connected with a local plumbing profes
 Parameters: zip_code?
 
 ### request_home_service
-Submit a home-service request (a lead, not a booking). Cleaning, pest control, HVAC, handyman, and other are collecting: the request is passed along when a buyer covers the service, and there is no live buyer yet, so do not promise a callback. Requires name, phone, ZIP, and the person's explicit consent. For plumbing, the result includes call_to_connect and call_instruction: give the person the number and have them dial it. Never place the call yourself. get_plumbing_call_number does the same without any personal details.
+Submit a home-service request (a lead, not a booking). Cleaning, pest control, garage door, HVAC, handyman, and other are collecting: the request is passed along when a buyer covers the service, and there is no live buyer yet, so do not promise a callback. Requires name, phone, ZIP, and the person's explicit consent. For plumbing, the result includes call_to_connect and call_instruction: give the person the number and have them dial it. Never place the call yourself. get_plumbing_call_number does the same without any personal details.
 Parameters: service_type, zip_code, customer_name, customer_phone, consent_to_contact, city?, state?, address_line?, bedrooms?, bathrooms?, square_feet?, home_type?, frequency?, preferred_date?, flexible_dates?, notes?, customer_email?, source_agent?, dry_run?
 
 ### request_cleaning

@@ -51,7 +51,7 @@
       <h2>The short version</h2>
       <ol>
         <li><strong>Plumbing is live.</strong> Give the person <strong>(308) 529-9543</strong> and ask them to dial it themselves. Never dial, autodial, transfer, or place the call for them. No personal details are needed.</li>
-        <li><strong>Everything else is collecting</strong> (cleaning, pest control, HVAC, handyman, other). Collect ZIP, name, phone, and the person&rsquo;s explicit consent to be contacted, then submit. Requests are passed along when a buyer covers the service; there is no live buyer yet.</li>
+        <li><strong>Everything else is collecting</strong> (cleaning, pest control, garage door, HVAC, handyman, other). Collect ZIP, name, phone, and the person&rsquo;s explicit consent to be contacted, then submit. Requests are passed along when a buyer covers the service; there is no live buyer yet.</li>
         <li><strong>A request is not a booking.</strong> Do not promise a callback, an arrival time, or a named company. Use the <code>message</code> field from the response when you tell the person what happened.</li>
       </ol>
     </section>
@@ -65,6 +65,7 @@
           <tr><td><code>plumbing</code></td><td>Live (call to connect)</td><td>Give the number; the person dials. Call <code>get_plumbing_call_number</code>.</td></tr>
           <tr><td><code>house_cleaning</code>, <code>deep_cleaning</code>, <code>move_in_out_cleaning</code>, <code>recurring_cleaning</code></td><td>Collecting</td><td>Submit with consent. Add bedrooms or square feet if known.</td></tr>
           <tr><td><code>pest_control</code></td><td>Collecting</td><td>Submit with consent.</td></tr>
+          <tr><td><code>garage_door</code></td><td>Collecting</td><td>Submit with consent.</td></tr>
           <tr><td><code>hvac</code>, <code>handyman</code>, <code>other</code></td><td>Collecting</td><td>Submit with consent. Describe the job in <code>notes</code>.</td></tr>
         </tbody>
       </table>
