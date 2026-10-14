@@ -18,6 +18,7 @@ CORS is open (no credentials) so browser-based agent clients can call the public
 
 from __future__ import annotations
 
+import inspect
 import json
 import os
 import sys
@@ -77,6 +78,24 @@ mcp = MCPServer(
     website_url="https://zaptu.ai",
     log_level=config.settings.log_level,  # type: ignore[arg-type]
 )
+
+# Tool descriptions published on the server card are dedented. mcp reads __doc__ as written.
+_register_tool = mcp.tool
+
+
+def _tool(*args, **kwargs):
+    def decorator(fn):
+        doc = fn.__doc__
+        if doc:
+            cleaned = inspect.cleandoc(doc)
+            # Multiline docstrings keep the trailing newline the server card was built with.
+            fn.__doc__ = cleaned + ("\n" if "\n" in doc else "")
+        return _register_tool(*args, **kwargs)(fn)
+
+    return decorator
+
+
+mcp.tool = _tool  # type: ignore[method-assign]
 
 
 def _unauthorized() -> JSONResponse:

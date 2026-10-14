@@ -120,10 +120,12 @@ footer { padding: 36px 24px 56px; }
 }
 .btn-call:hover { filter: brightness(1.05); }
 .phone-display { font-size: 28px; font-weight: 650; letter-spacing: -.02em; margin: 8px 0 16px; }
-.city section { margin-top: 32px; max-width: 760px; }
-.city section h2 { font-size: 22px; margin: 0 0 10px; }
-.city section p, .city section li { color: var(--muted); }
-.city section li strong { color: var(--ink); }
+.city section, .service-hub section { margin-top: 32px; max-width: 760px; }
+.city section h2, .service-hub section h2 { font-size: 22px; margin: 0 0 10px; }
+.city section p, .city section li, .service-hub section p, .service-hub section li, .service-hub section dd { color: var(--muted); }
+.city section li strong, .service-hub section li strong, .service-hub section dt { color: var(--ink); }
+.service-hub section dt { font-weight: 650; margin-top: 14px; }
+.service-hub section dd { margin: 4px 0 0; }
 .city .eyebrow a { text-decoration: none; }
 .areas { columns: 3; padding-left: 18px; }
 .city-links { columns: 2; padding-left: 18px; }

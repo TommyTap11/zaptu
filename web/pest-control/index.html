@@ -47,6 +47,43 @@
       }
     },
     {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does Zaptu do the repair?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is a callback promised?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. A callback depends on whether a participating provider covers the ZIP code on the request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who checks licensing and insurance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What detail helps with a pest request?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Name the pest if it is known, where it shows up, and when. Mention children or pets in the home, and any product already put down. Keep children and pets away from that product. Zaptu does not perform pest control."
+          }
+        }
+      ]
+    },
+    {
       "@type": "BreadcrumbList",
       "itemListElement": [
         {
@@ -76,7 +113,7 @@
       <a href="/agents/">For agents</a>
     </nav>
   </header>
-  <main>
+  <main class="service-hub">
     <h1>Pest control</h1>
     <p class="lede">Seeing ants, roaches, rodents or other pests? Send a request to be connected with an independent local pest control professional. A request is not a booking. Zaptu does not perform pest control.</p>
     <form id="request" class="request-form" action="https://api.zaptu.ai/v1/intake" method="post" name="service-request">
@@ -103,6 +140,67 @@
       <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
       <p class="note">US residential. <a href="/privacy/">Privacy</a></p>
     </form>
+    <section>
+      <h2>What this covers</h2>
+      <p>These are common pest problems people describe in a request. Write down what you see, where it is, and when it shows up. Zaptu does not perform pest control.</p>
+      <ul>
+        <li><strong>Ants and roaches.</strong> Trails in the kitchen or bathroom, or roaches seen at night.</li>
+        <li><strong>Rodents.</strong> Droppings, gnaw marks, or scratching sounds in walls or the attic.</li>
+        <li><strong>Termites.</strong> Mud tubes on the foundation, swarming winged insects, or soft or hollow-sounding wood.</li>
+        <li><strong>Scorpions, spiders and other insects.</strong> Pests coming in from the yard, under doors, or through gaps.</li>
+        <li><strong>Mosquitoes and wasps.</strong> Nests near entries, eaves or play areas, and standing water in the yard.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What to include in your request</h2>
+      <p>Add the details below in the notes field. A participating provider can use them to understand the request. They do not set an appointment, and Zaptu does not perform the work.</p>
+      <ul>
+        <li>Which pests, and the rooms or outdoor areas where they show up.</li>
+        <li>The time of day, and whether it started after rain or a cold snap.</li>
+        <li>Whether children or pets live in the home.</li>
+        <li>Any product already put down, and where it is.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What happens after you send a request</h2>
+      <ol>
+        <li>Zaptu records your request and passes it along when a participating independent provider covers your ZIP code.</li>
+        <li>If a provider takes the request, they contact you by phone or text to talk through the problem.</li>
+        <li>You and the provider agree on timing, the work, and any costs directly. Zaptu is not part of that agreement.</li>
+      </ol>
+      <p>A request is not a booking, and a callback is not promised. Zaptu does not perform the work and does not send a named company.</p>
+    </section>
+    <section>
+      <h2>Before someone follows up</h2>
+      <ul>
+        <li>Keep children and pets away from any product you have already put down.</li>
+        <li>Note where and when you see pests; it helps whoever follows up.</li>
+        <li>If someone is stung and has trouble breathing, call 911.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Common questions</h2>
+      <dl>
+        <dt>Does Zaptu do the repair?</dt>
+        <dd>No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices.</dd>
+        <dt>Is a callback promised?</dt>
+        <dd>No. A callback depends on whether a participating provider covers the ZIP code on the request.</dd>
+        <dt>Who checks licensing and insurance?</dt>
+        <dd>The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work.</dd>
+        <dt>What detail helps with a pest request?</dt>
+        <dd>Name the pest if it is known, where it shows up, and when. Mention children or pets in the home, and any product already put down. Keep children and pets away from that product. Zaptu does not perform pest control.</dd>
+      </dl>
+    </section>
+    <section>
+      <h2>Other home services</h2>
+      <ul class="city-links">
+        <li><a href="/plumbing/">Plumbing</a></li>
+        <li><a href="/garage-door/">Garage door repair</a></li>
+        <li><a href="/hvac/">HVAC repair</a></li>
+        <li><a href="/handyman/">Handyman</a></li>
+        <li><a href="/how-it-works/">How it works</a></li>
+      </ul>
+    </section>
     <section>
       <h2>Pest control by city</h2>
       <ul class="city-links">

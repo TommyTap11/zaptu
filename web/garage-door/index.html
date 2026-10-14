@@ -47,6 +47,43 @@
       }
     },
     {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does Zaptu do the repair?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is a callback promised?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. A callback depends on whether a participating provider covers the ZIP code on the request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who checks licensing and insurance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Should the springs be adjusted before sending a request?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Torsion springs and the cables attached to them hold a lot of tension. Leave them alone, keep people and pets out from under a stuck-open door, and describe what the door is doing in the request."
+          }
+        }
+      ]
+    },
+    {
       "@type": "BreadcrumbList",
       "itemListElement": [
         {
@@ -76,7 +113,7 @@
       <a href="/agents/">For agents</a>
     </nav>
   </header>
-  <main>
+  <main class="service-hub">
     <h1>Garage door repair</h1>
     <p class="lede">Broken spring, stuck door, or an opener that quit? Send a request to be connected with an independent local garage door professional. A request is not a booking. Zaptu does not perform garage door work.</p>
     <form id="request" class="request-form" action="https://api.zaptu.ai/v1/intake" method="post" name="service-request">
@@ -103,6 +140,68 @@
       <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
       <p class="note">US residential. <a href="/privacy/">Privacy</a></p>
     </form>
+    <section>
+      <h2>What this covers</h2>
+      <p>These are common garage door problems people describe in a request. Springs and cables are under tension, so leave them alone and write down what the door is doing.</p>
+      <ul>
+        <li><strong>Broken springs.</strong> A loud bang from the garage, a door that suddenly feels very heavy, or a gap in the spring above the door. Springs hold a lot of tension, so leave them alone.</li>
+        <li><strong>Door off track or stuck.</strong> A door that hangs crooked, binds partway, or has a roller out of its track. Stop using it so it does not fall.</li>
+        <li><strong>Opener problems.</strong> The motor runs but the door does not move, the remote or keypad stopped working, or the door reverses on its own.</li>
+        <li><strong>Cables, rollers and hinges.</strong> Frayed cables, worn or noisy rollers, and cracked hinges or brackets.</li>
+        <li><strong>Panels and seals.</strong> Dented or cracked panels and worn bottom seals that let in water, dust or pests.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What to include in your request</h2>
+      <p>Add the details below in the notes field. A participating provider can use them to understand the request. They do not set an appointment, and Zaptu does not perform the work.</p>
+      <ul>
+        <li>Whether the door is stuck open, stuck closed, or stops partway.</li>
+        <li>Whether a vehicle is trapped inside the garage.</li>
+        <li>Any bang, grinding, or a door that reverses on its own.</li>
+        <li>The age of the door or opener, if known.</li>
+        <li>Whether the opener has been unplugged.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What happens after you send a request</h2>
+      <ol>
+        <li>Zaptu records your request and passes it along when a participating independent provider covers your ZIP code.</li>
+        <li>If a provider takes the request, they contact you by phone or text to talk through the problem.</li>
+        <li>You and the provider agree on timing, the work, and any costs directly. Zaptu is not part of that agreement.</li>
+      </ol>
+      <p>A request is not a booking, and a callback is not promised. Zaptu does not perform the work and does not send a named company.</p>
+    </section>
+    <section>
+      <h2>Before someone follows up</h2>
+      <ul>
+        <li>Do not try to adjust or release torsion springs or the cables attached to them.</li>
+        <li>If the door is stuck open, keep people and pets out from under it.</li>
+        <li>If the door is off its track, unplug the opener so it cannot be run by mistake.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Common questions</h2>
+      <dl>
+        <dt>Does Zaptu do the repair?</dt>
+        <dd>No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices.</dd>
+        <dt>Is a callback promised?</dt>
+        <dd>No. A callback depends on whether a participating provider covers the ZIP code on the request.</dd>
+        <dt>Who checks licensing and insurance?</dt>
+        <dd>The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work.</dd>
+        <dt>Should the springs be adjusted before sending a request?</dt>
+        <dd>No. Torsion springs and the cables attached to them hold a lot of tension. Leave them alone, keep people and pets out from under a stuck-open door, and describe what the door is doing in the request.</dd>
+      </dl>
+    </section>
+    <section>
+      <h2>Other home services</h2>
+      <ul class="city-links">
+        <li><a href="/plumbing/">Plumbing</a></li>
+        <li><a href="/pest-control/">Pest control</a></li>
+        <li><a href="/hvac/">HVAC repair</a></li>
+        <li><a href="/handyman/">Handyman</a></li>
+        <li><a href="/how-it-works/">How it works</a></li>
+      </ul>
+    </section>
     <section>
       <h2>Garage door repair by city</h2>
       <ul class="city-links">

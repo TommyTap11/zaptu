@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Handyman requests for AI assistants | Zaptu</title>
-  <meta name="description" content="Handyman requests from AI assistants are collected by Zaptu and held until a buyer is live. Not a confirmed appointment." />
+  <title>Handyman Services — Send a Request | Zaptu</title>
+  <meta name="description" content="Send a request to be connected with an independent local handyman. Zaptu does not perform the work and does not book appointments." />
   <link rel="canonical" href="https://zaptu.ai/handyman/" />
   <!-- seo:og -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Zaptu" />
-  <meta property="og:title" content="Handyman requests for AI assistants | Zaptu" />
-  <meta property="og:description" content="Handyman requests from AI assistants are collected by Zaptu and held until a buyer is live. Not a confirmed appointment." />
+  <meta property="og:title" content="Handyman Services — Send a Request | Zaptu" />
+  <meta property="og:description" content="Send a request to be connected with an independent local handyman. Zaptu does not perform the work and does not book appointments." />
   <meta property="og:url" content="https://zaptu.ai/handyman/" />
   <meta property="og:image" content="https://zaptu.ai/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Handyman requests for AI assistants | Zaptu" />
-  <meta name="twitter:description" content="Handyman requests from AI assistants are collected by Zaptu and held until a buyer is live. Not a confirmed appointment." />
+  <meta name="twitter:title" content="Handyman Services — Send a Request | Zaptu" />
+  <meta name="twitter:description" content="Send a request to be connected with an independent local handyman. Zaptu does not perform the work and does not book appointments." />
   <meta name="twitter:image" content="https://zaptu.ai/og-image.png" />
   <!-- /seo:og -->
   <meta name="robots" content="index,follow" />
@@ -30,6 +30,79 @@
   <script src="/z.js" defer></script>
   <!-- /seo:icons -->
   <link rel="stylesheet" href="/style.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://zaptu.ai/handyman/",
+      "url": "https://zaptu.ai/handyman/",
+      "name": "Handyman Services \u2014 Send a Request | Zaptu",
+      "description": "Send a request to be connected with an independent local handyman. Zaptu does not perform the work and does not book appointments.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Zaptu",
+        "url": "https://zaptu.ai/"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does Zaptu do the repair?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is a callback promised?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. A callback depends on whether a participating provider covers the ZIP code on the request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who checks licensing and insurance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What kinds of jobs fit a handyman request?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Smaller jobs around the home fit this request: drywall holes and patching, doors that stick, hinges, knobs and lock hardware, mounting shelves, mirrors, curtain rods and TVs, caulking and sealing around tubs, sinks and windows, minor carpentry and trim, furniture and fixture assembly, and small exterior fixes such as fences, gates and screens. Electrical work, gas work, and plumbing beyond a simple fixture swap may fall under state and local rules that call for a trade license, depending on the state and the size of the job. The homeowner should confirm that. Zaptu does not perform the work and does not decide which rules apply."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Zaptu",
+          "item": "https://zaptu.ai/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Handyman",
+          "item": "https://zaptu.ai/handyman/"
+        }
+      ]
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <header>
@@ -40,14 +113,130 @@
       <a href="/agents/">For agents</a>
     </nav>
   </header>
-  <main>
+  <main class="service-hub">
     <h1>Handyman</h1>
-    <p class="lede">Collected and stored. Describe the job in notes. We pass the request along when a buyer covers this service. Not a confirmed appointment.</p>
-    <p><a class="btn-call" href="/?service=handyman#request">Send a request</a></p>
+    <p class="lede">A hole in the drywall, a door that sticks, or a shelf that needs to go up? Send a request to be connected with an independent local handyman. A request is not a booking. Zaptu does not perform the work and does not send a named company.</p>
+    <form id="request" class="request-form" action="https://api.zaptu.ai/v1/intake" method="post" name="service-request">
+      <p class="hp" aria-hidden="true"><label>Do not fill <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+      <h2>Send a request</h2>
+      <p class="hint">Handyman. Your request is passed along when a participating provider covers your ZIP code. It is not a booking.</p>
+      <input type="hidden" name="service_type" value="handyman" />
+      <label for="customer_name">Name</label>
+      <input id="customer_name" name="customer_name" required minlength="2" maxlength="120" autocomplete="name" />
+      <div class="row">
+        <div>
+          <label for="customer_phone">Phone</label>
+          <input id="customer_phone" name="customer_phone" type="tel" required minlength="10" autocomplete="tel-national" inputmode="tel" />
+        </div>
+        <div>
+          <label for="zip_code">ZIP</label>
+          <input id="zip_code" name="zip_code" required pattern="[0-9]{5}" maxlength="5" inputmode="numeric" autocomplete="postal-code" />
+        </div>
+      </div>
+      <label for="notes">What is going on?</label>
+      <textarea id="notes" name="notes" rows="3" maxlength="2000"></textarea>
+      <label class="consent" for="consent_to_contact"><input type="checkbox" id="consent_to_contact" name="consent_to_contact" value="yes" required /><span>I agree a provider or Zaptu partner may call or text about this request.</span></label>
+      <button type="submit">Send request</button>
+      <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+      <p class="note">US residential. <a href="/privacy/">Privacy</a></p>
+    </form>
+    <section>
+      <h2>What this covers</h2>
+      <p>A handyman request is for smaller jobs around a home: patching drywall, a door that sticks, hinges and knobs, mounting a shelf, a mirror, a curtain rod, or a TV, caulking a tub, a sink, or a window, a short carpentry or trim task, putting furniture or a fixture together, or a small exterior fix such as a fence picket, a gate, or a screen. Zaptu records the request and passes it along when a participating independent provider covers the ZIP code. Zaptu does not perform the work and does not send a named company.</p>
+      <ul>
+        <li><strong>Drywall holes and patching.</strong> Nail pops, doorknob holes, and small cracks or holes in walls and ceilings. Describe the room, about how large each hole is, and whether paint is already on hand.</li>
+        <li><strong>Doors that stick, plus hinges, knobs and lock hardware.</strong> A door that rubs the frame, a loose hinge, a knob that spins, or lock hardware that no longer lines up. Say whether it is an interior door or an exterior door.</li>
+        <li><strong>Mounting shelves, mirrors, curtain rods and TVs.</strong> Items that need to be fastened to a wall, including shelves, mirrors, curtain rods and TVs. Note the wall type if known, such as drywall or plaster, and the approximate size.</li>
+        <li><strong>Caulking and sealing around tubs, sinks and windows.</strong> Gaps around a tub, a sink, or a window that let in water or a draft. Say which rooms and whether the old caulk is still in place.</li>
+        <li><strong>Minor carpentry and trim.</strong> Loose baseboard, a missing piece of trim, a small shelf, or another short carpentry task. Describe the room and the material.</li>
+        <li><strong>Furniture and fixture assembly.</strong> Flat-pack furniture, a fixture that arrived in a box, or hardware that still needs to be put together. Note how many pieces and whether the instructions are on hand.</li>
+        <li><strong>Small exterior fixes.</strong> A fence picket, a gate that sags, a torn screen, or another small exterior item. Say whether the work is at ground level and which side of the home it is on.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What to include in your request</h2>
+      <p>Add the details below in the notes field. A participating provider can use them to understand the request. They do not set an appointment, and Zaptu does not perform the work.</p>
+      <ul>
+        <li>The rooms or areas where the work is.</li>
+        <li>A plain description of each item, specific enough that a photo would match it.</li>
+        <li>A rough size for each item, such as the width of a hole or the length of a shelf.</li>
+        <li>Whether materials, such as paint, caulk, or hardware, are already on hand.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>What happens after you send a request</h2>
+      <ol>
+        <li>Zaptu records your request and passes it along when a participating independent provider covers your ZIP code.</li>
+        <li>If a provider takes the request, they contact you by phone or text to talk through the problem.</li>
+        <li>You and the provider agree on timing, the work, and any costs directly. Zaptu is not part of that agreement.</li>
+      </ol>
+      <p>A request is not a booking, and a callback is not promised. Zaptu does not perform the work and does not send a named company.</p>
+    </section>
+    <section>
+      <h2>Before someone follows up</h2>
+      <ul>
+        <li>Electrical work, gas work, and plumbing beyond a simple fixture swap may legally require a trade license. The rule depends on the state, the local area, and the size of the job, so the homeowner should confirm before anyone starts.</li>
+        <li>Do not open walls where wiring or pipes might run.</li>
+        <li>Shut off water or power before anyone works near them.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Common questions</h2>
+      <dl>
+        <dt>Does Zaptu do the repair?</dt>
+        <dd>No. Zaptu passes requests to participating independent providers and does not perform the work, send a named company, or set prices.</dd>
+        <dt>Is a callback promised?</dt>
+        <dd>No. A callback depends on whether a participating provider covers the ZIP code on the request.</dd>
+        <dt>Who checks licensing and insurance?</dt>
+        <dd>The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work.</dd>
+        <dt>What kinds of jobs fit a handyman request?</dt>
+        <dd>Smaller jobs around the home fit this request: drywall holes and patching, doors that stick, hinges, knobs and lock hardware, mounting shelves, mirrors, curtain rods and TVs, caulking and sealing around tubs, sinks and windows, minor carpentry and trim, furniture and fixture assembly, and small exterior fixes such as fences, gates and screens. Electrical work, gas work, and plumbing beyond a simple fixture swap may fall under state and local rules that call for a trade license, depending on the state and the size of the job. The homeowner should confirm that. Zaptu does not perform the work and does not decide which rules apply.</dd>
+      </dl>
+    </section>
+    <section>
+      <h2>Other home services</h2>
+      <ul class="city-links">
+        <li><a href="/plumbing/">Plumbing</a></li>
+        <li><a href="/garage-door/">Garage door repair</a></li>
+        <li><a href="/pest-control/">Pest control</a></li>
+        <li><a href="/hvac/">HVAC repair</a></li>
+        <li><a href="/how-it-works/">How it works</a></li>
+      </ul>
+    </section>
   </main>
   <footer>
     <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
     <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/how-it-works/">How it works</a> · <a href="/agents/">For agents</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:hello@zaptu.ai">Contact</a></p>
   </footer>
+  <script>
+(function () {
+  var f = document.getElementById("request");
+  if (!f || !window.fetch || !window.URLSearchParams) return;
+  var q = new URLSearchParams(location.search), st = document.getElementById("form-status");
+  f.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var data = {};
+    new FormData(f).forEach(function (v, k) { data[k] = v; });
+    data.consent_to_contact = f.consent_to_contact.checked;
+    if (q.get("dry_run") === "1") data.dry_run = true;
+    var btn = f.querySelector("button[type=submit]");
+    btn.disabled = true; st.textContent = "Sending...";
+    [].forEach.call(f.querySelectorAll("[aria-invalid]"), function (el) { el.removeAttribute("aria-invalid"); });
+    fetch(f.action, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (x.ok && x.j.status !== "rejected") { location.href = "/thanks/"; return; }
+        var fields = (x.j && x.j.fields) || {};
+        Object.keys(fields).forEach(function (k) { if (f[k] && f[k].setAttribute) f[k].setAttribute("aria-invalid", "true"); });
+        st.textContent = (x.j && x.j.message) || "Something went wrong. Please try again.";
+        btn.disabled = false;
+      })
+      .catch(function () {
+        if (data.dry_run) { var h = document.createElement("input"); h.type = "hidden"; h.name = "dry_run"; h.value = "1"; f.appendChild(h); }
+        st.textContent = "Sending..."; f.submit();
+      });
+  });
+})();
+  </script>
 </body>
 </html>
