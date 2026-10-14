@@ -10,6 +10,8 @@ Exposes:
   GET  /llms.txt, /llms-full.txt, /robots.txt
   POST /v1/leads, GET /v1/leads/{lead_id}   (token)
   MCP  /mcp                 streamable HTTP, stateless, no auth
+  POST /v1/hit              anonymous page-view / call-click beacon (no cookies, no IPs stored)
+  GET  /v1/stats            visit + usage stats (Bearer stats token)
 
 CORS is open (no credentials) so browser-based agent clients can call the public API.
 """
@@ -42,7 +44,7 @@ if str(SRC) not in sys.path:
 from mcp.server.mcpserver import MCPServer  # noqa: E402
 from mcp.types import ToolAnnotations  # noqa: E402
 
-from aslc import catalog, config  # noqa: E402
+from aslc import analytics, catalog, config  # noqa: E402
 from aslc.models import ALL_SERVICE_TYPES, ServiceRequest  # noqa: E402
 from aslc.service import lookup_lead, submit_request  # noqa: E402
 from aslc.storage import list_leads  # noqa: E402
@@ -404,6 +406,44 @@ async def public_intake(request: Request) -> Response:
     return _json(result.model_dump(mode="json"), status_code)
 
 
+@mcp.custom_route("/v1/hit", methods=["POST"])
+async def hit(request: Request) -> Response:
+    """sendBeacon target. Body: {"e": "pageview"|"call_click", "p": path, "r": referrer}."""
+    ip = _client_ip(request)
+    if _rate_limited(ip):
+        return Response(status_code=204)
+    try:
+        raw = await request.body()
+        body = json.loads(raw[:2000] or b"{}")
+        if not isinstance(body, dict):
+            body = {}
+    except Exception:
+        body = {}
+    if request.headers.get("dnt") == "1" or request.headers.get("sec-gpc") == "1":
+        return Response(status_code=204)
+    analytics.record_hit(
+        str(body.get("e") or "pageview"),
+        str(body.get("p") or "/"),
+        str(body.get("r") or ""),
+        ip,
+        request.headers.get("user-agent", ""),
+    )
+    return Response(status_code=204, headers={"Cache-Control": "no-store"})
+
+
+@mcp.custom_route("/v1/stats", methods=["GET"])
+async def stats_http(request: Request) -> Response:
+    header = request.headers.get("authorization", "")
+    token = header.removeprefix("Bearer ").strip() if header.startswith("Bearer ") else request.headers.get("x-stats-token")
+    if not analytics.token_ok(token):
+        return _unauthorized()
+    try:
+        days = int(request.query_params.get("days", "30"))
+    except ValueError:
+        days = 30
+    return JSONResponse(analytics.stats(days), headers={"Cache-Control": "no-store"})
+
+
 @mcp.custom_route("/health", methods=["GET"])
 async def health(_request: Request) -> Response:
     return JSONResponse(
@@ -485,6 +525,7 @@ async def get_plumbing_call_number(
     The person must place the call themselves: never dial, autodial, transfer, or
     call on their behalf. Zaptu does not perform the work and this is not a booking.
     """
+    analytics.record_api("mcp_tool:get_plumbing_call_number")
     return json.dumps(catalog.plumbing_answer(zip_code), indent=2)
 
 
@@ -538,6 +579,7 @@ async def request_home_service(
     person the number and have them dial it. Never place the call yourself.
     get_plumbing_call_number does the same without any personal details.
     """
+    analytics.record_api("mcp_tool:request_home_service")
     payload = {
         "service_type": service_type,
         "zip_code": zip_code,
@@ -584,6 +626,7 @@ async def request_cleaning(
     state: str | None = None,
 ) -> str:
     """Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service."""
+    analytics.record_api("mcp_tool:request_cleaning")
     return await request_home_service(
         service_type="house_cleaning" if frequency == "one_time" else "recurring_cleaning",
         zip_code=zip_code,
@@ -608,6 +651,7 @@ async def get_lead_status(
     lead_id: Annotated[str, Field(description="ID returned by request_home_service.")],
 ) -> str:
     """Look up a previously submitted service request by lead_id."""
+    analytics.record_api("mcp_tool:get_lead_status")
     row = lookup_lead(lead_id)
     if not row:
         return json.dumps({"error": "not_found", "lead_id": lead_id, "message": "No request with that lead_id."})
@@ -628,6 +672,7 @@ async def get_lead_status(
 @mcp.tool(title="List supported services", annotations=READ_ONLY)
 async def list_supported_services() -> str:
     """Which services are live (plumbing: the person dials a number) vs collecting, plus the rules for agents."""
+    analytics.record_api("mcp_tool:list_supported_services")
     return json.dumps(catalog.services_catalog(), indent=2)
 
 
@@ -649,6 +694,23 @@ class _StatelessGetGuard:
         await self.app(scope, receive, send)
 
 
+_COUNTED_API = {("POST", "/mcp"): "mcp", ("POST", "/v1/intake"): "/v1/intake", ("GET", "/v1/services"): "/v1/services"}
+
+
+class _UsageCounter:
+    """Counts API/MCP requests (endpoint + day only; nothing about the caller)."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http":
+            name = _COUNTED_API.get((scope["method"], scope["path"].rstrip("/") or "/"))
+            if name:
+                analytics.record_api(name)
+        await self.app(scope, receive, send)
+
+
 def create_app(host: str = "0.0.0.0") -> Starlette:
     app = mcp.streamable_http_app(
         streamable_http_path="/mcp",
@@ -657,6 +719,7 @@ def create_app(host: str = "0.0.0.0") -> Starlette:
         host=host,
     )
     app.add_middleware(_StatelessGetGuard)
+    app.add_middleware(_UsageCounter)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],

@@ -35,6 +35,7 @@ ICONS = "\n".join(
         '  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />',
         '  <link rel="manifest" href="/site.webmanifest" />',
         '  <meta name="theme-color" content="#07080b" />',
+        '  <script src="/z.js" defer></script>',
         "  <!-- /seo:icons -->",
     ]
 )
