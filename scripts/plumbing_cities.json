@@ -672,6 +672,233 @@
         "Catonsville",
         "Parkville"
       ]
+    },
+    {
+      "city": "Marietta",
+      "state": "Georgia",
+      "abbr": "GA",
+      "slug": "marietta-ga",
+      "median_min": 125.0,
+      "max_min": 125.0,
+      "zips": 14,
+      "zips_ge_100": 14,
+      "buyers": 3,
+      "zip_areas": [
+        "30060-30069",
+        "30008",
+        "30080-30082",
+        "30101-30102",
+        "30106",
+        "30126-30127",
+        "30144",
+        "30152"
+      ],
+      "nearby_covered_areas": [
+        "Smyrna",
+        "Acworth",
+        "Kennesaw",
+        "Austell",
+        "Mableton",
+        "Powder Springs"
+      ]
+    },
+    {
+      "city": "Arlington",
+      "state": "Texas",
+      "abbr": "TX",
+      "slug": "arlington-tx",
+      "median_min": 100.5,
+      "max_min": 100.5,
+      "zips": 19,
+      "zips_ge_100": 19,
+      "buyers": 3,
+      "zip_areas": [
+        "76001-76019",
+        "76021-76022",
+        "76039-76040",
+        "76063",
+        "75050-75054"
+      ],
+      "nearby_covered_areas": [
+        "Grand Prairie",
+        "Bedford",
+        "Euless",
+        "Aledo",
+        "Alvarado",
+        "Mansfield"
+      ]
+    },
+    {
+      "city": "Dayton",
+      "state": "Ohio",
+      "abbr": "OH",
+      "slug": "dayton-oh",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 49,
+      "zips_ge_100": 43,
+      "buyers": 2,
+      "zip_areas": [
+        "453",
+        "454"
+      ],
+      "nearby_covered_areas": [
+        "Miamisburg",
+        "Troy",
+        "Alpha",
+        "Ansonia",
+        "Arcanum",
+        "Bellbrook",
+        "Bowersville",
+        "Bradford",
+        "Brookville",
+        "Camden",
+        "Casstown",
+        "Cedarville"
+      ]
+    },
+    {
+      "city": "Columbus",
+      "state": "Ohio",
+      "abbr": "OH",
+      "slug": "columbus-oh",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 47,
+      "zips_ge_100": 45,
+      "buyers": 2,
+      "zip_areas": [
+        "430",
+        "431",
+        "432"
+      ],
+      "nearby_covered_areas": [
+        "Newark",
+        "Westerville",
+        "Groveport",
+        "Dublin",
+        "Marysville",
+        "Reynoldsburg",
+        "Lockbourne",
+        "Alexandria",
+        "Amlin",
+        "Ashley",
+        "Blacklick",
+        "Bladensburg"
+      ]
+    },
+    {
+      "city": "Raleigh",
+      "state": "North Carolina",
+      "abbr": "NC",
+      "slug": "raleigh-nc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 44,
+      "zips_ge_100": 35,
+      "buyers": 2,
+      "zip_areas": [
+        "275",
+        "276"
+      ],
+      "nearby_covered_areas": [
+        "Cary",
+        "Chapel Hill",
+        "Goldsboro",
+        "Apex",
+        "Clayton",
+        "Bahama",
+        "Benson",
+        "Carrboro",
+        "Four Oaks",
+        "Holly Springs",
+        "Kenly",
+        "Micro"
+      ]
+    },
+    {
+      "city": "Boise",
+      "state": "Idaho",
+      "abbr": "ID",
+      "slug": "boise-id",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 36,
+      "zips_ge_100": 28,
+      "buyers": 2,
+      "zip_areas": [
+        "836",
+        "837"
+      ],
+      "nearby_covered_areas": [
+        "Nampa",
+        "Caldwell",
+        "Meridian",
+        "Eagle",
+        "Greenleaf",
+        "Huston",
+        "Kuna",
+        "Melba",
+        "Middleton",
+        "Notus",
+        "Parma",
+        "Star"
+      ]
+    },
+    {
+      "city": "Columbia",
+      "state": "South Carolina",
+      "abbr": "SC",
+      "slug": "columbia-sc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 35,
+      "zips_ge_100": 34,
+      "buyers": 2,
+      "zip_areas": [
+        "290",
+        "291",
+        "292"
+      ],
+      "nearby_covered_areas": [
+        "West Columbia",
+        "Lexington",
+        "Ballentine",
+        "Batesburg",
+        "Bishopville",
+        "Blair",
+        "Blythewood",
+        "Cayce",
+        "Chapin",
+        "Eastover",
+        "Gadsden",
+        "Gaston"
+      ]
+    },
+    {
+      "city": "Knoxville",
+      "state": "Tennessee",
+      "abbr": "TN",
+      "slug": "knoxville-tn",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 34,
+      "zips_ge_100": 31,
+      "buyers": 2,
+      "zip_areas": [
+        "377",
+        "378",
+        "379"
+      ],
+      "nearby_covered_areas": [
+        "Greeneville",
+        "Corryton",
+        "Mascot",
+        "Midway",
+        "Mohawk",
+        "Mosheim",
+        "Powell"
+      ]
     }
   ],
   "rejected": [

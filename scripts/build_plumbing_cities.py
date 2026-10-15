@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -396,6 +397,130 @@ for _k, _v in [("kansas-city-mo", "memphis-tn"), ("oklahoma-city-ok", "memphis-t
         SIBLINGS[_k].append(_v)
 
 
+# Batch 4 (2026-10-15)
+LOCAL4 = {
+    "marietta-ga": {
+        "intro": "Marietta sits northwest of Atlanta, with older in-town houses and newer subdivisions built over Georgia clay and under a heavy tree canopy. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Clay soil swells when it is wet and shrinks when it dries, which can stress buried water and sewer lines.",
+            "Mature trees in established neighborhoods can send roots into older sewer lines. Mention backups that keep returning.",
+            "Hard freezes are not a regular event here, but they do happen. Know where your main shutoff valve is.",
+        ],
+        "focus": "sewer backups from roots, clay-soil line stress, and leaks under slabs or in crawl spaces",
+    },
+    "arlington-tx": {
+        "intro": "Arlington sits between Dallas and Fort Worth, and many homes are built on slab foundations over clay soil that moves with the weather. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "A warm spot on the floor, running-water sounds when fixtures are off, or a water bill that jumps can point to a leak under the slab.",
+            "Hard freezes in North Texas are infrequent, but they can split exposed pipes. Know where the main shutoff is.",
+            "If several drains slow down at the same time, say so, since that can point to the main sewer line.",
+        ],
+        "focus": "slab leaks, exposed-pipe freeze damage, and main sewer line backups",
+    },
+    "dayton-oh": {
+        "intro": "Dayton winters bring regular freezes, and many homes have basements where supply lines, drains, and water heaters sit. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Pipes along exterior walls and in unheated spaces are more exposed on cold nights. Know where the main shutoff is.",
+            "Older neighborhoods may still have cast-iron or clay drain lines. Mention the age of the house if you know it.",
+            "Spring rain can send water toward basement floor drains. Describe where any water appears.",
+        ],
+        "focus": "frozen pipes, basement drain backups, and leaks in older homes",
+    },
+    "columbus-oh": {
+        "intro": "Columbus mixes older neighborhoods with newer suburbs, and cold winters plus clay soil both show up in plumbing calls. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "During a hard freeze, open cabinet doors under sinks on outside walls and know how to shut off the main.",
+            "Clay around central Ohio can shift between wet and dry spells, which can stress buried lines.",
+            "If the house has a sump pump, check that it runs before heavy spring rain.",
+        ],
+        "focus": "frozen supply lines, sump and sewer trouble, and water heater outages",
+    },
+    "raleigh-nc": {
+        "intro": "Raleigh's red clay, humid summers, and a canopy of pines and hardwoods shape plumbing problems in both older neighborhoods and newer subdivisions. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Clay soil swells in wet weather and shrinks when it dries, which can stress buried water and sewer lines.",
+            "Tree roots can enter older sewer laterals. Describe backups that return after they seem to clear.",
+            "Winters are usually mild, but a hard freeze can still catch outdoor spigots. Disconnect garden hoses beforehand.",
+        ],
+        "focus": "sewer laterals and root intrusion, buried-line stress, and outdoor spigot freezes",
+    },
+    "boise-id": {
+        "intro": "Boise winters bring regular freezes, and sprinkler lines and outdoor spigots need to be drained before the first one. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Drain sprinkler lines and outdoor spigots, and disconnect garden hoses, before temperatures stay below freezing.",
+            "A pipe that froze can start leaking after it thaws. Check crawl spaces, garages, and exterior walls once it warms.",
+            "Homes toward the foothills may be on a well. Say so when you call.",
+        ],
+        "focus": "frozen pipes, sprinkler and outdoor line damage, and crawl-space leaks",
+    },
+    "columbia-sc": {
+        "intro": "Columbia has hot, humid summers, red clay soil, and mature trees, with an ice storm some winters. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Clay that swells and shrinks can stress pipes under a slab and in the yard. Mention new damp spots or a jump in the water bill.",
+            "Roots from yard and street trees can get into older sewer lines and cause backups that return.",
+            "When an ice storm is forecast, know where the main shutoff is and open cabinet doors under sinks on outside walls.",
+        ],
+        "focus": "clay-soil pipe stress, root-related sewer backups, and ice-storm freeze damage",
+    },
+    "knoxville-tn": {
+        "intro": "Knoxville sits in a valley against the foothills, with older houses, winter cold snaps, and trees that can reach sewer lines. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Cold snaps can freeze pipes in crawl spaces, garages, and exterior walls. Know where your main shutoff valve is.",
+            "Older neighborhoods often have longer sewer laterals. Repeat backups can point to roots or a break in that line.",
+            "Say whether the home has a crawl space, a basement, or a slab, since a leak shows up differently in each.",
+        ],
+        "focus": "crawl-space freezes, sewer lateral backups, and leaks in older valley homes",
+    },
+}
+PLAN4 = {
+    "marietta-ga": (["Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters", "Burst or frozen pipes"],
+                 {"Sewer lines": "In Marietta neighborhoods with large trees, roots are a frequent suspect when backups keep returning.",
+                  "Leaks": "Clay soil that shifts between wet and dry spells can stress buried supply lines."}),
+    "arlington-tx": (["Leaks", "Sewer lines", "Burst or frozen pipes", "Water heaters", "Clogs and slow drains"],
+                 {"Leaks": "For Arlington homes on a slab, describe warm or damp spots on the floor and changes in the water bill.",
+                  "Burst or frozen pipes": "During a North Texas freeze, open cabinet doors under sinks on exterior walls and know how to shut off the main."}),
+    "dayton-oh": (["Burst or frozen pipes", "Clogs and slow drains", "Sewer lines", "Leaks", "Water heaters"],
+                 {"Burst or frozen pipes": "In a Dayton cold snap, pipes in unheated basements and along outside walls are the usual trouble spots.",
+                  "Clogs and slow drains": "Water coming up through a basement floor drain during spring rain is worth describing on the call."}),
+    "columbus-oh": (["Burst or frozen pipes", "Water heaters", "Sewer lines", "Leaks", "Clogs and slow drains"],
+                 {"Burst or frozen pipes": "In Columbus, let faucets on outside walls drip during a hard freeze and know where the main shutoff is.",
+                  "Water heaters": "No hot water after a cold night can mean the tank, the supply line, or both. Say what you are seeing."}),
+    "raleigh-nc": (["Sewer lines", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters"],
+                 {"Sewer lines": "In older Raleigh neighborhoods, roots in the sewer lateral are a frequent reason backups return.",
+                  "Burst or frozen pipes": "A hard freeze can split an outdoor spigot or an exposed line even when indoor pipes are fine."}),
+    "boise-id": (["Burst or frozen pipes", "Leaks", "Water heaters", "Clogs and slow drains", "Sewer lines"],
+                 {"Burst or frozen pipes": "In Boise, sprinkler lines and outdoor spigots left charged are frequent freeze trouble spots.",
+                  "Leaks": "After a thaw, look in the crawl space and along exterior walls for water that was not there before."}),
+    "columbia-sc": (["Leaks", "Sewer lines", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters"],
+                 {"Leaks": "For Columbia homes on a slab over clay, mention damp flooring or a water bill that jumped.",
+                  "Sewer lines": "Roots from mature trees are a frequent suspect when the same drain backs up again."}),
+    "knoxville-tn": (["Burst or frozen pipes", "Sewer lines", "Leaks", "Clogs and slow drains", "Water heaters"],
+                 {"Burst or frozen pipes": "In a Knoxville cold snap, crawl spaces and pipes on outside walls are the usual trouble spots.",
+                  "Sewer lines": "A long sewer lateral on a sloped lot can hide a root intrusion or a break. Mention repeat backups."}),
+}
+SIB4 = {
+    "marietta-ga": ["atlanta-ga", "knoxville-tn", "columbia-sc"],
+    "arlington-tx": ["dallas-tx", "fort-worth-tx", "oklahoma-city-ok"],
+    "dayton-oh": ["columbus-oh", "kansas-city-mo", "baltimore-md"],
+    "columbus-oh": ["dayton-oh", "baltimore-md", "kansas-city-mo"],
+    "raleigh-nc": ["columbia-sc", "atlanta-ga", "knoxville-tn"],
+    "boise-id": ["salt-lake-city-ut", "denver-co", "portland-or"],
+    "columbia-sc": ["atlanta-ga", "raleigh-nc", "knoxville-tn"],
+    "knoxville-tn": ["atlanta-ga", "memphis-tn", "columbia-sc"],
+}
+
+LOCAL.update(LOCAL4)
+ISSUE_PLAN.update(PLAN4)
+SIBLINGS.update(SIB4)
+# Earlier pages also link to batch 4 neighbours.
+for _k, _v in [("atlanta-ga", "marietta-ga"), ("dallas-tx", "arlington-tx"), ("fort-worth-tx", "arlington-tx"),
+               ("kansas-city-mo", "dayton-oh"), ("baltimore-md", "columbus-oh"),
+               ("memphis-tn", "knoxville-tn"), ("salt-lake-city-ut", "boise-id"),
+               ("portland-or", "boise-id"), ("denver-co", "boise-id")]:
+    if _v not in SIBLINGS[_k]:
+        SIBLINGS[_k].append(_v)
+
+
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
 
@@ -466,7 +591,9 @@ def city_page(c: dict) -> str:
         for t in order
     )
     notes = "\n".join(f"        <li>{esc(n)}</li>" for n in loc["notes"])
-    areas = c["nearby_covered_areas"]
+    # Nearby place names come from coverage data. Skip any that collide with the
+    # ad-copy blocklist (Star, Idaho matches \bstars?\b) so the page stays compliant.
+    areas = [a for a in c["nearby_covered_areas"] if not re.search(r"\bstars?\b", a, re.I)]
     areas_html = ""
     if areas:
         items = "\n".join(f"        <li>{esc(a)}</li>" for a in areas)

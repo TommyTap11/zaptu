@@ -1,6 +1,7 @@
 """Derive covered plumbing cities + nearby covered areas from TCC coverage CSVs.
 
-Input (not committed): /home/box/agent-data/shared/zaptu/tcc-plumbing-*.csv
+Input (not committed): $ZAPTU_TCC_DATA_DIR/tcc-plumbing-*.csv
+Default directory: /home/box/agent-data/shared/zaptu
 Output: scripts/plumbing_cities.json
 
 "Nearby areas" = other cities in the ZIP-level coverage file, same state, whose ZIPs
@@ -11,11 +12,12 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from collections import Counter, defaultdict
 from pathlib import Path
 from statistics import median
 
-SHARED = Path("/home/box/agent-data/shared/zaptu")
+SHARED = Path(os.environ.get("ZAPTU_TCC_DATA_DIR", "/home/box/agent-data/shared/zaptu"))
 OUT = Path(__file__).with_name("plumbing_cities.json")
 MIN_REQUIRED = 100.0
 
@@ -51,8 +53,18 @@ CANDIDATES = [
     ("Portland", "Oregon", "OR", "portland-or", ["972", "970"]),
     ("Salt Lake City", "Utah", "UT", "salt-lake-city-ut", ["841"]),
     ("Baltimore", "Maryland", "MD", "baltimore-md", ["212"]),
+    # Batch 4 (2026-10-15): next highest median Min not yet live, then most covered ZIPs;
+    # skipped Pompano Beach/Hollywood FL (already nearby areas on Fort Lauderdale), Fresno (by-zip median $2.50).
+    ("Marietta", "Georgia", "GA", "marietta-ga", ["30060-30069", "30008", "30080-30082", "30101-30102", "30106", "30126-30127", "30144", "30152"]),
+    ("Arlington", "Texas", "TX", "arlington-tx", ["76001-76019", "76021-76022", "76039-76040", "76063", "75050-75054"]),
+    ("Dayton", "Ohio", "OH", "dayton-oh", ["453", "454"]),
+    ("Columbus", "Ohio", "OH", "columbus-oh", ["430", "431", "432"]),
+    ("Raleigh", "North Carolina", "NC", "raleigh-nc", ["275", "276"]),
+    ("Boise", "Idaho", "ID", "boise-id", ["836", "837"]),
+    ("Columbia", "South Carolina", "SC", "columbia-sc", ["290", "291", "292"]),
+    ("Knoxville", "Tennessee", "TN", "knoxville-tn", ["377", "378", "379"]),
 ]
-TARGET = 24
+TARGET = 32
 MAX_AREAS = 12
 
 
