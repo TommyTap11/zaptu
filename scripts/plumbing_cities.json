@@ -899,6 +899,238 @@
         "Mosheim",
         "Powell"
       ]
+    },
+    {
+      "city": "Arlington",
+      "state": "Virginia",
+      "abbr": "VA",
+      "slug": "arlington-va",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 32,
+      "zips_ge_100": 27,
+      "buyers": 2,
+      "zip_areas": [
+        "220",
+        "221",
+        "222",
+        "223"
+      ],
+      "nearby_covered_areas": [
+        "Alexandria",
+        "Fairfax",
+        "Springfield",
+        "Falls Church",
+        "Mc Lean",
+        "Merrifield",
+        "Vienna",
+        "Woodbridge",
+        "Burke",
+        "Dumfries",
+        "Lorton",
+        "Quantico"
+      ]
+    },
+    {
+      "city": "Greensboro",
+      "state": "North Carolina",
+      "abbr": "NC",
+      "slug": "greensboro-nc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 31,
+      "zips_ge_100": 28,
+      "buyers": 2,
+      "zip_areas": [
+        "272",
+        "273",
+        "274"
+      ],
+      "nearby_covered_areas": [
+        "High Point",
+        "Lexington",
+        "Asheboro",
+        "Burlington",
+        "Kernersville",
+        "Eden",
+        "Reidsville",
+        "Thomasville",
+        "Alamance",
+        "Altamahaw",
+        "Bear Creek",
+        "Bennett"
+      ]
+    },
+    {
+      "city": "Winston Salem",
+      "state": "North Carolina",
+      "abbr": "NC",
+      "slug": "winston-salem-nc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 27,
+      "zips_ge_100": 25,
+      "buyers": 2,
+      "zip_areas": [
+        "270",
+        "271"
+      ],
+      "nearby_covered_areas": [
+        "Rural Hall",
+        "Advance",
+        "Belews Creek",
+        "Bethania",
+        "Clemmons",
+        "East Bend",
+        "King",
+        "Lewisville",
+        "Madison",
+        "Mayodan",
+        "Mocksville",
+        "Mount Airy"
+      ]
+    },
+    {
+      "city": "Harrisburg",
+      "state": "Pennsylvania",
+      "abbr": "PA",
+      "slug": "harrisburg-pa",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 26,
+      "zips_ge_100": 26,
+      "buyers": 2,
+      "zip_areas": [
+        "170",
+        "171"
+      ],
+      "nearby_covered_areas": [
+        "Camp Hill",
+        "Carlisle",
+        "Mechanicsburg",
+        "Berrysburg",
+        "Boiling Springs",
+        "Dauphin",
+        "Elizabethville",
+        "Enola",
+        "Grantham",
+        "Grantville",
+        "Gratz",
+        "Halifax"
+      ]
+    },
+    {
+      "city": "New Haven",
+      "state": "Connecticut",
+      "abbr": "CT",
+      "slug": "new-haven-ct",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 26,
+      "zips_ge_100": 26,
+      "buyers": 2,
+      "zip_areas": [
+        "065",
+        "06405",
+        "06437",
+        "06471-06473",
+        "06477",
+        "06492-06495"
+      ],
+      "nearby_covered_areas": [
+        "Wallingford",
+        "Hamden",
+        "Branford",
+        "Guilford",
+        "North Branford",
+        "Northford",
+        "North Haven",
+        "Orange",
+        "East Haven",
+        "West Haven",
+        "Bethany",
+        "Woodbridge"
+      ]
+    },
+    {
+      "city": "Fresno",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "fresno-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 25,
+      "zips_ge_100": 18,
+      "buyers": 2,
+      "zip_areas": [
+        "936",
+        "937",
+        "938"
+      ],
+      "nearby_covered_areas": [
+        "Clovis",
+        "Madera",
+        "Biola",
+        "Caruthers",
+        "Del Rey",
+        "Fowler",
+        "Friant",
+        "Kerman",
+        "Kingsburg",
+        "Parlier",
+        "Raisin",
+        "Reedley"
+      ]
+    },
+    {
+      "city": "Alexandria",
+      "state": "Virginia",
+      "abbr": "VA",
+      "slug": "alexandria-va",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 23,
+      "zips_ge_100": 21,
+      "buyers": 2,
+      "zip_areas": [
+        "223",
+        "222",
+        "22150-22153",
+        "22003",
+        "22041-22044"
+      ],
+      "nearby_covered_areas": [
+        "Arlington",
+        "Falls Church",
+        "Springfield",
+        "Annandale",
+        "Ft Myer"
+      ]
+    },
+    {
+      "city": "Mesa",
+      "state": "Arizona",
+      "abbr": "AZ",
+      "slug": "mesa-az",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 20,
+      "zips_ge_100": 19,
+      "buyers": 2,
+      "zip_areas": [
+        "852"
+      ],
+      "nearby_covered_areas": [
+        "Scottsdale",
+        "Chandler",
+        "Gilbert",
+        "Tempe",
+        "Fountain Hills",
+        "Higley",
+        "Paradise Valley",
+        "Rio Verde",
+        "Fort Mcdowell"
+      ]
     }
   ],
   "rejected": [

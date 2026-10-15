@@ -521,6 +521,129 @@ for _k, _v in [("atlanta-ga", "marietta-ga"), ("dallas-tx", "arlington-tx"), ("f
         SIBLINGS[_k].append(_v)
 
 
+# Batch 5 (2026-10-15)
+LOCAL5 = {
+    "arlington-va": {
+        "intro": "Arlington mixes older garden apartments, mid-rise buildings, and houses between the Potomac and Fairfax County. A leak in a stacked unit travels differently from one in a single-family home. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a multi-unit building, water can reach the unit below. Check whether building management needs to know before work starts.",
+            "Older buildings may still have galvanized supply lines or cast-iron drains. Mention the age of the building if you know it.",
+            "Winter cold snaps can freeze pipes in exterior walls and unheated spaces. Know where the main shutoff is.",
+        ],
+        "focus": "leaks between units, drain problems in older buildings, and freeze damage",
+    },
+    "greensboro-nc": {
+        "intro": "Greensboro sits in the Piedmont, with red clay soil, humid summers, and a mix of older neighborhoods and newer subdivisions. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Clay soil swells when it is wet and shrinks when it dries, which can stress buried water and sewer lines.",
+            "Mature trees can send roots into older sewer laterals. Mention backups that keep returning.",
+            "Winters are usually mild, but a hard freeze can still split an outdoor spigot. Disconnect garden hoses beforehand.",
+        ],
+        "focus": "sewer laterals and root intrusion, buried-line stress from clay, and outdoor spigot freezes",
+    },
+    "winston-salem-nc": {
+        "intro": "Winston Salem spreads across Piedmont hills, with older in-town houses, mill neighborhoods, and newer subdivisions on clay soil. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Clay that shifts between wet and dry spells can stress pipes under a slab and in the yard.",
+            "Roots from yard and street trees can get into older sewer lines and cause backups that return.",
+            "On a cold night, pipes in crawl spaces and along outside walls are more exposed. Know where the main shutoff is.",
+        ],
+        "focus": "clay-soil pipe stress, root-related sewer backups, and crawl-space leaks",
+    },
+    "harrisburg-pa": {
+        "intro": "Harrisburg winters bring regular freezes, and many homes have basements where supply lines, drains, and water heaters sit. The river valley also sees heavy spring rain. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Pipes along exterior walls and in unheated basements are more exposed on cold nights. Know where the main shutoff is.",
+            "Older neighborhoods may still have cast-iron or clay drain lines. Mention the age of the house if you know it.",
+            "Spring rain can send water toward basement floor drains. Describe where any water appears.",
+        ],
+        "focus": "winter pipe freezes, basement drain backups after spring rain, and water heater outages",
+    },
+    "new-haven-ct": {
+        "intro": "New Haven mixes older homes and multi-family buildings with cold, wet winters that are hard on pipes and drains. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a multi-unit house, a leak can travel between floors. Let neighbors or the owner know if water is moving.",
+            "Older homes may have cast-iron drain lines or older supply pipes. Mention the age of the house if you know it.",
+            "On cold nights, pipes along exterior walls and in unheated basements are more exposed. Know where the main shutoff is.",
+        ],
+        "focus": "frozen pipes in older houses, drain problems in multi-family buildings, and leaks between floors",
+    },
+    "fresno-ca": {
+        "intro": "Fresno sits in the San Joaquin Valley, where hot, dry summers and hard water take a toll on water heaters and fixtures, and winter nights can still freeze outdoor lines. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Hard water leaves mineral buildup that can shorten the life of a water heater and clog faucet aerators and shower heads.",
+            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing on the call.",
+            "Drain outdoor spigots and disconnect garden hoses before a freeze, and know where the main shutoff is.",
+        ],
+        "focus": "water heater scale, slab leaks, and frozen outdoor lines",
+    },
+    "alexandria-va": {
+        "intro": "Alexandria has many older homes, from early houses to garden apartments, and cold snaps can freeze pipes in exterior walls and crawl spaces. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Older homes may still have galvanized supply lines or cast-iron drains. Mention the age of the house if you know it.",
+            "In a multi-unit building, water can reach the unit below. Check whether building management needs to know.",
+            "Before a hard freeze, disconnect garden hoses and know where your main shutoff valve is.",
+        ],
+        "focus": "leaks in older homes, drain line problems, and freeze damage along exterior walls",
+    },
+    "mesa-az": {
+        "intro": "Mesa's desert heat and hard water both show up in plumbing, from scale in water heaters to fixtures that stop flowing freely. Many homes sit on slab foundations. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Mineral buildup can clog faucet aerators and shower heads and leave sediment in a tank water heater.",
+            "An unexplained jump in the water bill, or a warm spot on the floor, can point to a leak under the slab.",
+            "In summer, water from outdoor or shallow lines can run hot for a while. That alone is not a leak.",
+        ],
+        "focus": "water heater sediment, slab leaks, and fixture clogs from mineral buildup",
+    },
+}
+PLAN5 = {
+    "arlington-va": (["Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Sewer lines", "Water heaters"],
+                 {"Leaks": "In an Arlington apartment or stacked unit, note whether the leak is inside the unit or coming from a shared wall or ceiling.",
+                  "Burst or frozen pipes": "During a cold snap, pipes in exterior walls and unheated spaces are the usual trouble spots."}),
+    "greensboro-nc": (["Sewer lines", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters"],
+                 {"Sewer lines": "In older Greensboro neighborhoods, roots in the sewer lateral are a frequent reason backups return.",
+                  "Burst or frozen pipes": "A hard freeze can split an outdoor spigot even when indoor pipes are fine."}),
+    "winston-salem-nc": (["Sewer lines", "Leaks", "Burst or frozen pipes", "Clogs and slow drains", "Water heaters"],
+                 {"Sewer lines": "On a hilly Winston Salem lot, a long sewer lateral can hide a root intrusion or a break. Mention repeat backups.",
+                  "Leaks": "Clay soil that shifts between wet and dry spells can stress buried supply lines."}),
+    "harrisburg-pa": (["Burst or frozen pipes", "Clogs and slow drains", "Sewer lines", "Leaks", "Water heaters"],
+                 {"Burst or frozen pipes": "In a Harrisburg cold snap, pipes in unheated basements and along outside walls are the usual trouble spots.",
+                  "Clogs and slow drains": "Water coming up through a basement floor drain during spring rain is worth describing on the call."}),
+    "new-haven-ct": (["Burst or frozen pipes", "Clogs and slow drains", "Leaks", "Sewer lines", "Water heaters"],
+                 {"Burst or frozen pipes": "In a New Haven cold snap, pipes along outside walls and in unheated basements are the usual trouble spots.",
+                  "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
+    "fresno-ca": (["Water heaters", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Sewer lines"],
+                 {"Water heaters": "In Fresno, hard water can leave sediment in the tank; note any rumbling or popping sounds.",
+                  "Leaks": "For homes on a slab, describe any warm or damp spots on the floor and changes in the water bill."}),
+    "alexandria-va": (["Leaks", "Burst or frozen pipes", "Clogs and slow drains", "Sewer lines", "Water heaters"],
+                 {"Leaks": "Low pressure together with rusty water in an older Alexandria home can point to aging supply lines.",
+                  "Burst or frozen pipes": "Before a hard freeze, disconnect garden hoses and know how to shut off the main."}),
+    "mesa-az": (["Water heaters", "Leaks", "Clogs and slow drains", "Sewer lines", "Burst or frozen pipes"],
+                 {"Water heaters": "Mesa's hard water can leave sediment in the tank; note any rumbling or popping sounds.",
+                  "Leaks": "A slab leak can show up as a damp patch of flooring or a spike in the water bill."}),
+}
+SIB5 = {
+    "arlington-va": ["alexandria-va", "baltimore-md", "boston-ma"],
+    "greensboro-nc": ["winston-salem-nc", "raleigh-nc", "columbia-sc"],
+    "winston-salem-nc": ["greensboro-nc", "raleigh-nc", "knoxville-tn"],
+    "harrisburg-pa": ["baltimore-md", "new-haven-ct", "boston-ma"],
+    "new-haven-ct": ["boston-ma", "harrisburg-pa", "baltimore-md"],
+    "fresno-ca": ["sacramento-ca", "los-angeles-ca", "san-francisco-ca"],
+    "alexandria-va": ["arlington-va", "baltimore-md", "boston-ma"],
+    "mesa-az": ["phoenix-az", "las-vegas-nv", "san-diego-ca"],
+}
+
+LOCAL.update(LOCAL5)
+ISSUE_PLAN.update(PLAN5)
+SIBLINGS.update(SIB5)
+# Earlier pages also link to batch 5 neighbours.
+for _k, _v in [("phoenix-az", "mesa-az"), ("raleigh-nc", "greensboro-nc"), ("raleigh-nc", "winston-salem-nc"),
+               ("baltimore-md", "arlington-va"), ("boston-ma", "new-haven-ct"),
+               ("sacramento-ca", "fresno-ca")]:
+    if _v not in SIBLINGS[_k]:
+        SIBLINGS[_k].append(_v)
+
+
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
 
@@ -584,7 +707,7 @@ def city_page(c: dict) -> str:
     order, extra = ISSUE_PLAN[c["slug"]]
     base = dict(ISSUES)
     warm = c["slug"] in {"miami-fl", "fort-lauderdale-fl", "phoenix-az", "los-angeles-ca", "las-vegas-nv", "san-diego-ca",
-            "west-palm-beach-fl", "boca-raton-fl", "san-francisco-ca"}
+            "west-palm-beach-fl", "boca-raton-fl", "san-francisco-ca", "fresno-ca", "mesa-az"}
     label = lambda t: "Burst pipes" if warm and t == "Burst or frozen pipes" else t
     issues = "\n".join(
         f"        <li><strong>{esc(label(t))}.</strong> {esc(base[t])}" + (f" {esc(extra[t])}" if t in extra else "") + "</li>"
