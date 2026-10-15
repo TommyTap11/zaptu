@@ -115,7 +115,7 @@ def test_every_page_loads_counter_script():
 
 def test_counter_script_is_cookieless_beacon():
     js = (WEB / "z.js").read_text(encoding="utf-8")
-    assert "sendBeacon" in js and "https://api.zaptu.ai/v1/hit" in js
+    assert "sendBeacon" in js and "https://zaptu.onrender.com/v1/hit" in js and "api.zaptu.ai/v1/hit" not in js
     assert 'a[href^="tel:"]' in js
     for bad in ("cookie", "localStorage", "sessionStorage"):
         assert bad not in js

@@ -2,7 +2,9 @@
 (function () {
   if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl) return;
   if (!/(^|\.)zaptu\.ai$/.test(location.hostname)) return;
-  var URL_ = "https://api.zaptu.ai/v1/hit";
+  // Render host, not api.zaptu.ai: the *.zaptu.ai Netlify cert lets browsers reuse the
+  // zaptu.ai connection for api.zaptu.ai (HTTP/2 coalescing) and the beacon 404s at Netlify.
+  var URL_ = "https://zaptu.onrender.com/v1/hit";
   function send(e) {
     var body = JSON.stringify({ e: e, p: location.pathname, r: document.referrer || "" });
     try {
