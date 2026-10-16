@@ -1131,6 +1131,181 @@
         "Rio Verde",
         "Fort Mcdowell"
       ]
+    },
+    {
+      "city": "Greenville",
+      "state": "South Carolina",
+      "abbr": "SC",
+      "slug": "greenville-sc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 19,
+      "zips_ge_100": 17,
+      "buyers": 2,
+      "zip_areas": [
+        "296"
+      ],
+      "nearby_covered_areas": [
+        "Anderson",
+        "Easley",
+        "Greer",
+        "Simpsonville",
+        "Belton",
+        "Central",
+        "Clemson",
+        "Cleveland",
+        "Conestee",
+        "Fair Play",
+        "Fountain Inn",
+        "Gray Court"
+      ]
+    },
+    {
+      "city": "Long Beach",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "long-beach-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 29,
+      "zips_ge_100": 27,
+      "buyers": 3,
+      "zip_areas": [
+        "908"
+      ],
+      "nearby_covered_areas": [
+        "Carson"
+      ]
+    },
+    {
+      "city": "Durham",
+      "state": "North Carolina",
+      "abbr": "NC",
+      "slug": "durham-nc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 16,
+      "zips_ge_100": 16,
+      "buyers": 2,
+      "zip_areas": [
+        "277"
+      ],
+      "nearby_covered_areas": []
+    },
+    {
+      "city": "Spokane",
+      "state": "Washington",
+      "abbr": "WA",
+      "slug": "spokane-wa",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 29,
+      "zips_ge_100": 28,
+      "buyers": 2,
+      "zip_areas": [
+        "990",
+        "991",
+        "992"
+      ],
+      "nearby_covered_areas": [
+        "Airway Heights",
+        "Chattaroy",
+        "Cheney",
+        "Colbert",
+        "Deer Park",
+        "Elk",
+        "Fairchild Air Force Base",
+        "Fairfield",
+        "Four Lakes",
+        "Greenacres",
+        "Latah",
+        "Liberty Lake"
+      ]
+    },
+    {
+      "city": "Fort Myers",
+      "state": "Florida",
+      "abbr": "FL",
+      "slug": "fort-myers-fl",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 15,
+      "zips_ge_100": 15,
+      "buyers": 2,
+      "zip_areas": [
+        "339"
+      ],
+      "nearby_covered_areas": [
+        "Cape Coral",
+        "Lehigh Acres",
+        "Port Charlotte",
+        "Punta Gorda",
+        "North Fort Myers",
+        "Estero",
+        "Fort Myers Beach",
+        "Alva",
+        "Boca Grande",
+        "Bokeelia",
+        "Captiva",
+        "El Jobean"
+      ]
+    },
+    {
+      "city": "Stockton",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "stockton-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 21,
+      "zips_ge_100": 18,
+      "buyers": 2,
+      "zip_areas": [
+        "952"
+      ],
+      "nearby_covered_areas": [
+        "Lodi",
+        "French Camp"
+      ]
+    },
+    {
+      "city": "Overland Park",
+      "state": "Kansas",
+      "abbr": "KS",
+      "slug": "overland-park-ks",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 13,
+      "zips_ge_100": 13,
+      "buyers": 2,
+      "zip_areas": [
+        "662"
+      ],
+      "nearby_covered_areas": [
+        "Shawnee",
+        "Lenexa",
+        "Mission",
+        "Leawood",
+        "Prairie Village"
+      ]
+    },
+    {
+      "city": "Santa Barbara",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "santa-barbara-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 16,
+      "zips_ge_100": 16,
+      "buyers": 2,
+      "zip_areas": [
+        "931"
+      ],
+      "nearby_covered_areas": [
+        "Goleta",
+        "Montecito"
+      ]
     }
   ],
   "rejected": [

@@ -74,8 +74,18 @@ CANDIDATES = [
     ("Fresno", "California", "CA", "fresno-ca", ["936", "937", "938"]),
     ("Alexandria", "Virginia", "VA", "alexandria-va", ["223", "222", "22150-22153", "22003", "22041-22044"]),
     ("Mesa", "Arizona", "AZ", "mesa-az", ["852"]),
+    # Batch 6 (2026-10-16): next metros by covered ZIPs with median Min >= $100, none already
+    # live or listed as a nearby area on an existing page.
+    ("Greenville", "South Carolina", "SC", "greenville-sc", ["296"]),
+    ("Long Beach", "California", "CA", "long-beach-ca", ["908"]),
+    ("Durham", "North Carolina", "NC", "durham-nc", ["277"]),
+    ("Spokane", "Washington", "WA", "spokane-wa", ["990", "991", "992"]),
+    ("Fort Myers", "Florida", "FL", "fort-myers-fl", ["339"]),
+    ("Stockton", "California", "CA", "stockton-ca", ["952"]),
+    ("Overland Park", "Kansas", "KS", "overland-park-ks", ["662"]),
+    ("Santa Barbara", "California", "CA", "santa-barbara-ca", ["931"]),
 ]
-TARGET = 40
+TARGET = 48
 MAX_AREAS = 12
 
 
