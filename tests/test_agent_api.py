@@ -35,9 +35,12 @@ def rpc(client, method, params=None, id_=1):
     return r.json()
 
 
+def call_tool_raw(client, name, args):
+    return rpc(client, "tools/call", {"name": name, "arguments": args})["result"]
+
+
 def call_tool(client, name, args):
-    body = rpc(client, "tools/call", {"name": name, "arguments": args})
-    text = body["result"]["content"][0]["text"]
+    text = call_tool_raw(client, name, args)["content"][0]["text"]
     return json.loads(text)
 
 
@@ -90,6 +93,65 @@ def test_mcp_request_validation_error_is_readable(client):
     })
     assert out["error"] == "invalid_request"
     assert "10-digit" in out["fields"]["customer_phone"]
+
+
+CLEANING = {
+    "service_type": "house_cleaning", "zip_code": "33139", "customer_name": "Test Person",
+    "customer_phone": "3055550100", "consent_to_contact": True, "bedrooms": 2,
+}
+
+
+def test_mcp_validation_error_sets_is_error(client):
+    res = call_tool_raw(client, "request_home_service", {**CLEANING, "customer_phone": "123"})
+    assert res["isError"] is True
+
+
+def test_mcp_valid_request_is_not_error(client):
+    res = call_tool_raw(client, "request_home_service", {**CLEANING, "dry_run": True})
+    assert res.get("isError") in (False, None)
+
+
+def test_mcp_unknown_argument_rejected(client, tmp_path):
+    res = call_tool_raw(client, "request_home_service", {**CLEANING, "dry_run": True, "consent_to_contct": True})
+    assert res["isError"] is True
+    assert "consent_to_contct" in res["content"][0]["text"]
+    assert leads_file(tmp_path) == []
+
+
+def test_mcp_unknown_argument_rejected_on_read_only_tool(client):
+    res = call_tool_raw(client, "get_plumbing_call_number", {"zip": "33139"})
+    assert res["isError"] is True
+
+
+def test_mcp_consent_false_rejected_for_non_plumbing(client, tmp_path):
+    from aslc import config
+
+    config.settings.require_consent = False  # the MCP rule must hold even if the env flag is off
+    try:
+        for svc in ("house_cleaning", "hvac", "pest_control", "garage_door", "handyman", "other"):
+            res = call_tool_raw(client, "request_home_service", {**CLEANING, "service_type": svc, "consent_to_contact": False})
+            assert res["isError"] is True, svc
+            out = json.loads(res["content"][0]["text"])
+            assert "consent_to_contact" in out["fields"]
+        res = call_tool_raw(client, "request_cleaning", {k: v for k, v in CLEANING.items() if k != "service_type"} | {"consent_to_contact": False})
+        assert res["isError"] is True
+    finally:
+        config.settings.require_consent = True
+    assert leads_file(tmp_path) == []
+
+
+def test_mcp_dry_run_has_no_lead_id_and_no_saved_wording(client, tmp_path):
+    for svc in ("house_cleaning", "hvac", "plumbing"):
+        res = call_tool_raw(client, "request_home_service", {**CLEANING, "service_type": svc, "dry_run": True})
+        assert res.get("isError") in (False, None)
+        text = res["content"][0]["text"]
+        out = json.loads(text)
+        assert out["dry_run"] is True
+        assert out["lead_id"] is None
+        assert "saved" not in text.lower().replace("nothing was saved", "")
+        assert "was received" not in text.lower()
+        assert out["message"].startswith("Dry run")
+    assert leads_file(tmp_path) == []
 
 
 def test_mcp_list_services_live_vs_collecting(client):
@@ -202,6 +264,7 @@ def test_dry_run_stores_nothing(client, tmp_path):
     assert r.status_code == 200
     body = r.json()
     assert body["dry_run"] is True and body["message"].startswith("Dry run")
+    assert body["lead_id"] is None
     r = client.post("/v1/intake?dry_run=1", data={k: str(v) for k, v in GOOD.items()} | {"consent_to_contact": "yes"}, follow_redirects=False)
     assert r.status_code == 303 and r.headers["location"] == "https://zaptu.ai/thanks/"
     assert leads_file(tmp_path) == []

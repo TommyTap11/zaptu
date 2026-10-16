@@ -396,8 +396,15 @@
       "LeadResponse": {
         "properties": {
           "lead_id": {
-            "title": "Lead Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Id"
           },
           "status": {
             "$ref": "#/components/schemas/LeadStatus"

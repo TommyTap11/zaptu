@@ -162,7 +162,7 @@ class LeadRecord(BaseModel):
 
 
 class LeadResponse(BaseModel):
-    lead_id: str
+    lead_id: str | None  # None for dry runs: nothing was stored, so there is no lead to look up
     status: LeadStatus
     message: str
     next_steps: list[str]

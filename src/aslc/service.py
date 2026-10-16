@@ -49,7 +49,14 @@ async def submit_request(req: ServiceRequest, *, dry_run: bool = False) -> LeadR
     def respond(**kwargs) -> LeadResponse:
         resp = LeadResponse(**kwargs)
         if dry_run:
-            resp.message = f"{DRY_RUN_NOTE} {resp.message}"
+            # Nothing was stored, so no lead_id and no "saved"/"received" wording.
+            resp.lead_id = None
+            msg = resp.message.replace("Request received but not forwarded.", "Request would not be forwarded.")
+            msg = msg.replace("Request received for", "Request would be accepted for")
+            resp.message = f"{DRY_RUN_NOTE} {msg}"
+            resp.next_steps = [DRY_RUN_NOTE] + [
+                s for s in resp.next_steps if s not in ("Your request was saved.", "Your request was received.")
+            ]
             resp.dry_run = True
         return resp
 
