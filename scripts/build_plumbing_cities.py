@@ -778,7 +778,56 @@ def footer() -> str:
     )
 
 
-def jsonld(c: dict, url: str, title: str, desc: str) -> str:
+SHORT = {"Leaks": "Leaks", "Clogs and slow drains": "Drain Clogs", "Water heaters": "Water Heaters",
+         "Burst or frozen pipes": "Frozen Pipes", "Sewer lines": "Sewer Lines"}
+TELL = {
+    "Leaks": "Where the water shows up, whether it drips or sprays, and whether the water meter moves with every fixture off.",
+    "Clogs and slow drains": "Which drains are slow, whether more than one backs up at the same time, and what you have already tried.",
+    "Water heaters": "Whether the heater is gas or electric, roughly how old it is, and any noises or water at the base.",
+    "Burst or frozen pipes": "Which faucets have no water, where that pipe runs (outside wall, crawl space, garage), and whether the main is shut off.",
+    "Sewer lines": "Whether the home is on city sewer or septic, which fixtures back up, and any sewage odor.",
+}
+
+
+def seo_title(c: dict, lead: str, warm: bool) -> str:
+    short = "Burst Pipes" if warm and lead == "Burst or frozen pipes" else SHORT[lead]
+    name = f"{c['city']}, {c['abbr']}"
+    for t in (f"Plumber in {name}: {short} and More | Zaptu", f"Plumber in {name}: {short} | Zaptu",
+              f"Plumber in {name} | Zaptu"):
+        if len(t) <= 65:
+            return t
+    return f"Plumber in {name}"
+
+
+def seo_desc(c: dict, loc: dict) -> str:
+    name = f"{c['city']}, {c['abbr']}"
+    for d in (f"Plumbing trouble in {name}? Call {PHONE_DISPLAY} to connect with a local plumbing professional about {loc['focus']}. Zaptu does not do the work.",
+              f"Plumbing trouble in {name}? Call {PHONE_DISPLAY} to connect with a local plumbing professional. Zaptu does not do the work."):
+        if len(d) <= 160:
+            return d
+    return d
+
+
+def city_faqs(c: dict, loc: dict, areas: list) -> list:
+    city, name = c["city"], f"{c['city']}, {c['abbr']}"
+    if areas:
+        cover = f"Based on our partner's current ZIP code coverage, the same number also reaches participating plumbing professionals in {', '.join(areas[:6])}. Coverage can change."
+    else:
+        cover = f"Coverage follows our partner's current ZIP codes for the {city} area and can change. Have your ZIP code ready when you call."
+    return [
+        (f"How do I reach a plumber in {name}?",
+         f"Call {PHONE_DISPLAY}. A call-routing partner connects you with a participating independent plumbing professional if one is available for your ZIP code. You place the call yourself."),
+        (f"What plumbing problems do {city} homeowners call about?",
+         f"Calls in the {city} area often involve {loc['focus']}. {loc['notes'][0]}"),
+        (f"Which areas near {city} does this number cover?", cover),
+        ("Does Zaptu do the plumbing work or set the cost?",
+         "No. Zaptu does not perform plumbing work and is not part of the agreement. You discuss the work, timing, and any costs directly with the plumbing company."),
+        ("What should I do before I call?",
+         "If water is actively leaking, close the main water shutoff. Have your ZIP code and a short description ready. If you smell gas, leave the building and call your gas utility or 911 first."),
+    ]
+
+
+def jsonld(c: dict, url: str, title: str, desc: str, faqs: list | None = None) -> str:
     data = {
         "@context": "https://schema.org",
         "@graph": [
@@ -813,6 +862,13 @@ def jsonld(c: dict, url: str, title: str, desc: str) -> str:
             },
         ],
     }
+    if faqs:
+        data["@graph"].append({
+            "@type": "FAQPage",
+            "mainEntity": [
+                {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs
+            ],
+        })
     return json.dumps(data, indent=2)
 
 
@@ -820,11 +876,6 @@ def city_page(c: dict) -> str:
     loc = LOCAL[c["slug"]]
     name = f"{c['city']}, {c['abbr']}"
     url = f"https://zaptu.ai/plumbing/{c['slug']}/"
-    title = f"Plumber in {name} — Call to Connect | Zaptu"
-    desc = (
-        f"Need a plumber in {name}? Call {PHONE_DISPLAY} to be connected with a local plumbing "
-        f"professional for {loc['focus']}. Zaptu does not perform the work."
-    )
     order, extra = ISSUE_PLAN[c["slug"]]
     base = dict(ISSUES)
     warm = c["slug"] in {"miami-fl", "fort-lauderdale-fl", "phoenix-az", "los-angeles-ca", "las-vegas-nv", "san-diego-ca",
@@ -838,6 +889,16 @@ def city_page(c: dict) -> str:
     # Nearby place names come from coverage data. Skip any that collide with the
     # ad-copy blocklist (Star, Idaho matches \bstars?\b) so the page stays compliant.
     areas = [a for a in c["nearby_covered_areas"] if not re.search(r"\bstars?\b", a, re.I)]
+    title = seo_title(c, order[0], warm)
+    desc = seo_desc(c, loc)
+    faqs = city_faqs(c, loc, areas)
+    tell = "\n".join(f"        <li>{esc(TELL[t])}</li>" for t in order[:3])
+    urgent = ["Water you cannot stop, even with the fixture valve closed.",
+              "Sewage coming up through a drain or toilet.",
+              "Water near outlets, panels, or light fixtures.",
+              "No water at all to the house." if warm else "No water after a freeze, which can mean a frozen or split pipe."]
+    urgent_html = "\n".join(f"        <li>{esc(u)}</li>" for u in urgent)
+    faq_html = "\n".join(f"      <h3>{esc(q)}</h3>\n      <p>{esc(a)}</p>" for q, a in faqs)
     areas_html = ""
     if areas:
         items = "\n".join(f"        <li>{esc(a)}</li>" for a in areas)
@@ -872,7 +933,7 @@ def city_page(c: dict) -> str:
   <meta name="robots" content="index,follow" />
   <link rel="stylesheet" href="/style.css" />
   <script type="application/ld+json">
-{jsonld(c, url, title, desc)}
+{jsonld(c, url, title, desc, faqs)}
   </script>
 </head>
 <body>
@@ -910,6 +971,22 @@ def city_page(c: dict) -> str:
     </section>
 
     <section>
+      <h2>What to tell the plumber</h2>
+      <ul>
+        <li>Your ZIP code, the type of home (house, condo, apartment), and its rough age if you know it.</li>
+{tell}
+      </ul>
+    </section>
+
+    <section>
+      <h2>When to call right away</h2>
+      <ul>
+{urgent_html}
+      </ul>
+      <p>A slow drip or a single slow drain can usually wait for a time that suits you, but mention how long it has been going on.</p>
+    </section>
+
+    <section>
       <h2>What happens when you call</h2>
       <ol>
         <li>Your call goes to a call-routing partner that works with independent plumbing companies in the {esc(c['city'])} area.</li>
@@ -926,6 +1003,11 @@ def city_page(c: dict) -> str:
         <li>Have your ZIP code ready, plus a short description of what you see and hear.</li>
         <li>If you smell gas, leave the building and call your gas utility or 911 first.</li>
       </ul>
+    </section>
+
+    <section class="faq">
+      <h2>{esc(c['city'])} plumbing questions</h2>
+{faq_html}
     </section>
 {areas_html}
 {siblings_html}
