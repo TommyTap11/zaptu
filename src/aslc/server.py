@@ -43,7 +43,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from mcp.server.mcpserver import MCPServer  # noqa: E402
-from mcp.types import ToolAnnotations  # noqa: E402
+from mcp.types import CallToolResult, TextContent, ToolAnnotations  # noqa: E402
 
 from aslc import analytics, catalog, config  # noqa: E402
 from aslc.models import ALL_SERVICE_TYPES, ServiceRequest  # noqa: E402
@@ -90,9 +90,29 @@ def _tool(*args, **kwargs):
             cleaned = inspect.cleandoc(doc)
             # Multiline docstrings keep the trailing newline the server card was built with.
             fn.__doc__ = cleaned + ("\n" if "\n" in doc else "")
-        return _register_tool(*args, **kwargs)(fn)
+        registered = _register_tool(*args, **kwargs)(fn)
+        _forbid_unknown_arguments(kwargs.get("name") or fn.__name__)
+        return registered
 
     return decorator
+
+
+def _forbid_unknown_arguments(tool_name: str) -> None:
+    """Reject misspelled or unknown tool arguments instead of silently dropping them.
+
+    The published inputSchema is left unchanged; only call-time validation gets stricter.
+    """
+    tool = mcp._tool_manager.get_tool(tool_name)
+    if tool is None:
+        return
+    base = tool.fn_metadata.arg_model
+    strict = type(base.__name__, (base,), {"model_config": {**base.model_config, "extra": "forbid"}, "__module__": base.__module__})
+    tool.fn_metadata.arg_model = strict
+
+
+def _tool_error(payload: dict[str, Any]) -> CallToolResult:
+    """A tool result the client sees as failed (isError: true), with a readable JSON body."""
+    return CallToolResult(content=[TextContent(type="text", text=json.dumps(payload, indent=2))], is_error=True)
 
 
 mcp.tool = _tool  # type: ignore[method-assign]
@@ -624,8 +644,14 @@ async def request_home_service(
         req = ServiceRequest.model_validate(payload)
     except ValidationError as exc:
         fields = _friendly_errors(exc)
-        return json.dumps({"error": "invalid_request", "message": " ".join(fields.values()), "fields": fields}, indent=2)
+        return _tool_error({"error": "invalid_request", "message": " ".join(fields.values()), "fields": fields})
+    if not req.consent_to_contact and service_type not in CALL_TO_CONNECT:
+        # Hard rule for form leads, independent of the REQUIRE_CONSENT setting.
+        msg = "consent_to_contact must be true: the person has to agree to a call or text about this request."
+        return _tool_error({"error": "invalid_request", "message": msg, "fields": {"consent_to_contact": msg}})
     result = await submit_request(req, dry_run=dry_run)
+    if result.status.value == "rejected":
+        return _tool_error({"error": "rejected", **result.model_dump(mode="json")})
     return result.model_dump_json(indent=2)
 
 
