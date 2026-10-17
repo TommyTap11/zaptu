@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 WEB = Path(__file__).resolve().parents[1] / "web"
-PAGES = sorted(WEB.rglob("index.html"))
+PAGES = [p for p in sorted(WEB.rglob("index.html")) if "dashboard" not in p.parts]  # private dashboard: see test_dashboard.py
 CITY_PAGES = sorted((WEB / "plumbing").glob("*/index.html"))
 
 
