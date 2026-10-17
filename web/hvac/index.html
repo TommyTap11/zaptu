@@ -223,6 +223,15 @@
     new FormData(f).forEach(function (v, k) { data[k] = v; });
     data.consent_to_contact = f.consent_to_contact.checked;
     if (q.get("dry_run") === "1") data.dry_run = true;
+    if (!data.dry_run) {  // backup copy to Netlify Forms (emails a notification); never blocks the intake post
+      try {
+        var nb = new URLSearchParams();
+        new FormData(f).forEach(function (v, k) { nb.append(k, v); });
+        nb.set("form-name", "service-request");
+        if (!nb.has("bot-field")) nb.set("bot-field", "");
+        fetch("/", { method: "POST", keepalive: true, headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: nb.toString() }).catch(function () {});
+      } catch (err) {}
+    }
     var btn = f.querySelector("button[type=submit]");
     btn.disabled = true; st.textContent = "Sending...";
     [].forEach.call(f.querySelectorAll("[aria-invalid]"), function (el) { el.removeAttribute("aria-invalid"); });

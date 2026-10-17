@@ -11,7 +11,7 @@ import pytest
 from test_web_compliance import BANNED, DISCLAIMER_RE
 
 WEB = Path(__file__).resolve().parents[1] / "web"
-PAGES = sorted(WEB.rglob("index.html")) + [WEB / "404.html"]
+PAGES = [p for p in sorted(WEB.rglob("index.html")) if "dashboard" not in p.parts] + [WEB / "404.html"]  # private dashboard: see test_dashboard.py
 CONTACT = "hello@zaptu.ai"
 
 

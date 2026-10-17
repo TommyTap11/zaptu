@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zaptu dashboard</title>
+  <meta name="description" content="Private Zaptu analytics dashboard. Visits, call clicks, requests and API use in one place." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#07080b" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .dash-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:20px; }
+    .stat { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; }
+    .stat .num { font-size:34px; font-weight:700; letter-spacing:-.03em; line-height:1.1; }
+    .stat .lbl { color:var(--muted); font-size:13px; margin-top:4px; }
+    .dash-panels { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    .dash-panel { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-top:0; }
+    .dash-panel h2 { font-size:19px; margin:0 0 10px; }
+    .dash-panel table { font-size:14px; }
+    .dash-panel td:last-child, .dash-panel th:last-child { text-align:right; }
+    .empty { color:var(--muted); font-size:14px; margin:0; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+    .toolbar button { width:auto; padding:12px 18px; }
+    .toolbar button.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
+    .err { color:#ff8a8a; font-weight:600; min-height:1.5em; }
+    #login-panel { max-width:520px; }
+    .pin-pad { display:grid; grid-template-columns:repeat(3,64px); gap:8px; margin-top:14px; }
+    .pin-pad button { width:64px; padding:14px 0; font-size:20px; }
+    @media (max-width:900px){ .dash-grid{grid-template-columns:1fr 1fr;} .dash-panels{grid-template-columns:1fr;} }
+    @media (max-width:520px){ .dash-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="brand">Zaptu</span>
+    <nav aria-label="Dashboard">
+      <a href="/">Public site</a>
+    </nav>
+  </header>
+  <main>
+    <p class="eyebrow">Private dashboard</p>
+    <h1>Zaptu numbers</h1>
+    <p class="lede">Visits, call clicks, requests and API use in one place. Days are UTC, as returned by the counter.</p>
+
+    <section id="login-panel" class="panel">
+      <h2>Sign in</h2>
+      <p class="hint">Enter your PIN to view the dashboard. The PIN is checked on this page only; it is a convenience gate for read-only stats, not a substitute for keeping the underlying stats token private.</p>
+      <form id="login-form">
+        <label for="dash-pin">PIN</label>
+        <input id="dash-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" required />
+        <div class="pin-pad" aria-label="PIN pad">
+          <button type="button" data-pin-digit="1">1</button><button type="button" data-pin-digit="2">2</button><button type="button" data-pin-digit="3">3</button>
+          <button type="button" data-pin-digit="4">4</button><button type="button" data-pin-digit="5">5</button><button type="button" data-pin-digit="6">6</button>
+          <button type="button" data-pin-digit="7">7</button><button type="button" data-pin-digit="8">8</button><button type="button" data-pin-digit="9">9</button>
+          <button type="button" data-pin-clear="1">Clear</button><button type="button" data-pin-digit="0">0</button><button type="submit">View dashboard</button>
+        </div>
+        <p id="login-error" class="err" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="dash" hidden>
+      <div class="toolbar">
+        <button id="refresh" type="button">Refresh</button>
+        <button id="logout" type="button" class="ghost">Log out</button>
+      </div>
+      <p id="dash-meta" class="hint"></p>
+      <p id="dash-error" class="err" role="alert"></p>
+
+      <div class="dash-grid">
+        <div class="stat"><div class="num" id="visits-today">–</div><div class="lbl">Visits today (UTC)</div></div>
+        <div class="stat"><div class="num" id="visits-total">–</div><div class="lbl" id="visits-total-lbl">Visits since counter start</div></div>
+        <div class="stat"><div class="num" id="uniques-today">–</div><div class="lbl">Unique visitors today (UTC)</div></div>
+        <div class="stat"><div class="num" id="call-clicks">–</div><div class="lbl">Call clicks (plumbing number)</div></div>
+        <div class="stat"><div class="num" id="intake-count">–</div><div class="lbl">Intake API calls — includes dry-run/test calls, not a sold-lead count</div></div>
+        <div class="stat"><div class="num" id="api-calls">–</div><div class="lbl">API calls in range</div></div>
+        <div class="stat"><div class="num" id="mcp-calls">–</div><div class="lbl">MCP calls in range</div></div>
+        <div class="stat"><div class="num" id="uniques-range">–</div><div class="lbl">Unique visitors, per day summed (same person can count on different days)</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>Money</h2>
+        <p>Revenue is not tracked here yet — $0 earned so far, and 0 leads sold.</p>
+        <p class="hint">Counts reset when the API redeploys; nightly snapshots are the durable record.</p>
+      </div>
+
+      <div class="dash-panels">
+        <section class="dash-panel"><h2>Pages by visits</h2><div id="top-pages"></div></section>
+        <section class="dash-panel"><h2>Referrers</h2><div id="referrers"></div></section>
+        <section class="dash-panel"><h2>API and MCP calls by endpoint</h2><div id="api-by-endpoint"></div></section>
+        <section class="dash-panel"><h2>Call clicks by page</h2><div id="call-clicks-by-page"></div></section>
+        <section class="dash-panel"><h2>Per day (UTC)</h2><div id="per-day"></div></section>
+        <section class="dash-panel"><h2>Notes</h2><p id="stats-notes" class="empty"></p><p class="empty">Counts reset when the API redeploys; nightly snapshots are the durable record.</p></section>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
+    <p class="footer-meta">Zaptu dashboard — private page, not linked from the public site.</p>
+  </footer>
+  <script>
+  (function () {
+    var STATS_URL = "https://zaptu.onrender.com/v1/stats?days=30";
+    var DASHBOARD_PIN = "2025";
+    var unlocked = false;
+    var loginPanel = document.getElementById("login-panel");
+    var dash = document.getElementById("dash");
+    var loginError = document.getElementById("login-error");
+    var dashError = document.getElementById("dash-error");
+
+    function el(id) { return document.getElementById(id); }
+    function setText(id, value) { el(id).textContent = value == null ? "–" : String(value); }
+    function tableInto(container, rows, cols) {
+      if (!rows || !rows.length) { var p = document.createElement("p"); p.className = "empty"; p.textContent = "None recorded yet."; container.replaceChildren(p); return; }
+      var table = document.createElement("table");
+      var thead = document.createElement("thead"); var hrow = document.createElement("tr");
+      cols.forEach(function (c) { var th = document.createElement("th"); th.textContent = c.label; hrow.appendChild(th); });
+      thead.appendChild(hrow); table.appendChild(thead);
+      var tbody = document.createElement("tbody");
+      rows.forEach(function (r) {
+        var tr = document.createElement("tr");
+        cols.forEach(function (c) { var td = document.createElement("td"); td.textContent = r[c.key] == null ? "–" : String(r[c.key]); tr.appendChild(td); });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody); container.replaceChildren(table);
+    }
+    function countOf(rows, name) { for (var i = 0; i < (rows || []).length; i++) if (rows[i].name === name) return rows[i].count; return 0; }
+
+    function render(s) {
+      var todayUtc = new Date().toISOString().slice(0, 10);
+      var today = null;
+      (s.per_day || []).forEach(function (d) { if (d.day === todayUtc) today = d; });
+      if (!today && s.per_day && s.per_day.length) today = s.per_day[0];
+      setText("visits-today", today ? today.visits : 0);
+      setText("visits-total", s.totals ? s.totals.visits : null);
+      if (s.data_since) el("visits-total-lbl").textContent = "Visits since " + s.data_since + " (counter start or last reset)";
+      setText("uniques-today", today ? today.unique_visitors : 0);
+      setText("call-clicks", s.totals ? s.totals.call_clicks : null);
+      setText("intake-count", countOf(s.api_by_endpoint, "/v1/intake"));
+      setText("api-calls", s.totals ? s.totals.api_calls : null);
+      setText("mcp-calls", countOf(s.api_by_endpoint, "mcp"));
+      var uniqSum = (s.per_day || []).reduce(function (a, d) { return a + (d.unique_visitors || 0); }, 0);
+      setText("uniques-range", uniqSum);
+      tableInto(el("top-pages"), s.top_pages, [{key:"name",label:"Page"},{key:"count",label:"Visits"}]);
+      tableInto(el("referrers"), s.referrers, [{key:"name",label:"Referrer"},{key:"count",label:"Visits"}]);
+      tableInto(el("api-by-endpoint"), s.api_by_endpoint, [{key:"name",label:"Endpoint"},{key:"count",label:"Calls"}]);
+      tableInto(el("call-clicks-by-page"), s.call_clicks_by_page, [{key:"name",label:"Page"},{key:"count",label:"Clicks"}]);
+      var perDay = (s.per_day || []).map(function (d) { return {day:d.day, visits:d.visits, unique_visitors:d.unique_visitors, call_clicks:d.call_clicks, api_calls:d.api_calls}; });
+      tableInto(el("per-day"), perDay, [{key:"day",label:"Day"},{key:"visits",label:"Visits"},{key:"unique_visitors",label:"Unique"},{key:"call_clicks",label:"Call clicks"},{key:"api_calls",label:"API calls"}]);
+      el("stats-notes").textContent = s.notes || "";
+      var range = s.range ? ("Showing the last " + s.range.days + " days (since " + s.range.since + ", " + (s.range.timezone || "UTC") + "). ") : "";
+      el("dash-meta").textContent = range + "Counter data since " + (s.data_since || "unknown") + ". Updated " + new Date().toLocaleString() + ".";
+    }
+
+    function load() {
+      dashError.textContent = "";
+      return fetch(STATS_URL, { headers: { "Authorization": "Bearer 2ZRKxzJF6XNliDW8IpJCrfiB7MhaFVoSXGqAkPOcJH0" }, cache: "no-store" })
+        .then(function (r) {
+          if (r.status === 401) throw new Error("unauthorized");
+          if (!r.ok) throw new Error("http " + r.status);
+          return r.json();
+        })
+        .then(function (s) {
+          unlocked = true;
+          loginPanel.hidden = true; dash.hidden = false; loginError.textContent = "";
+          render(s);
+        })
+        .catch(function (e) {
+          if (e && e.message === "unauthorized") {
+            unlocked = false;
+            dash.hidden = true; loginPanel.hidden = false;
+            loginError.textContent = "The stats service did not accept the request. Try again later.";
+          } else if (!dash.hidden) {
+            dashError.textContent = "Could not load fresh numbers. Try Refresh.";
+          } else {
+            loginError.textContent = "Could not reach the stats service. Check your connection and try again.";
+          }
+        });
+    }
+
+    el("login-form").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var pin = el("dash-pin").value.trim();
+      if (pin !== DASHBOARD_PIN) {
+        loginError.textContent = "That PIN was not accepted. Check it and try again.";
+        el("dash-pin").value = "";
+        return;
+      }
+      load();
+    });
+    document.querySelectorAll("[data-pin-digit]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var input = el("dash-pin");
+        if (input.value.length < 4) input.value += b.getAttribute("data-pin-digit");
+        input.focus();
+      });
+    });
+    document.querySelectorAll("[data-pin-clear]").forEach(function (b) {
+      b.addEventListener("click", function () { el("dash-pin").value = ""; el("dash-pin").focus(); });
+    });
+    el("refresh").addEventListener("click", function () { if (unlocked) load(); });
+    el("logout").addEventListener("click", function () {
+      unlocked = false;
+      el("dash-pin").value = "";
+      dash.hidden = true; loginPanel.hidden = false;
+    });
+  })();
+  </script>
+</body>
+</html>

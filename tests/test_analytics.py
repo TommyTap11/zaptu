@@ -107,7 +107,7 @@ def test_api_and_mcp_usage_counted(client):
 
 
 def test_every_page_loads_counter_script():
-    pages = list(WEB.rglob("*.html"))
+    pages = [p for p in WEB.rglob("*.html") if "dashboard" not in p.parts]  # dashboard loads no beacon by design
     assert pages
     for p in pages:
         assert '<script src="/z.js" defer></script>' in p.read_text(encoding="utf-8"), p
