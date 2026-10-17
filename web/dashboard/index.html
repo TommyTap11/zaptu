@@ -27,6 +27,8 @@
     .toolbar button.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
     .err { color:#ff8a8a; font-weight:600; min-height:1.5em; }
     #login-panel { max-width:520px; }
+    .pin-pad { display:grid; grid-template-columns:repeat(3,64px); gap:8px; margin-top:14px; }
+    .pin-pad button { width:64px; padding:14px 0; font-size:20px; }
     @media (max-width:900px){ .dash-grid{grid-template-columns:1fr 1fr;} .dash-panels{grid-template-columns:1fr;} }
     @media (max-width:520px){ .dash-grid{grid-template-columns:1fr;} }
   </style>
@@ -45,11 +47,16 @@
 
     <section id="login-panel" class="panel">
       <h2>Sign in</h2>
-      <p class="hint">Enter the dashboard key. It is kept only in this tab (session storage) and sent to the stats endpoint. It is never saved on the page.</p>
+      <p class="hint">Enter your PIN to view the dashboard. The PIN is checked on this page only; it is a convenience gate for read-only stats, not a substitute for keeping the underlying stats token private.</p>
       <form id="login-form">
-        <label for="dash-key">Dashboard key</label>
-        <input id="dash-key" type="password" autocomplete="current-password" required />
-        <button type="submit">View dashboard</button>
+        <label for="dash-pin">PIN</label>
+        <input id="dash-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" required />
+        <div class="pin-pad" aria-label="PIN pad">
+          <button type="button" data-pin-digit="1">1</button><button type="button" data-pin-digit="2">2</button><button type="button" data-pin-digit="3">3</button>
+          <button type="button" data-pin-digit="4">4</button><button type="button" data-pin-digit="5">5</button><button type="button" data-pin-digit="6">6</button>
+          <button type="button" data-pin-digit="7">7</button><button type="button" data-pin-digit="8">8</button><button type="button" data-pin-digit="9">9</button>
+          <button type="button" data-pin-clear="1">Clear</button><button type="button" data-pin-digit="0">0</button><button type="submit">View dashboard</button>
+        </div>
         <p id="login-error" class="err" role="alert"></p>
       </form>
     </section>
@@ -96,7 +103,8 @@
   <script>
   (function () {
     var STATS_URL = "https://zaptu.onrender.com/v1/stats?days=30";
-    var STORE = "zaptu-dashboard-key";
+    var DASHBOARD_PIN = "2025";
+    var unlocked = false;
     var loginPanel = document.getElementById("login-panel");
     var dash = document.getElementById("dash");
     var loginError = document.getElementById("login-error");
@@ -146,24 +154,24 @@
       el("dash-meta").textContent = range + "Counter data since " + (s.data_since || "unknown") + ". Updated " + new Date().toLocaleString() + ".";
     }
 
-    function load(key) {
+    function load() {
       dashError.textContent = "";
-      return fetch(STATS_URL, { headers: { "Authorization": "Bearer " + key }, cache: "no-store" })
+      return fetch(STATS_URL, { headers: { "Authorization": "Bearer 2ZRKxzJF6XNliDW8IpJCrfiB7MhaFVoSXGqAkPOcJH0" }, cache: "no-store" })
         .then(function (r) {
           if (r.status === 401) throw new Error("unauthorized");
           if (!r.ok) throw new Error("http " + r.status);
           return r.json();
         })
         .then(function (s) {
-          sessionStorage.setItem(STORE, key);
+          unlocked = true;
           loginPanel.hidden = true; dash.hidden = false; loginError.textContent = "";
           render(s);
         })
         .catch(function (e) {
           if (e && e.message === "unauthorized") {
-            sessionStorage.removeItem(STORE);
+            unlocked = false;
             dash.hidden = true; loginPanel.hidden = false;
-            loginError.textContent = "That key was not accepted. Check it and try again.";
+            loginError.textContent = "The stats service did not accept the request. Try again later.";
           } else if (!dash.hidden) {
             dashError.textContent = "Could not load fresh numbers. Try Refresh.";
           } else {
@@ -174,18 +182,30 @@
 
     el("login-form").addEventListener("submit", function (ev) {
       ev.preventDefault();
-      var key = el("dash-key").value.trim();
-      if (key) load(key);
+      var pin = el("dash-pin").value.trim();
+      if (pin !== DASHBOARD_PIN) {
+        loginError.textContent = "That PIN was not accepted. Check it and try again.";
+        el("dash-pin").value = "";
+        return;
+      }
+      load();
     });
-    el("refresh").addEventListener("click", function () { var k = sessionStorage.getItem(STORE); if (k) load(k); });
+    document.querySelectorAll("[data-pin-digit]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var input = el("dash-pin");
+        if (input.value.length < 4) input.value += b.getAttribute("data-pin-digit");
+        input.focus();
+      });
+    });
+    document.querySelectorAll("[data-pin-clear]").forEach(function (b) {
+      b.addEventListener("click", function () { el("dash-pin").value = ""; el("dash-pin").focus(); });
+    });
+    el("refresh").addEventListener("click", function () { if (unlocked) load(); });
     el("logout").addEventListener("click", function () {
-      sessionStorage.removeItem(STORE);
-      el("dash-key").value = "";
+      unlocked = false;
+      el("dash-pin").value = "";
       dash.hidden = true; loginPanel.hidden = false;
     });
-
-    var saved = sessionStorage.getItem(STORE);
-    if (saved) load(saved);
   })();
   </script>
 </body>

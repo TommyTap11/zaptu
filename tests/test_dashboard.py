@@ -38,18 +38,24 @@ def test_dashboard_has_no_beacon_or_external_trackers():
     assert "googletagmanager" not in t and "google-analytics" not in t
 
 
-def test_dashboard_key_is_not_hardcoded():
+def test_dashboard_pin_flow():
     t = html()
-    # The entered key is the stats token: kept only in session storage, sent as Bearer.
-    assert "sessionStorage" in t
-    assert "localStorage" not in t
-    assert '"Bearer " +' in t or "'Bearer ' +" in t or '"Bearer " + key' in t
-    assert "/v1/stats" in t
-    # No literal credential after Bearer, and the real token (when present on the box) is absent.
-    assert not re.search(r"Bearer\s+[A-Za-z0-9_\-]{16,}", t)
+    # PIN form/pad: user enters PIN 2025, checked client-side before any fetch.
+    assert 'id="dash-pin"' in t
+    assert 'id="login-form"' in t
+    assert "data-pin-digit" in t and "data-pin-clear" in t
+    assert 'var DASHBOARD_PIN = "2025"' in t
+    assert "pin !== DASHBOARD_PIN" in t
+    assert "dash-key" not in t
+    assert "sessionStorage" not in t and "localStorage" not in t
+    # After the PIN check, stats are fetched from the identical endpoint with Bearer auth.
+    assert "https://zaptu.onrender.com/v1/stats?days=30" in t
+    assert re.search(r"Bearer\s+[A-Za-z0-9_\-]{16,}", t), "embedded stats token in fetch"
+    # Token is kept only in that fetch logic: exactly one occurrence when present on the box.
     token_file = Path("/home/box/agent-data/shared/zaptu/secrets/stats-token.txt")
     if token_file.exists():
-        assert token_file.read_text(encoding="utf-8").strip() not in t
+        token = token_file.read_text(encoding="utf-8").strip()
+        assert t.count(token) == 1
 
 
 def test_dashboard_uses_real_stats_fields_and_honest_labels():
