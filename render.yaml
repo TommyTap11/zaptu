@@ -1,8 +1,8 @@
 # Render Blueprint for Zaptu API.
 # Starter ($7/mo) recommended — always-on. Free plan sleeps and has no persistent disk.
-# Disk is OPTIONAL: without it, leads.jsonl is ephemeral; accepted leads are also
-# logged to stdout as structured JSON (phone masked). Add a disk later if you want
-# durable file storage, or switch to Postgres.
+# Without DATABASE_URL, leads/analytics are ephemeral on Render (leads also logged
+# to stdout as structured JSON, phone masked). Set DATABASE_URL (sync:false below)
+# to a Postgres/Supabase pooler URL for durable storage that survives restarts.
 services:
   - type: web
     name: zaptu
@@ -32,6 +32,8 @@ services:
         value: "30"
       - key: API_TOKEN
         generateValue: true
+      - key: DATABASE_URL
+        sync: false # Postgres/Supabase connection string; set in Render dashboard, never commit the value
       - key: LEAD_WEBHOOK_URL
         sync: false
       - key: LEAD_WEBHOOK_TOKEN
