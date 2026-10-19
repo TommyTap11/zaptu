@@ -38,18 +38,31 @@ def test_dashboard_has_no_beacon_or_external_trackers():
     assert "googletagmanager" not in t and "google-analytics" not in t
 
 
-def test_dashboard_key_is_not_hardcoded():
+def test_dashboard_pin_is_not_hardcoded():
     t = html()
-    # The entered key is the stats token: kept only in session storage, sent as Bearer.
+    # The entered PIN is checked by the server: kept only in session storage,
+    # sent as the X-Dashboard-Pin header to the dashboard-stats endpoint.
     assert "sessionStorage" in t
     assert "localStorage" not in t
-    assert '"Bearer " +' in t or "'Bearer ' +" in t or '"Bearer " + key' in t
-    assert "/v1/stats" in t
-    # No literal credential after Bearer, and the real token (when present on the box) is absent.
-    assert not re.search(r"Bearer\s+[A-Za-z0-9_\-]{16,}", t)
-    token_file = Path("/home/box/agent-data/shared/zaptu/secrets/stats-token.txt")
-    if token_file.exists():
-        assert token_file.read_text(encoding="utf-8").strip() not in t
+    assert "X-Dashboard-Pin" in t
+    assert "/v1/dashboard-stats" in t
+    assert "Bearer" not in t
+    # No PIN comparison/value baked into the page, and no real credential present.
+    assert not re.search(r"(?:pin|PIN)\s*={2,3}\s*['\"][0-9]+", t)
+    assert not re.search(r"data-pin-value", t)
+    for name in ("stats-token.txt", "stats-token-old-leaked.txt"):
+        token_file = Path("/home/box/agent-data/shared/zaptu/secrets") / name
+        if token_file.exists():
+            assert token_file.read_text(encoding="utf-8").strip() not in t
+
+
+def test_dashboard_has_pin_keypad_entry():
+    t = html()
+    assert 'id="dash-pin"' in t
+    assert 'inputmode="numeric"' in t
+    for digit in "0123456789":
+        assert f'data-digit="{digit}"' in t
+    assert 'data-action="clear"' in t and 'data-action="back"' in t
 
 
 def test_dashboard_uses_real_stats_fields_and_honest_labels():
@@ -57,7 +70,7 @@ def test_dashboard_uses_real_stats_fields_and_honest_labels():
     for field in ("data_since", "totals", "per_day", "unique_visitors", "call_clicks",
                   "top_pages", "referrers", "api_by_endpoint", "call_clicks_by_page"):
         assert field in t, field
-    assert "Counts reset when the API redeploys; nightly snapshots are the durable record." in t
+    assert "Counts are stored in the database and survive API restarts; nightly snapshots are a backup record." in t
     assert "not tracked here yet" in t
 
 

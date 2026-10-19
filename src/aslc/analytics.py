@@ -173,6 +173,18 @@ def record_api(name: str) -> None:
     _insert("api", name)
 
 
+def dashboard_pin_ok(pin: str | None) -> bool:
+    """Constant-time check of the dashboard PIN against env DASHBOARD_PIN.
+
+    Fail closed: no PIN configured on the server means no access.
+    The PIN value lives only in the server environment, never in code/repo.
+    """
+    want = os.getenv("DASHBOARD_PIN")
+    if not want or not pin:
+        return False
+    return hmac.compare_digest(pin, want)
+
+
 def token_ok(token: str | None) -> bool:
     if not token:
         return False

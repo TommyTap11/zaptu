@@ -32,6 +32,8 @@ services:
         value: "30"
       - key: API_TOKEN
         generateValue: true
+      - key: DASHBOARD_PIN
+        sync: false # dashboard PIN; set in Render dashboard/API, never commit the value
       - key: DATABASE_URL
         sync: false # Postgres/Supabase connection string; set in Render dashboard, never commit the value
       - key: LEAD_WEBHOOK_URL

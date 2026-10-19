@@ -44,6 +44,37 @@ def test_stats_requires_token(client):
     assert client.get("/v1/stats", headers={"Authorization": "Bearer nope"}).status_code == 401
 
 
+def test_dashboard_stats_requires_correct_pin(client, monkeypatch):
+    monkeypatch.setenv("DASHBOARD_PIN", "0000-test-pin")
+    # Missing pin.
+    assert client.get("/v1/dashboard-stats").status_code == 401
+    # Wrong pin.
+    assert client.get("/v1/dashboard-stats", headers={"X-Dashboard-Pin": "wrong"}).status_code == 401
+    # Right pin returns the same shape as /v1/stats.
+    r = client.get("/v1/dashboard-stats", headers={"X-Dashboard-Pin": "0000-test-pin"})
+    assert r.status_code == 200, r.text
+    assert r.json() == stats(client)
+    # Stats token access is unaffected.
+    assert client.get("/v1/stats", headers={"Authorization": f"Bearer {TOKEN}"}).status_code == 200
+
+
+def test_dashboard_stats_fails_closed_without_server_pin(client, monkeypatch):
+    monkeypatch.delenv("DASHBOARD_PIN", raising=False)
+    assert client.get("/v1/dashboard-stats", headers={"X-Dashboard-Pin": "anything"}).status_code == 401
+
+
+def test_dashboard_pin_ok_is_constant_time_env_check(monkeypatch):
+    from aslc import analytics
+
+    monkeypatch.setenv("DASHBOARD_PIN", "0000-test-pin")
+    assert analytics.dashboard_pin_ok("0000-test-pin")
+    assert not analytics.dashboard_pin_ok("0000-test-pi")
+    assert not analytics.dashboard_pin_ok("")
+    assert not analytics.dashboard_pin_ok(None)
+    monkeypatch.delenv("DASHBOARD_PIN", raising=False)
+    assert not analytics.dashboard_pin_ok("0000-test-pin")
+
+
 def test_default_token_is_hash_only(monkeypatch):
     from aslc import analytics
 
