@@ -26,10 +26,14 @@
     .toolbar button { width:auto; padding:12px 18px; }
     .toolbar button.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
     .err { color:#ff8a8a; font-weight:600; min-height:1.5em; }
-    #login-panel { max-width:520px; }
-    .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; max-width:280px; margin-top:12px; }
-    .keypad button { padding:14px 0; font-size:18px; }
-    .keypad button.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); font-size:14px; }
+    #login-panel { max-width:400px; margin:48px auto 0; padding:32px 28px; text-align:center; }
+    #login-panel h2 { margin:0 0 8px; font-size:24px; letter-spacing:-.02em; }
+    #login-panel .hint { margin:0 auto; max-width:300px; }
+    #login-form { margin-top:24px; }
+    #login-form label { margin:0 0 10px; text-align:center; }
+    #dash-pin { text-align:center; font-size:24px; letter-spacing:.35em; padding:16px 12px 16px 20px; border-radius:12px; }
+    #login-form button[type="submit"] { margin-top:16px; width:100%; }
+    #login-panel .err { margin:12px 0 0; font-size:14px; }
     @media (max-width:900px){ .dash-grid{grid-template-columns:1fr 1fr;} .dash-panels{grid-template-columns:1fr;} }
     @media (max-width:520px){ .dash-grid{grid-template-columns:1fr;} }
   </style>
@@ -46,26 +50,12 @@
     <h1>Zaptu numbers</h1>
     <p class="lede">Visits, call clicks, requests and API use in one place. Days are UTC, as returned by the counter.</p>
 
-    <section id="login-panel" class="panel">
-      <h2>Sign in</h2>
-      <p class="hint">Enter the dashboard PIN using the keypad or your keyboard. It is kept only in this tab (session storage) and sent to the server, which checks it. The PIN itself is never saved on this page.</p>
+    <section id="login-panel" class="panel" aria-labelledby="login-heading">
+      <h2 id="login-heading">Sign in</h2>
+      <p class="hint">Enter your PIN to view the dashboard. It is checked on the server and kept only in this tab.</p>
       <form id="login-form">
         <label for="dash-pin">Dashboard PIN</label>
-        <input id="dash-pin" type="password" inputmode="numeric" autocomplete="off" required />
-        <div class="keypad" aria-label="PIN keypad">
-          <button type="button" data-digit="1">1</button>
-          <button type="button" data-digit="2">2</button>
-          <button type="button" data-digit="3">3</button>
-          <button type="button" data-digit="4">4</button>
-          <button type="button" data-digit="5">5</button>
-          <button type="button" data-digit="6">6</button>
-          <button type="button" data-digit="7">7</button>
-          <button type="button" data-digit="8">8</button>
-          <button type="button" data-digit="9">9</button>
-          <button type="button" class="ghost" data-action="clear">Clear</button>
-          <button type="button" data-digit="0">0</button>
-          <button type="button" class="ghost" data-action="back">Delete</button>
-        </div>
+        <input id="dash-pin" type="password" inputmode="numeric" autocomplete="off" required autofocus />
         <button type="submit">View dashboard</button>
         <p id="login-error" class="err" role="alert"></p>
       </form>
@@ -199,16 +189,6 @@
       sessionStorage.removeItem(STORE);
       el("dash-pin").value = "";
       dash.hidden = true; loginPanel.hidden = false;
-    });
-
-    Array.prototype.forEach.call(document.querySelectorAll(".keypad button"), function (b) {
-      b.addEventListener("click", function () {
-        var input = el("dash-pin");
-        if (b.getAttribute("data-digit")) { if (input.value.length < 12) input.value += b.getAttribute("data-digit"); }
-        else if (b.getAttribute("data-action") === "clear") input.value = "";
-        else if (b.getAttribute("data-action") === "back") input.value = input.value.slice(0, -1);
-        input.focus();
-      });
     });
 
     var saved = sessionStorage.getItem(STORE);
