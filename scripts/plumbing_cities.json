@@ -1525,6 +1525,184 @@
         "Royston",
         "Rutledge"
       ]
+    },
+    {
+      "city": "Silver Spring",
+      "state": "Maryland",
+      "abbr": "MD",
+      "slug": "silver-spring-md",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 16,
+      "zips_ge_100": 14,
+      "buyers": 2,
+      "zip_areas": [
+        "209"
+      ],
+      "nearby_covered_areas": [
+        "Takoma Park"
+      ]
+    },
+    {
+      "city": "Kansas City",
+      "state": "Kansas",
+      "abbr": "KS",
+      "slug": "kansas-city-ks",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 15,
+      "zips_ge_100": 10,
+      "buyers": 2,
+      "zip_areas": [
+        "661"
+      ],
+      "nearby_covered_areas": [
+        "Edwardsville"
+      ]
+    },
+    {
+      "city": "Ogden",
+      "state": "Utah",
+      "abbr": "UT",
+      "slug": "ogden-ut",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 13,
+      "zips_ge_100": 13,
+      "buyers": 2,
+      "zip_areas": [
+        "842",
+        "844"
+      ],
+      "nearby_covered_areas": []
+    },
+    {
+      "city": "Saint Cloud",
+      "state": "Minnesota",
+      "abbr": "MN",
+      "slug": "saint-cloud-mn",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 11,
+      "zips_ge_100": 10,
+      "buyers": 2,
+      "zip_areas": [
+        "563"
+      ],
+      "nearby_covered_areas": [
+        "Waite Park",
+        "Albany",
+        "Avon",
+        "Belgrade",
+        "Cold Spring",
+        "Collegeville",
+        "Elrosa",
+        "Foley",
+        "Freeport",
+        "Gilman",
+        "Greenwald",
+        "Holdingford"
+      ]
+    },
+    {
+      "city": "Bethesda",
+      "state": "Maryland",
+      "abbr": "MD",
+      "slug": "bethesda-md",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 11,
+      "zips_ge_100": 11,
+      "buyers": 2,
+      "zip_areas": [
+        "208"
+      ],
+      "nearby_covered_areas": [
+        "Chevy Chase",
+        "Potomac",
+        "Kensington",
+        "Glen Echo"
+      ]
+    },
+    {
+      "city": "Spartanburg",
+      "state": "South Carolina",
+      "abbr": "SC",
+      "slug": "spartanburg-sc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 10,
+      "zips_ge_100": 9,
+      "buyers": 2,
+      "zip_areas": [
+        "293"
+      ],
+      "nearby_covered_areas": [
+        "Arcadia",
+        "Campobello",
+        "Clifton",
+        "Converse",
+        "Cross Anchor",
+        "Drayton",
+        "Duncan",
+        "Enoree",
+        "Fairforest",
+        "Fingerville",
+        "Glendale",
+        "Gramling"
+      ]
+    },
+    {
+      "city": "Fayetteville",
+      "state": "North Carolina",
+      "abbr": "NC",
+      "slug": "fayetteville-nc",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 10,
+      "zips_ge_100": 10,
+      "buyers": 2,
+      "zip_areas": [
+        "283"
+      ],
+      "nearby_covered_areas": [
+        "Fort Bragg",
+        "Cumberland",
+        "Dudley",
+        "Falcon",
+        "Hope Mills",
+        "Linden",
+        "Mount Olive",
+        "Stedman",
+        "Wade"
+      ]
+    },
+    {
+      "city": "Denton",
+      "state": "Texas",
+      "abbr": "TX",
+      "slug": "denton-tx",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 10,
+      "zips_ge_100": 10,
+      "buyers": 2,
+      "zip_areas": [
+        "762"
+      ],
+      "nearby_covered_areas": [
+        "Keller",
+        "Argyle",
+        "Aubrey",
+        "Decatur",
+        "Justin",
+        "Krum",
+        "Pilot Point",
+        "Ponder",
+        "Roanoke",
+        "Sanger",
+        "Slidell"
+      ]
     }
   ],
   "rejected": [

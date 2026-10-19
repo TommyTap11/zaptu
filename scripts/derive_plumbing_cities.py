@@ -96,11 +96,22 @@ CANDIDATES = [
     ("Manchester", "New Hampshire", "NH", "manchester-nh", ["030", "031"]),
     ("Port Saint Lucie", "Florida", "FL", "port-saint-lucie-fl", ["349"]),
     ("Athens", "Georgia", "GA", "athens-ga", ["306"]),
+    # Batch 8 (2026-10-19): next metros with median Min >= $100 whose ZIP3 areas no live
+    # page covers and that are not nearby areas on an existing page, ranked by covered ZIPs.
+    # Skipped: Spring/Humble TX (Houston ZIP3 773; Houston itself is excluded at $25).
+    ("Silver Spring", "Maryland", "MD", "silver-spring-md", ["209"]),
+    ("Kansas City", "Kansas", "KS", "kansas-city-ks", ["661"]),
+    ("Ogden", "Utah", "UT", "ogden-ut", ["842", "844"]),
+    ("Saint Cloud", "Minnesota", "MN", "saint-cloud-mn", ["563"]),
+    ("Bethesda", "Maryland", "MD", "bethesda-md", ["208"]),
+    ("Spartanburg", "South Carolina", "SC", "spartanburg-sc", ["293"]),
+    ("Fayetteville", "North Carolina", "NC", "fayetteville-nc", ["283"]),
+    ("Denton", "Texas", "TX", "denton-tx", ["762"]),
 ]
-TARGET = 56
+TARGET = 64
 MAX_AREAS = 12
 # Abbreviated duplicates in the ZIP file (same place already listed under its full name).
-SKIP_AREAS = {"Huntingtn Bch"}
+SKIP_AREAS = {"Huntingtn Bch", "Pope A F B"}
 
 
 def in_metro(zip5: str, prefixes: list[str]) -> bool:
