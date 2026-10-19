@@ -1306,6 +1306,225 @@
         "Goleta",
         "Montecito"
       ]
+    },
+    {
+      "city": "Anaheim",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "anaheim-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 17,
+      "zips_ge_100": 17,
+      "buyers": 3,
+      "zip_areas": [
+        "928"
+      ],
+      "nearby_covered_areas": [
+        "Orange",
+        "Fullerton",
+        "Garden Grove",
+        "Corona",
+        "Brea",
+        "Yorba Linda",
+        "Placentia",
+        "Atwood",
+        "Norco",
+        "Villa Park"
+      ]
+    },
+    {
+      "city": "Irvine",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "irvine-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 15,
+      "zips_ge_100": 13,
+      "buyers": 3,
+      "zip_areas": [
+        "926",
+        "927"
+      ],
+      "nearby_covered_areas": [
+        "Santa Ana",
+        "Newport Beach",
+        "Laguna Beach",
+        "Huntington Beach",
+        "Costa Mesa",
+        "San Clemente",
+        "Westminster",
+        "Mission Viejo",
+        "Tustin",
+        "Laguna Hills",
+        "Aliso Viejo",
+        "San Juan Capistrano"
+      ]
+    },
+    {
+      "city": "Riverside",
+      "state": "California",
+      "abbr": "CA",
+      "slug": "riverside-ca",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 17,
+      "zips_ge_100": 17,
+      "buyers": 2,
+      "zip_areas": [
+        "925"
+      ],
+      "nearby_covered_areas": [
+        "Moreno Valley",
+        "Temecula",
+        "Hemet",
+        "Perris",
+        "Lake Elsinore",
+        "Murrieta",
+        "San Jacinto",
+        "Sun City",
+        "March Air Force Base",
+        "Aguanga",
+        "Anza",
+        "Homeland"
+      ]
+    },
+    {
+      "city": "Waterbury",
+      "state": "Connecticut",
+      "abbr": "CT",
+      "slug": "waterbury-ct",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 16,
+      "zips_ge_100": 16,
+      "buyers": 2,
+      "zip_areas": [
+        "067"
+      ],
+      "nearby_covered_areas": [
+        "Torrington",
+        "Prospect",
+        "Wolcott",
+        "Bantam",
+        "Bethlehem",
+        "Bridgewater",
+        "Cornwall",
+        "Cornwall Bridge",
+        "Gaylordsville",
+        "Goshen",
+        "Kent",
+        "Lakeside"
+      ]
+    },
+    {
+      "city": "Allentown",
+      "state": "Pennsylvania",
+      "abbr": "PA",
+      "slug": "allentown-pa",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 9,
+      "zips_ge_100": 8,
+      "buyers": 2,
+      "zip_areas": [
+        "180",
+        "181"
+      ],
+      "nearby_covered_areas": [
+        "Bethlehem",
+        "Easton",
+        "Emmaus",
+        "Lehigh Valley",
+        "Alburtis",
+        "Aquashicola",
+        "Bangor",
+        "Bath",
+        "Bowmanstown",
+        "Breinigsville",
+        "Catasauqua",
+        "Center Valley"
+      ]
+    },
+    {
+      "city": "Manchester",
+      "state": "New Hampshire",
+      "abbr": "NH",
+      "slug": "manchester-nh",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 9,
+      "zips_ge_100": 8,
+      "buyers": 2,
+      "zip_areas": [
+        "030",
+        "031"
+      ],
+      "nearby_covered_areas": [
+        "Nashua",
+        "Amherst",
+        "Auburn",
+        "Brookline",
+        "Candia",
+        "Chester",
+        "Deerfield",
+        "Derry",
+        "East Candia",
+        "East Derry",
+        "Epping",
+        "Francestown"
+      ]
+    },
+    {
+      "city": "Port Saint Lucie",
+      "state": "Florida",
+      "abbr": "FL",
+      "slug": "port-saint-lucie-fl",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 8,
+      "zips_ge_100": 8,
+      "buyers": 2,
+      "zip_areas": [
+        "349"
+      ],
+      "nearby_covered_areas": [
+        "Fort Pierce",
+        "Stuart",
+        "Jensen Beach",
+        "Palm City",
+        "Indiantown",
+        "Port Salerno"
+      ]
+    },
+    {
+      "city": "Athens",
+      "state": "Georgia",
+      "abbr": "GA",
+      "slug": "athens-ga",
+      "median_min": 100.0,
+      "max_min": 100.0,
+      "zips": 10,
+      "zips_ge_100": 10,
+      "buyers": 2,
+      "zip_areas": [
+        "306"
+      ],
+      "nearby_covered_areas": [
+        "Monroe",
+        "Bethlehem",
+        "Colbert",
+        "Comer",
+        "Danielsville",
+        "Franklin Springs",
+        "Good Hope",
+        "Hartwell",
+        "Hull",
+        "Ila",
+        "Royston",
+        "Rutledge"
+      ]
     }
   ],
   "rejected": [

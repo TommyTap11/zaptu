@@ -84,9 +84,23 @@ CANDIDATES = [
     ("Stockton", "California", "CA", "stockton-ca", ["952"]),
     ("Overland Park", "Kansas", "KS", "overland-park-ks", ["662"]),
     ("Santa Barbara", "California", "CA", "santa-barbara-ca", ["931"]),
+    # Batch 7 (2026-10-19): metros with median Min >= $100 whose ZIP3 areas no live page
+    # covers and that are not nearby areas on an existing page, ranked by covered ZIPs and
+    # population. Skipped: Brighton CO ($172, 4 ZIPs) and the $125 Georgia towns
+    # (3-5 ZIPs each) as thin coverage; Henderson/Scottsdale/Plano etc. already nearby areas.
+    ("Anaheim", "California", "CA", "anaheim-ca", ["928"]),
+    ("Irvine", "California", "CA", "irvine-ca", ["926", "927"]),
+    ("Riverside", "California", "CA", "riverside-ca", ["925"]),
+    ("Waterbury", "Connecticut", "CT", "waterbury-ct", ["067"]),
+    ("Allentown", "Pennsylvania", "PA", "allentown-pa", ["180", "181"]),
+    ("Manchester", "New Hampshire", "NH", "manchester-nh", ["030", "031"]),
+    ("Port Saint Lucie", "Florida", "FL", "port-saint-lucie-fl", ["349"]),
+    ("Athens", "Georgia", "GA", "athens-ga", ["306"]),
 ]
-TARGET = 48
+TARGET = 56
 MAX_AREAS = 12
+# Abbreviated duplicates in the ZIP file (same place already listed under its full name).
+SKIP_AREAS = {"Huntingtn Bch"}
 
 
 def in_metro(zip5: str, prefixes: list[str]) -> bool:
@@ -141,7 +155,7 @@ def main() -> None:
             if r["State"] != state or not in_metro(r["Zip"], prefixes):
                 continue
             name = norm(r["City"])
-            if name == city or float(r["Min"]) < MIN_REQUIRED:
+            if name == city or name in SKIP_AREAS or float(r["Min"]) < MIN_REQUIRED:
                 continue
             areas[name] += 1
         chosen.append({
