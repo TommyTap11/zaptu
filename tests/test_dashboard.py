@@ -1,4 +1,4 @@
-"""Private analytics dashboard at /dashboard/: gated client-side, unlisted, uncounted."""
+"""Private analytics dashboard at /dashboard/: server-PIN gated, unlisted, uncounted."""
 
 from __future__ import annotations
 
@@ -56,13 +56,18 @@ def test_dashboard_pin_is_not_hardcoded():
             assert token_file.read_text(encoding="utf-8").strip() not in t
 
 
-def test_dashboard_has_pin_keypad_entry():
+def test_dashboard_has_clean_pin_entry():
     t = html()
-    assert 'id="dash-pin"' in t
+    # One clean, centered PIN input + single submit; no on-screen keypad grid.
+    assert t.count('id="dash-pin"') == 1
+    assert 'type="password"' in t
     assert 'inputmode="numeric"' in t
-    for digit in "0123456789":
-        assert f'data-digit="{digit}"' in t
-    assert 'data-action="clear"' in t and 'data-action="back"' in t
+    assert "letter-spacing:.35em" in t.replace(" ", "")
+    assert '<button type="submit">View dashboard</button>' in t
+    assert "keypad" not in t.lower()
+    assert "data-digit" not in t
+    assert 'data-action="clear"' not in t and 'data-action="back"' not in t
+    assert 'id="login-panel"' in t
 
 
 def test_dashboard_uses_real_stats_fields_and_honest_labels():
