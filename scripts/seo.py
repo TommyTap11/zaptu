@@ -20,9 +20,14 @@ NOINDEX = {"thanks"}  # path segments that should not be indexed
 PRIVATE = {"dashboard"}  # private pages: seo.py must not touch, index, or list them
 CONTACT_EMAIL = "hello@zaptu.ai"
 
-NAV = [("/plumbing/", "Plumbing"), ("/how-it-works/", "How it works"), ("/agents/", "For agents")]
+NAV = [("/plumbing/", "Plumbing"), ("/cleaning/", "Cleaning"), ("/pest-control/", "Pest control"), ("/how-it-works/", "How it works"), ("/agents/", "For agents")]
 FOOTER_LINKS = [
     ("/plumbing/", "Plumbing"),
+    ("/cleaning/", "Cleaning"),
+    ("/pest-control/", "Pest control"),
+    ("/garage-door/", "Garage door"),
+    ("/hvac/", "HVAC"),
+    ("/handyman/", "Handyman"),
     ("/how-it-works/", "How it works"),
     ("/agents/", "For agents"),
     ("/privacy/", "Privacy"),
@@ -187,6 +192,19 @@ def main() -> None:
         + "\n</urlset>\n",
         encoding="utf-8",
     )
+    # 301 the /index.html variant of every public page and the netlify.app host to the canonical URL.
+    redirects = WEB / "_redirects"
+    start, end = "# seo:redirects", "# /seo:redirects"
+    lines = [start, "https://zaptuai.netlify.app/*  https://zaptu.ai/:splat  301!"]
+    lines += [f"{url_path(p)}index.html  {url_path(p)}  301!" for p in pages]
+    lines.append(end)
+    block = "\n".join(lines)
+    text = redirects.read_text(encoding="utf-8")
+    if start in text:
+        text = text[: text.index(start)] + block + text[text.index(end) + len(end):]
+    else:
+        text = text.rstrip("\n") + "\n" + block + "\n"
+    redirects.write_text(text, encoding="utf-8")
     print(f"sitemap.xml: {len(entries)} URLs; processed {len(pages)} pages")
 
 

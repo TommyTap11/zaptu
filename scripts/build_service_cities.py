@@ -15,6 +15,32 @@ import html
 import json
 from pathlib import Path
 
+PLUMBING_DATA = json.loads((Path(__file__).with_name("plumbing_cities.json")).read_text(encoding="utf-8"))
+PLUMBING = {c["slug"]: c for c in PLUMBING_DATA["cities"]}
+TITLE_MAX, DESC_MAX = 60, 155
+
+
+def fit_title(s: dict, name: str) -> str:
+    """Use the full title when it fits in 60 characters; otherwise drop the call to action."""
+    full = s["title"].format(name=name)
+    if len(full) <= TITLE_MAX:
+        return full
+    label = s["title"].split(" in {name}")[0]
+    short = f"{label} in {name} | Zaptu"
+    if len(short) <= TITLE_MAX:
+        return short
+    return f"{label} in {name.split(',')[0]} | Zaptu"
+
+
+def fit_desc(s: dict, name: str) -> str:
+    full = s["desc"].format(name=name)
+    if len(full) <= DESC_MAX:
+        return full
+    short = f"Send a request for {s['label'].lower()} in {name}. Independent local providers follow up when one covers the ZIP. Zaptu does not do the work."
+    if len(short) <= DESC_MAX:
+        return short
+    return f"Send a request for {s['label'].lower()} in {name}. Zaptu does not do the work."
+
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 BASE = "https://zaptu.ai"
@@ -31,6 +57,11 @@ DISCLAIMER = (
 CITIES = {
     "miami-fl": ("Miami", "FL", "Florida"),
     "fort-lauderdale-fl": ("Fort Lauderdale", "FL", "Florida"),
+    "west-palm-beach-fl": ("West Palm Beach", "FL", "Florida"),
+    "fort-myers-fl": ("Fort Myers", "FL", "Florida"),
+    "mesa-az": ("Mesa", "AZ", "Arizona"),
+    "marietta-ga": ("Marietta", "GA", "Georgia"),
+    "arlington-tx": ("Arlington", "TX", "Texas"),
     "phoenix-az": ("Phoenix", "AZ", "Arizona"),
     "dallas-tx": ("Dallas", "TX", "Texas"),
     "fort-worth-tx": ("Fort Worth", "TX", "Texas"),
@@ -52,7 +83,7 @@ SERVICES = {
         "label": "House cleaning",
         "h1": "House cleaning in {name}",
         "title": "House Cleaning in {name} — Send a Request | Zaptu",
-        "desc": "Need house cleaning, a deep clean, or a move-in or move-out clean in {name}? Send a contact request for an independent local cleaner. Zaptu does not do the cleaning.",
+        "desc": "House cleaning, a deep clean, or a move-out clean in {name}? Send a contact request for an independent local cleaner. Zaptu does not clean.",
         "hub_title": "House Cleaning — Send a Request | Zaptu",
         "hub_desc": "Send a contact request for house cleaning, a deep clean, or a move-in or move-out clean. Zaptu does not do the cleaning and does not book appointments.",
         "hub_lede": "Need a regular clean, a deep clean, or a clean before a move? Send a contact request to be connected with an independent local cleaning professional. A request is not a booking, and no arrival time is promised. Zaptu does not do the cleaning and does not send a named company.",
@@ -81,8 +112,29 @@ SERVICES = {
             ("Who checks licensing and insurance?", "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not do the cleaning."),
             ("What detail helps with a cleaning request?", "The type of clean, the number of bedrooms and bathrooms or the square footage, the home type, pets or allergies, and a rough timeframe such as a move date."),
         ],
-        "cities": ["miami-fl", "fort-lauderdale-fl", "atlanta-ga", "dallas-tx", "phoenix-az"],
+        "cities": ["miami-fl", "fort-lauderdale-fl", "west-palm-beach-fl", "atlanta-ga", "marietta-ga", "dallas-tx",
+                   "fort-worth-tx", "san-antonio-tx", "phoenix-az", "mesa-az"],
         "local": {
+            "west-palm-beach-fl": ("West Palm Beach is warm and humid for much of the year, and many homes are condos or seasonal residences that sit empty for part of the year.",
+                                   ["Humidity can lead to mildew in bathrooms, closets and on window frames. Say where you see it.",
+                                    "A seasonal home is often cleaned before the owner returns. Say whether the home has been closed up.",
+                                    "In a condo building, note any rules for service visitors, elevators or parking."]),
+            "marietta-ga": ("Marietta and the rest of Cobb County get heavy spring pollen, and many homes are larger suburban houses with more than one floor.",
+                            ["Pollen season leaves a yellow film on sills, porches and floors near doors. Mention it if that is the main concern.",
+                             "Red clay soil can stain entry rugs, grout and garage floors. Say where it gets tracked in.",
+                             "For a multi-story house, give the number of floors as well as bedrooms and bathrooms."]),
+            "fort-worth-tx": ("Fort Worth's hot, windy summers and spring storms bring dust and mud into homes, and many houses are single-family homes with yards.",
+                              ["Wind-blown dust collects on ceiling fans, vents and window blinds. Mention these if they need attention.",
+                               "Spring storms can mean muddy entries and floors. Say which entrances people use day to day.",
+                               "If the clean is for a move, say whether the home will be empty."]),
+            "san-antonio-tx": ("San Antonio has a long, hot season, and in winter, mountain cedar pollen from the Hill Country settles on surfaces across the area.",
+                               ["Cedar pollen in winter can leave a film on sills and furniture. Mention any allergies in the home.",
+                                "Humidity after summer storms can bring mildew to bathrooms. Say where you see it.",
+                                "Many rentals call for a move-out clean. Mention the move date if there is one."]),
+            "mesa-az": ("Mesa's desert dust and summer monsoon storms leave grit on floors and window tracks, and many winter residents open up homes that sat empty over the summer.",
+                        ["Hard water leaves spots on glass shower doors, faucets and fixtures. Say where they show up.",
+                         "A home that was closed for the summer often needs dust removed from every surface. Say how long it sat empty.",
+                         "Dust storms can coat patios and window tracks. Mention outdoor areas if they are part of the request."]),
             "miami-fl": ("Miami's heat and humidity mean kitchens, bathrooms and air vents can collect moisture and mildew, and many people live in high-rise condos with building rules.",
                          ["In a condo or apartment tower, mention the floor, the elevator, and any rules for service visitors or parking.",
                           "Humidity can lead to mildew in bathrooms and on window frames. Say where you see it.",
@@ -201,8 +253,29 @@ SERVICES = {
             ("Who checks licensing and insurance?", "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work."),
             ("What detail helps with a pest request?", "Name the pest if it is known, where it shows up, and when. Mention children or pets in the home, and any product already put down. Keep children and pets away from that product. Zaptu does not perform pest control."),
         ],
-        "cities": ["phoenix-az", "dallas-tx", "fort-worth-tx", "san-antonio-tx", "miami-fl", "atlanta-ga"],
+        "cities": ["phoenix-az", "mesa-az", "dallas-tx", "fort-worth-tx", "arlington-tx", "san-antonio-tx", "miami-fl",
+                   "fort-lauderdale-fl", "west-palm-beach-fl", "fort-myers-fl", "atlanta-ga"],
         "local": {
+            "mesa-az": ("Mesa shares the East Valley's desert pests, including bark scorpions, roaches and desert subterranean termites.",
+                        ["Bark scorpions can climb walls and come in through small gaps under doors. Mention where you have seen them.",
+                         "Desert subterranean termites build mud tubes on foundations and walls. Note any you find.",
+                         "Summer monsoon rain can bring a jump in crickets, roaches and ants. Say whether the problem started after a storm."]),
+            "arlington-tx": ("Arlington sits between Dallas and Fort Worth and sees the same North Texas pests, from fire ants in the yard to termites and winter rodents.",
+                             ["Fire ant mounds are common in North Texas lawns. Note whether they are near walkways or play areas.",
+                              "Termite swarms are often seen in spring. Mention any winged insects near windows or doors.",
+                              "Rodents often look for shelter indoors when the weather turns cold."]),
+            "fort-lauderdale-fl": ("Fort Lauderdale's warm, humid weather keeps pests active all year, including large roaches, ants, termites and mosquitoes.",
+                                   ["Large roaches, often called palmetto bugs, come in from outdoors. Say whether you see them inside, outside, or both.",
+                                    "Drywood termites leave small piles of pellets near wood trim and furniture. Note any you find.",
+                                    "In a condo building, pests can move between units. Mention whether neighbors have the same problem."]),
+            "west-palm-beach-fl": ("West Palm Beach's subtropical climate supports pests year-round, with ants, roaches, termites and mosquitoes common around homes.",
+                                   ["Small ghost ants are common in South Florida kitchens and bathrooms. Mention where the trails appear.",
+                                    "Termite swarms are often seen in spring. Mention any winged insects near windows or lights.",
+                                    "Standing water after summer rain can increase mosquitoes around the home."]),
+            "fort-myers-fl": ("Fort Myers has a long summer rainy season, which brings mosquitoes, ants and roaches, along with termites and roof rats.",
+                              ["The summer rainy season brings more mosquitoes. Note standing water in the yard, gutters or plant saucers.",
+                               "Roof rats climb trees and can get into attics. Mention scratching sounds overhead.",
+                               "Drywood and subterranean termites are both found in Southwest Florida. Note any pellets or mud tubes."]),
             "miami-fl": ("Miami's warm, humid climate keeps pests active all year, including roaches, ants, termites and mosquitoes.",
                          ["Drywood and subterranean termites are both found in South Florida. Note any small piles of droppings or mud tubes.",
                           "In a condo or apartment building, pests can move between units. Mention whether neighbors have the same problem.",
@@ -480,10 +553,10 @@ def after_request_section() -> str:
     </section>"""
 
 
-def faq_block(faq: list[tuple[str, str]]) -> tuple[str, dict]:
+def faq_block(faq: list[tuple[str, str]], heading: str = "Common questions") -> tuple[str, dict]:
     items = "\n".join(f"        <dt>{esc(q)}</dt>\n        <dd>{esc(a)}</dd>" for q, a in faq)
     html_block = f"""    <section>
-      <h2>Common questions</h2>
+      <h2>{esc(heading)}</h2>
       <dl>
 {items}
       </dl>
@@ -515,16 +588,43 @@ def city_page(cat: str, s: dict, slug: str) -> str:
     city, abbr, state = CITIES[slug]
     name = f"{city}, {abbr}"
     url = f"{BASE}/{cat}/{slug}/"
-    title, desc = s["title"].format(name=name), s["desc"].format(name=name)
+    title, desc = fit_title(s, name), fit_desc(s, name)
     intro, notes = s["local"][slug]
-    issues = bullets(s["issues"])
+    # City pages list issue names only; the hub page carries the full descriptions.
+    issues = "\n".join(f"        <li>{esc(t)}</li>" for t, _ in s["issues"])
     notes_html = bullets(notes)
     safety = bullets(s["safety"])
     sibs = "\n".join(
         f'        <li><a href="/{cat}/{o}/">{s["siblings_label"]} {esc(CITIES[o][0])}, {CITIES[o][1]}</a></li>'
         for o in s["cities"] if o != slug)
     other = [c for c in SERVICES if c != cat and slug in SERVICES[c]["cities"]]
-    other_html = "".join(f' · <a href="/{c}/{slug}/">{SERVICES[c]["label"]} in {esc(city)}</a>' for c in other)
+    same_city = ([f'        <li><a href="/plumbing/{slug}/">Plumber in {esc(city)}</a></li>'] if slug in PLUMBING else []) + [
+        f'        <li><a href="/{c}/{slug}/">{SERVICES[c]["label"]} in {esc(city)}</a></li>' for c in other]
+    same_city_html = ""
+    if same_city:
+        same_city_html = f"""
+    <section>
+      <h2>Other home services in {esc(city)}</h2>
+      <ul class="city-links">
+{chr(10).join(same_city)}
+      </ul>
+    </section>"""
+    nearby = PLUMBING.get(slug, {}).get("nearby_covered_areas", [])[:8]
+    nearby_html = ""
+    if nearby:
+        listed = ", ".join(nearby[:-1]) + (f" and {nearby[-1]}" if len(nearby) > 1 else nearby[0])
+        nearby_html = f"""
+    <section>
+      <h2>Nearby places</h2>
+      <p>Requests from the {esc(city)} area can come from nearby places such as {esc(listed)}. Put the ZIP code where the work is on the request. Whether a provider follows up depends on that ZIP code.</p>
+    </section>"""
+    work = s["label"].lower()
+    city_faq = [
+        (f"What should a {work} request in {city} mention?", f"{intro} {notes[0]}"),
+        (f"Is a visit or arrival time promised in {city}?", f"No. A request is not a booking. A callback depends on whether a participating provider covers the ZIP code, and any timing is agreed directly with that provider."),
+        (f"Does Zaptu do the work in {city}?", f"No. Zaptu passes requests to participating independent providers. It does not do the work, send a named company, or set prices."),
+    ]
+    faq_html, faq_ld = faq_block(city_faq, f"{city} {work} questions")
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "WebPage", "@id": url, "url": url, "name": title, "description": desc,
          "isPartOf": {"@type": "WebSite", "name": "Zaptu", "url": f"{BASE}/"}},
@@ -534,6 +634,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
          "provider": {"@type": "Organization", "name": "Zaptu", "url": f"{BASE}/"},
          "areaServed": {"@type": "City", "name": city, "containedInPlace": {"@type": "State", "name": state}}, "url": url},
         crumbs([("Zaptu", f"{BASE}/"), (s["label"], f"{BASE}/{cat}/"), (name, url)]),
+        faq_ld,
     ]}
     body = f"""  <main class="city">
     <p class="eyebrow"><a href="/{cat}/">{s['label']}</a> / {esc(name)}</p>
@@ -542,10 +643,11 @@ def city_page(cat: str, s: dict, slug: str) -> str:
 {cta_html(s, city, abbr)}
 
     <section>
-      <h2>Common reasons people reach out</h2>
+      <h2>Common reasons people in {esc(city)} reach out</h2>
       <ul>
 {issues}
       </ul>
+      <p class="note">More detail on each is on the <a href="/{cat}/">{esc(s['label'].lower())} page</a>.</p>
     </section>
 
     <section>
@@ -555,8 +657,6 @@ def city_page(cat: str, s: dict, slug: str) -> str:
       </ul>
     </section>
 
-{after_request_section()}
-
     <section>
       <h2>Before someone follows up</h2>
       <ul>
@@ -564,13 +664,16 @@ def city_page(cat: str, s: dict, slug: str) -> str:
       </ul>
     </section>
 
+{faq_html}
+{nearby_html}{same_city_html}
+
     <section>
       <h2>{s['label']} in other cities</h2>
       <ul class="city-links">
 {sibs}
       </ul>
     </section>
-    <p class="note"><a href="/{cat}/">All {s['label'].lower()} locations</a>{other_html}</p>
+    <p class="note"><a href="/{cat}/">All {s['label'].lower()} locations</a></p>
   </main>"""
     return page(title, desc, url, body, ld)
 
