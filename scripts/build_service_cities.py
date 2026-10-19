@@ -1,4 +1,4 @@
-"""Build garage-door, pest-control, HVAC, and handyman hubs, plus city pages where coverage exists.
+"""Build cleaning, garage-door, pest-control, HVAC, and handyman hubs, plus city pages where coverage exists.
 
 No buyer phone numbers exist for these categories, so pages use the request form only and must
 never show the plumbing tracking number. HVAC and handyman have hubs only: there is no city
@@ -29,6 +29,8 @@ DISCLAIMER = (
 )
 
 CITIES = {
+    "miami-fl": ("Miami", "FL", "Florida"),
+    "fort-lauderdale-fl": ("Fort Lauderdale", "FL", "Florida"),
     "phoenix-az": ("Phoenix", "AZ", "Arizona"),
     "dallas-tx": ("Dallas", "TX", "Texas"),
     "fort-worth-tx": ("Fort Worth", "TX", "Texas"),
@@ -39,6 +41,71 @@ CITIES = {
 }
 
 SERVICES = {
+    "cleaning": {
+        # Several cleaning service types share one page; the visitor picks one in a select.
+        "service_type": "house_cleaning",
+        "service_options": [
+            ("house_cleaning", "House cleaning"),
+            ("deep_cleaning", "Deep clean"),
+            ("move_in_out_cleaning", "Move-in / move-out cleaning"),
+        ],
+        "label": "House cleaning",
+        "h1": "House cleaning in {name}",
+        "title": "House Cleaning in {name} — Send a Request | Zaptu",
+        "desc": "Need house cleaning, a deep clean, or a move-in or move-out clean in {name}? Send a contact request for an independent local cleaner. Zaptu does not do the cleaning.",
+        "hub_title": "House Cleaning — Send a Request | Zaptu",
+        "hub_desc": "Send a contact request for house cleaning, a deep clean, or a move-in or move-out clean. Zaptu does not do the cleaning and does not book appointments.",
+        "hub_lede": "Need a regular clean, a deep clean, or a clean before a move? Send a contact request to be connected with an independent local cleaning professional. A request is not a booking, and no arrival time is promised. Zaptu does not do the cleaning and does not send a named company.",
+        "covers_note": "A cleaning request describes a clean at a home: a standard house clean, a deep clean, or a move-in or move-out clean. Zaptu records the request and passes it along when a participating independent provider covers the ZIP code. Zaptu does not do the cleaning, does not send a named company, and does not set a price or a date.",
+        "issues": [
+            ("House cleaning", "A standard clean of kitchens, bathrooms, floors and living areas. Say how many bedrooms and bathrooms the home has."),
+            ("Deep clean", "A more detailed clean, such as inside appliances, baseboards, cabinets and built-up grime. Say which rooms or areas come first."),
+            ("Move-in or move-out cleaning", "A clean of an empty or nearly empty home before or after a move. Say whether the home will be empty and the move date, if known."),
+            ("Apartments, condos and houses", "Say the home type, the floor and whether there is an elevator, and any building rules about access or parking."),
+        ],
+        "safety": [
+            "Put away valuables, medicines, and anything fragile before anyone comes in.",
+            "Mention pets in the home and whether they will be there.",
+            "Note any surfaces or products that should not be used, such as natural stone or a household allergy.",
+        ],
+        "include": [
+            "The type of clean: house cleaning, deep clean, or move-in or move-out.",
+            "The number of bedrooms and bathrooms, or the rough square footage.",
+            "The home type: apartment, condo, townhouse, or house.",
+            "Pets, allergies, or products to avoid.",
+            "A rough timeframe, such as a move date. A request does not set an appointment.",
+        ],
+        "faq": [
+            ("Does Zaptu do the cleaning?", "No. Zaptu passes requests to participating independent providers and does not do the cleaning, send a named company, or set prices."),
+            ("Is a callback or arrival time promised?", "No. A callback depends on whether a participating provider covers the ZIP code on the request, and any timing is agreed directly with the provider."),
+            ("Who checks licensing and insurance?", "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not do the cleaning."),
+            ("What detail helps with a cleaning request?", "The type of clean, the number of bedrooms and bathrooms or the square footage, the home type, pets or allergies, and a rough timeframe such as a move date."),
+        ],
+        "cities": ["miami-fl", "fort-lauderdale-fl", "atlanta-ga", "dallas-tx", "phoenix-az"],
+        "local": {
+            "miami-fl": ("Miami's heat and humidity mean kitchens, bathrooms and air vents can collect moisture and mildew, and many people live in high-rise condos with building rules.",
+                         ["In a condo or apartment tower, mention the floor, the elevator, and any rules for service visitors or parking.",
+                          "Humidity can lead to mildew in bathrooms and on window frames. Say where you see it.",
+                          "Leases often call for a move-out clean. Mention the move date if there is one."]),
+            "fort-lauderdale-fl": ("Fort Lauderdale's humid climate and sandy beaches both find their way indoors, and the area mixes condos, townhomes and single-family houses.",
+                                   ["Sand and salt air can build up on floors, sliding door tracks and patio glass. Mention balconies or patios.",
+                                    "In a condo building, note any rules for service visitors or parking.",
+                                    "Seasonal homes are often cleaned before owners return or after they leave. Say if the home is empty."]),
+            "atlanta-ga": ("Atlanta's spring pollen and red clay soil both tend to come inside, and the metro mixes in-town apartments with larger suburban houses.",
+                           ["Pollen season leaves a yellow film on window sills, floors and outdoor furniture. Mention it if that is the main concern.",
+                            "Red clay can stain entry rugs and grout. Say where it is tracked in.",
+                            "For a larger house, give the number of floors as well as bedrooms and bathrooms."]),
+            "dallas-tx": ("Dallas summers are long and hot, dust blows in from dry spells, and many homes are larger single-family houses.",
+                          ["Dust can collect on ceiling fans, vents and window blinds. Mention these if they need attention.",
+                           "For a larger house, give the number of floors as well as bedrooms and bathrooms.",
+                           "If the clean is for a move, say whether the home will be empty."]),
+            "phoenix-az": ("Phoenix's desert dust and monsoon storms leave fine grit on floors, window sills and patios, and hard water marks show up in kitchens and bathrooms.",
+                           ["Hard water leaves spots on glass shower doors, faucets and fixtures. Say where they show up.",
+                            "Dust storms can coat patios, window tracks and blinds. Mention outdoor areas if they are part of the request.",
+                            "Many rentals require a move-out clean. Mention the move date if there is one."]),
+        },
+        "siblings_label": "House cleaning in",
+    },
     "garage-door": {
         "service_type": "garage_door",
         "label": "Garage door repair",
@@ -134,8 +201,16 @@ SERVICES = {
             ("Who checks licensing and insurance?", "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work."),
             ("What detail helps with a pest request?", "Name the pest if it is known, where it shows up, and when. Mention children or pets in the home, and any product already put down. Keep children and pets away from that product. Zaptu does not perform pest control."),
         ],
-        "cities": ["phoenix-az", "dallas-tx", "fort-worth-tx", "san-antonio-tx"],
+        "cities": ["phoenix-az", "dallas-tx", "fort-worth-tx", "san-antonio-tx", "miami-fl", "atlanta-ga"],
         "local": {
+            "miami-fl": ("Miami's warm, humid climate keeps pests active all year, including roaches, ants, termites and mosquitoes.",
+                         ["Drywood and subterranean termites are both found in South Florida. Note any small piles of droppings or mud tubes.",
+                          "In a condo or apartment building, pests can move between units. Mention whether neighbors have the same problem.",
+                          "Standing water after summer rain can increase mosquitoes around the home."]),
+            "atlanta-ga": ("Atlanta's humid summers and wooded neighborhoods bring ants, roaches, termites, mosquitoes and rodents in cooler months.",
+                           ["Subterranean termites are common in Georgia. Note any mud tubes on the foundation or soft wood.",
+                            "Rodents often look for shelter indoors when the weather turns cold.",
+                            "Wooded lots can bring more mosquitoes and stinging insects near the home."]),
             "phoenix-az": ("Phoenix's desert climate brings pests that many other cities rarely see, such as scorpions, along with roaches and termites.",
                            ["Scorpions often come in through gaps under doors and around plumbing. Mention where you have seen them.",
                             "Desert subterranean termites are present in the Valley, so note any mud tubes on walls or the foundation."]),
@@ -242,18 +317,48 @@ def esc(s: str) -> str:
     return html.escape(s, quote=True)
 
 
-def form_html(service_type: str, label: str, city: str | None, abbr: str | None) -> str:
+# How each page asks for the request. "intake" = our own /v1/intake form (all pages today).
+# To move a category to a buyer's hosted form later, set "cta": "hosted_link" and
+# "hosted_url" on that SERVICES entry; cta_html() then renders a single link instead.
+# No hosted links are set: no buyer has issued per-category keys or written rates.
+def cta_html(s: dict, city: str | None, abbr: str | None) -> str:
+    mode = s.get("cta", "intake")
+    if mode == "intake":
+        return form_html(s["service_type"], s["label"], city, abbr, s.get("service_options"))
+    if mode == "hosted_link":
+        url = s["hosted_url"]  # required; must come from the buyer in writing
+        where = f" in the {esc(city)} area" if city else ""
+        return f"""    <div id="request" class="request-form">
+      <h2>Send a request</h2>
+      <p class="hint">{esc(s['label'])}{where}. The request form opens on a partner site. It is not a booking.</p>
+      <p><a class="btn-call" href="{esc(url)}" rel="nofollow">Open the request form</a></p>
+    </div>"""
+    raise ValueError(f"unknown cta mode {mode!r}")
+
+
+def form_html(service_type: str, label: str, city: str | None, abbr: str | None,
+              options: list[tuple[str, str]] | None = None) -> str:
     where = f" in the {esc(city)} area" if city else ""
     city_fields = (
         f'      <input type="hidden" name="city" value="{esc(city)}" />\n      <input type="hidden" name="state" value="{abbr}" />\n'
         if city else ""
     )
+    if options:
+        opts = "\n".join(f'          <option value="{v}">{esc(t)}</option>' for v, t in options)
+        service_field = (
+            f'      <div class="row">\n        <div>\n          <label for="service_type">Type of clean</label>\n'
+            f'          <select id="service_type" name="service_type">\n{opts}\n          </select>\n        </div>\n'
+            f'        <div>\n          <label for="bedrooms">Bedrooms</label>\n'
+            f'          <input id="bedrooms" name="bedrooms" type="number" min="0" max="20" inputmode="numeric" />\n'
+            f'        </div>\n      </div>\n'
+        )
+    else:
+        service_field = f'      <input type="hidden" name="service_type" value="{service_type}" />\n'
     return f"""    <form id="request" class="request-form" action="https://api.zaptu.ai/v1/intake" method="post" name="service-request">
       <p class="hp" aria-hidden="true"><label>Do not fill <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
       <h2>Send a request</h2>
       <p class="hint">{esc(label)}{where}. Your request is passed along when a participating provider covers your ZIP code. It is not a booking.</p>
-      <input type="hidden" name="service_type" value="{service_type}" />
-{city_fields}      <label for="customer_name">Name</label>
+{service_field}{city_fields}      <label for="customer_name">Name</label>
       <input id="customer_name" name="customer_name" required minlength="2" maxlength="120" autocomplete="name" />
       <div class="row">
         <div>
@@ -434,7 +539,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
     <p class="eyebrow"><a href="/{cat}/">{s['label']}</a> / {esc(name)}</p>
     <h1>{esc(s['h1'].format(name=name))}</h1>
     <p class="lede">{esc(intro)} Send a request to be connected with an independent local {s['label'].lower()} professional in the {esc(city)} area.</p>
-{form_html(s['service_type'], s['label'], city, abbr)}
+{cta_html(s, city, abbr)}
 
     <section>
       <h2>Common reasons people reach out</h2>
@@ -493,7 +598,7 @@ def hub_page(cat: str, s: dict) -> str:
     body = f"""  <main class="service-hub">
     <h1>{esc(s['label'])}</h1>
     <p class="lede">{esc(s['hub_lede'])}</p>
-{form_html(s['service_type'], s['label'], None, None)}
+{cta_html(s, None, None)}
     <section>
       <h2>What this covers</h2>
       <p>{esc(s['covers_note'])}</p>

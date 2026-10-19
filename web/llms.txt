@@ -96,6 +96,15 @@ Same call-to-connect number (308) 529-9543 on every page; the person dials.
 - [Plumber in Winston Salem, NC](https://zaptu.ai/plumbing/winston-salem-nc/)
 
 <!-- services:start -->
+## House cleaning city pages
+Request form only (service_type house_cleaning, collecting); no phone number.
+- [House cleaning](https://zaptu.ai/cleaning/)
+- [House cleaning in Miami, FL](https://zaptu.ai/cleaning/miami-fl/)
+- [House cleaning in Fort Lauderdale, FL](https://zaptu.ai/cleaning/fort-lauderdale-fl/)
+- [House cleaning in Atlanta, GA](https://zaptu.ai/cleaning/atlanta-ga/)
+- [House cleaning in Dallas, TX](https://zaptu.ai/cleaning/dallas-tx/)
+- [House cleaning in Phoenix, AZ](https://zaptu.ai/cleaning/phoenix-az/)
+
 ## Garage door repair city pages
 Request form only (service_type garage_door, collecting); no phone number.
 - [Garage door repair](https://zaptu.ai/garage-door/)
@@ -114,6 +123,8 @@ Request form only (service_type pest_control, collecting); no phone number.
 - [Pest control in Dallas, TX](https://zaptu.ai/pest-control/dallas-tx/)
 - [Pest control in Fort Worth, TX](https://zaptu.ai/pest-control/fort-worth-tx/)
 - [Pest control in San Antonio, TX](https://zaptu.ai/pest-control/san-antonio-tx/)
+- [Pest control in Miami, FL](https://zaptu.ai/pest-control/miami-fl/)
+- [Pest control in Atlanta, GA](https://zaptu.ai/pest-control/atlanta-ga/)
 
 ## HVAC repair
 Request form only (service_type hvac, collecting); no phone number. No city pages.
