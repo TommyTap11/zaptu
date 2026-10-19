@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 WEB = Path(__file__).resolve().parents[1] / "web"
-PAGES = sorted(WEB.rglob("*.html"))
+PAGES = [p for p in sorted(WEB.rglob("*.html")) if "dashboard" not in p.parts]  # private dashboard: see test_dashboard.py
 CITY_PAGES = sorted((WEB / "plumbing").glob("*/index.html"))
 
 DISCLAIMER_RE = re.compile(r'<p class="disclaimer">.*?</p>', re.S)

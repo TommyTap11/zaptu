@@ -17,6 +17,7 @@ WEB = ROOT / "web"
 BASE = "https://zaptu.ai"
 OG_IMAGE = f"{BASE}/og-image.png"
 NOINDEX = {"thanks"}  # path segments that should not be indexed
+PRIVATE = {"dashboard"}  # private pages: seo.py must not touch, index, or list them
 CONTACT_EMAIL = "hello@zaptu.ai"
 
 NAV = [("/plumbing/", "Plumbing"), ("/how-it-works/", "How it works"), ("/agents/", "For agents")]
@@ -162,7 +163,7 @@ def lastmod(page: Path) -> str:
 
 
 def main() -> None:
-    pages = sorted(WEB.rglob("index.html"))
+    pages = [p for p in sorted(WEB.rglob("index.html")) if not (set(p.relative_to(WEB).parts) & PRIVATE)]
     known = {url_path(p) for p in pages}
     for p in pages:
         process(p, known)
