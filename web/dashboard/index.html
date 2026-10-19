@@ -9,101 +9,179 @@
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <meta name="theme-color" content="#07080b" />
-  <link rel="stylesheet" href="/style.css" />
+  <meta name="theme-color" content="#ffffff" />
   <style>
-    .dash-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:20px; }
-    .stat { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; }
-    .stat .num { font-size:34px; font-weight:700; letter-spacing:-.03em; line-height:1.1; }
-    .stat .lbl { color:var(--muted); font-size:13px; margin-top:4px; }
-    .dash-panels { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
-    .dash-panel { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-top:0; }
-    .dash-panel h2 { font-size:19px; margin:0 0 10px; }
-    .dash-panel table { font-size:14px; }
-    .dash-panel td:last-child, .dash-panel th:last-child { text-align:right; }
-    .empty { color:var(--muted); font-size:14px; margin:0; }
-    .toolbar { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
-    .toolbar button { width:auto; padding:12px 18px; }
-    .toolbar button.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
-    .err { color:#ff8a8a; font-weight:600; min-height:1.5em; }
-    #login-panel { max-width:400px; margin:48px auto 0; padding:32px 28px; text-align:center; }
-    #login-panel h2 { margin:0 0 8px; font-size:24px; letter-spacing:-.02em; }
-    #login-panel .hint { margin:0 auto; max-width:300px; }
-    #login-form { margin-top:24px; }
-    #login-form label { margin:0 0 10px; text-align:center; }
-    #dash-pin { text-align:center; font-size:24px; letter-spacing:.35em; padding:16px 12px 16px 20px; border-radius:12px; }
-    #login-form button[type="submit"] { margin-top:16px; width:100%; }
-    #login-panel .err { margin:12px 0 0; font-size:14px; }
-    #map { height:320px; border-radius:12px; background:#0b0d12; border:1px solid var(--line); }
-    #map .map-empty { padding:16px; color:var(--muted); font-size:14px; }
-    @media (max-width:900px){ .dash-grid{grid-template-columns:1fr 1fr;} .dash-panels{grid-template-columns:1fr;} }
-    @media (max-width:520px){ .dash-grid{grid-template-columns:1fr;} }
+    :root{--green:#14532D;--green2:#10B981;--orange:#F97316;--bg:#F3F4F6;--card:#fff;--ink:#111827;--muted:#6B7280;--line:#E5E7EB;--red:#DC2626}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+    a{color:inherit} :focus-visible{outline:2px solid var(--green2);outline-offset:2px;border-radius:6px}
+    .layout{display:flex;min-height:100vh}
+    .sidebar{width:232px;flex:none;background:#fff;border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh}
+    .wordmark{font-size:24px;font-weight:800;letter-spacing:-.03em;color:var(--green);padding:4px 10px 18px}
+    .wordmark span{color:var(--green2)}
+    .side-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 10px 6px}
+    .side-nav a{display:block;padding:9px 10px;border-radius:8px;text-decoration:none;color:#374151;font-size:14px;font-weight:550;margin:2px 0}
+    .side-nav a:hover,.side-nav a.active{background:#ECFDF5;color:var(--green)}
+    .side-note{margin:18px 10px 0;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+    .main{flex:1;min-width:0;padding:24px 28px 48px;max-width:1240px}
+    .topbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;margin-bottom:18px}
+    .topbar h1{font-size:26px;letter-spacing:-.02em;margin:0}
+    .subtitle{color:var(--muted);font-size:14px;margin:3px 0 0}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .range{display:flex;background:#fff;border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+    .range button{border:0;background:transparent;padding:7px 12px;border-radius:7px;font:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+    .range button.active{background:var(--green);color:#fff}
+    .btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 14px;border-radius:9px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+    .btn.primary{background:var(--green);border-color:var(--green);color:#fff;width:100%}
+    .btn:hover{filter:brightness(.98)}
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .stat,.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+    .stat .lbl{color:var(--muted);font-size:13px;font-weight:600}
+    .stat .num{font-size:32px;font-weight:750;letter-spacing:-.03em;line-height:1.15;margin-top:4px}
+    .stat .sub{color:var(--muted);font-size:12px;margin-top:3px}
+    .stat .accent{width:34px;height:4px;border-radius:99px;background:var(--green2);margin-bottom:12px}
+    .stat.orange .accent{background:var(--orange)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+    .grid-main{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-top:14px}
+    .card h2{font-size:16px;margin:0 0 6px;letter-spacing:-.01em}
+    .card h3{font-size:14px;margin:16px 0 6px}
+    .hint{color:var(--muted);font-size:13px;margin:6px 0 0}
+    .empty{color:var(--muted);font-size:14px;margin:8px 0}
+    table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+    th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+    th{color:#374151;font-weight:650;background:#F9FAFB}
+    td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+    tbody tr:hover{background:#F9FAFB}
+    .chart-wrap{margin-top:12px}
+    .chart{width:100%;height:180px;display:block}
+    .chart-axis{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:4px}
+    #map{height:320px;border-radius:8px;background:#F9FAFB;border:1px solid var(--line);overflow:hidden}
+    #map .map-empty{padding:16px;color:var(--muted);font-size:14px}
+    .err{color:var(--red);font-weight:600;min-height:1.5em;font-size:14px}
+    #login-panel{max-width:420px;margin:72px auto 0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:32px 28px;text-align:center}
+    #login-panel h2{margin:0 0 8px;font-size:24px}
+    #login-form{margin-top:22px;text-align:left}
+    #login-form label{display:block;font-size:13px;color:var(--muted);margin:0 0 8px;text-align:center}
+    #dash-pin{width:100%;text-align:center;font-size:24px;letter-spacing:.35em;padding:14px 12px 14px 20px;border-radius:9px;border:1px solid var(--line);font:inherit;background:#fff;color:var(--ink)}
+    #login-form button[type="submit"]{margin-top:16px}
+    footer{color:var(--muted);font-size:12px;margin-top:22px}
+    @media(max-width:980px){.stat-grid{grid-template-columns:1fr 1fr}.grid2,.grid-main{grid-template-columns:1fr}}
+    @media(max-width:720px){.sidebar{display:none}.main{padding:18px 14px 40px}.stat-grid{grid-template-columns:1fr}.mobile-brand{display:block!important}}
+    .mobile-brand{display:none;font-size:22px;font-weight:800;color:var(--green);margin-bottom:10px}
   </style>
 </head>
 <body>
-  <header>
-    <span class="brand">Zaptu</span>
-    <nav aria-label="Dashboard">
-      <a href="/">Public site</a>
-    </nav>
-  </header>
-  <main>
-    <p class="eyebrow">Private dashboard</p>
-    <h1>Zaptu numbers</h1>
-    <p class="lede">Visits, call clicks, requests and API use in one place. Days are UTC, as returned by the counter.</p>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Dashboard">
+      <div class="wordmark">zaptu<span>.</span></div>
+      <div class="side-label">Dashboard</div>
+      <nav class="side-nav">
+        <a href="#overview" class="active">Overview</a>
+        <a href="#visits-chart">Visits</a>
+        <a href="#top-pages-card">Top pages</a>
+        <a href="#places-card">Visits by place</a>
+        <a href="#activity-card">Forms &amp; calls</a>
+        <a href="#api-card">API / MCP</a>
+      </nav>
+      <p class="side-note">Private page. Not linked from the public site.</p>
+    </aside>
 
-    <section id="login-panel" class="panel" aria-labelledby="login-heading">
-      <h2 id="login-heading">Sign in</h2>
-      <p class="hint">Enter your PIN to view the dashboard. It is checked on the server and kept only in this tab.</p>
-      <form id="login-form">
-        <label for="dash-pin">Dashboard PIN</label>
-        <input id="dash-pin" type="password" inputmode="numeric" autocomplete="off" required autofocus />
-        <button type="submit">View dashboard</button>
-        <p id="login-error" class="err" role="alert"></p>
-      </form>
-    </section>
+    <main class="main">
+      <div class="mobile-brand">zaptu.</div>
+      <section id="login-panel" aria-labelledby="login-heading">
+        <h2 id="login-heading">Sign in</h2>
+        <p class="hint">Enter your PIN to view the dashboard. It is checked on the server and kept only in this tab.</p>
+        <form id="login-form">
+          <label for="dash-pin">Dashboard PIN</label>
+          <input id="dash-pin" type="password" inputmode="numeric" autocomplete="off" required autofocus />
+          <button type="submit" class="btn primary">View dashboard</button>
+          <p id="login-error" class="err" role="alert"></p>
+        </form>
+      </section>
 
-    <section id="dash" hidden>
-      <div class="toolbar">
-        <button id="refresh" type="button">Refresh</button>
-        <button id="logout" type="button" class="ghost">Log out</button>
-      </div>
-      <p id="dash-meta" class="hint"></p>
-      <p id="dash-error" class="err" role="alert"></p>
+      <section id="dash" hidden>
+        <div class="topbar" id="overview">
+          <div>
+            <h1>Overview</h1>
+            <p class="subtitle">Visits, call clicks, requests and API use in one place. Days are UTC, as returned by the counter.</p>
+          </div>
+          <div class="actions">
+            <div class="range" role="group" aria-label="Date range">
+              <button id="range-today" type="button">Today</button>
+              <button id="range-30" type="button" class="active">Last 30 days</button>
+            </div>
+            <button id="refresh" type="button" class="btn">Refresh</button>
+            <button id="logout" type="button" class="btn">Log out</button>
+          </div>
+        </div>
 
-      <div class="dash-grid">
-        <div class="stat"><div class="num" id="visits-today">–</div><div class="lbl">Visits today (UTC)</div></div>
-        <div class="stat"><div class="num" id="visits-total">–</div><div class="lbl" id="visits-total-lbl">Visits since counter start</div></div>
-        <div class="stat"><div class="num" id="uniques-today">–</div><div class="lbl">Unique visitors today (UTC)</div></div>
-        <div class="stat"><div class="num" id="call-clicks">–</div><div class="lbl">Call clicks (plumbing number)</div></div>
-        <div class="stat"><div class="num" id="intake-count">–</div><div class="lbl">Intake API calls — includes dry-run/test calls, not a sold-lead count</div></div>
-        <div class="stat"><div class="num" id="api-calls">–</div><div class="lbl">API calls in range</div></div>
-        <div class="stat"><div class="num" id="mcp-calls">–</div><div class="lbl">MCP calls in range</div></div>
-        <div class="stat"><div class="num" id="uniques-range">–</div><div class="lbl">Unique visitors, per day summed (same person can count on different days)</div></div>
-      </div>
+        <p id="dash-meta" class="hint"></p>
+        <p id="dash-error" class="err" role="alert"></p>
 
-      <div class="panel">
-        <h2>Money</h2>
-        <p>Revenue is not tracked here yet — $0 earned so far, and 0 leads sold.</p>
-        <p class="hint">Counts are stored in the database and survive API restarts; nightly snapshots are a backup record.</p>
-      </div>
+        <div class="stat-grid" aria-label="Key numbers">
+          <div class="stat"><div class="accent"></div><div class="lbl" id="visits-label">Visits — last 30 days</div><div class="num" id="visits-today">–</div><div class="sub" id="visits-total-lbl">Visits since counter start: <span id="visits-total">–</span></div></div>
+          <div class="stat"><div class="accent"></div><div class="lbl">Unique visitors</div><div class="num" id="uniques-range">–</div><div class="sub">Per day summed — same person can count on different days. Today: <span id="uniques-today">–</span></div></div>
+          <div class="stat orange"><div class="accent"></div><div class="lbl">Call clicks</div><div class="num" id="call-clicks">–</div><div class="sub">Plumbing number, in selected range</div></div>
+          <div class="stat"><div class="accent"></div><div class="lbl">Revenue</div><div class="num">$0</div><div class="sub">0 leads sold · Revenue is not tracked here yet</div></div>
+        </div>
 
-      <div class="dash-panels">
-        <section class="dash-panel"><h2>Pages by visits</h2><div id="top-pages"></div></section>
-        <section class="dash-panel"><h2>Referrers</h2><div id="referrers"></div></section>
-        <section class="dash-panel"><h2>API and MCP calls by endpoint</h2><div id="api-by-endpoint"></div></section>
-        <section class="dash-panel"><h2>Call clicks by page</h2><div id="call-clicks-by-page"></div></section>
-        <section class="dash-panel"><h2>Per day (UTC)</h2><div id="per-day"></div></section>
-        <section class="dash-panel"><h2>Visits by place</h2><div id="top-locations"></div><p class="hint">Locations are approximate, from IP address, city-level only.</p></section>
-        <section class="dash-panel"><h2>Map</h2><div id="map"><p class="map-empty">Map loads after sign-in, when there are located visits.</p></div><p class="hint">Locations are approximate, from IP address, city-level only. Map tiles (OpenStreetMap via Leaflet) load only after you sign in with the PIN.</p></section>
-        <section class="dash-panel"><h2>Notes</h2><p id="stats-notes" class="empty"></p><p class="empty">Counts are stored in the database and survive API restarts; nightly snapshots are a backup record.</p></section>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
-    <p class="footer-meta">Zaptu dashboard — private page, not linked from the public site.</p>
-  </footer>
+        <div class="grid-main">
+          <section class="card" id="visits-chart">
+            <h2>Visits per day</h2>
+            <p class="hint" id="chart-note">Last 30 days (UTC), from per-day counter data.</p>
+            <div class="chart-wrap" id="chart"></div>
+            <h3>Per day (UTC)</h3>
+            <div id="per-day"></div>
+          </section>
+
+          <section class="card" id="activity-card">
+            <h2>Forms &amp; calls</h2>
+            <p class="hint">Honest labels: these are activity counts, not sold leads.</p>
+            <table><tbody>
+              <tr><td>Requests received</td><td id="intake-count">–</td></tr>
+              <tr><td colspan="2" class="hint" style="text-align:left">From /v1/intake count — includes tests and dry-run/test calls, not a sold-lead count</td></tr>
+              <tr><td>Call clicks (plumbing number)</td><td id="call-clicks-summary">–</td></tr>
+            </tbody></table>
+            <div id="call-clicks-by-page"></div>
+            <h3>Money</h3>
+            <p class="empty">Revenue is not tracked here yet — $0 earned so far, and 0 leads sold.</p>
+            <p class="hint">Counts are stored in the database and survive API restarts; nightly snapshots are a backup record.</p>
+          </section>
+        </div>
+
+        <div class="grid2">
+          <section class="card" id="top-pages-card"><h2>Top pages</h2><div id="top-pages"></div></section>
+          <section class="card"><h2>Referrers</h2><div id="referrers"></div></section>
+        </div>
+
+        <div class="grid2">
+          <section class="card" id="places-card">
+            <h2>Visits by place</h2>
+            <div id="top-locations"></div>
+            <p class="hint">Locations are approximate, from IP address, city-level only.</p>
+            <h3>Map</h3>
+            <div id="map"><p class="map-empty">Map loads after sign-in, when there are located visits.</p></div>
+            <p class="hint">Locations are approximate, from IP address, city-level only. Map tiles (OpenStreetMap via Leaflet) load only after you sign in with the PIN.</p>
+          </section>
+
+          <section class="card" id="api-card">
+            <h2>API / MCP calls</h2>
+            <table><tbody>
+              <tr><td>API calls in range</td><td id="api-calls">–</td></tr>
+              <tr><td>MCP calls in range</td><td id="mcp-calls">–</td></tr>
+            </tbody></table>
+            <p class="hint">Most API/MCP volume is directory bots checking the connector, not customer demand.</p>
+            <div id="api-by-endpoint"></div>
+            <h3>Notes</h3>
+            <p id="stats-notes" class="empty"></p>
+            <p class="empty">Counts are stored in the database and survive API restarts; nightly snapshots are a backup record.</p>
+          </section>
+        </div>
+
+        <footer>Zaptu dashboard — private page, not linked from the public site.</footer>
+      </section>
+    </main>
+  </div>
+
   <script>
   (function () {
     var STATS_URL = "https://zaptu.onrender.com/v1/dashboard-stats?days=30";
@@ -112,6 +190,8 @@
     var dash = document.getElementById("dash");
     var loginError = document.getElementById("login-error");
     var dashError = document.getElementById("dash-error");
+    var lastStats = null;
+    var currentRange = "30";
 
     function el(id) { return document.getElementById(id); }
     function setText(id, value) { el(id).textContent = value == null ? "–" : String(value); }
@@ -132,6 +212,7 @@
     function countOf(rows, name) { for (var i = 0; i < (rows || []).length; i++) if (rows[i].name === name) return rows[i].count; return 0; }
     function placeName(loc) { var parts = [loc.city, loc.region, loc.country].filter(function (x) { return x && x !== "unknown"; }); return parts.length ? parts.join(", ") : "Unknown"; }
     function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
     var leafletPromise = null, dashMap = null;
     function loadLeaflet() {
       if (window.L) return Promise.resolve(window.L);
@@ -155,7 +236,7 @@
         var bounds = [];
         points.forEach(function (l) {
           var visits = l.visits || 1;
-          L.circleMarker([l.lat, l.lng], { radius: Math.max(6, Math.min(24, 5 + Math.sqrt(visits) * 3)), color: "#c8f54a", fillColor: "#c8f54a", fillOpacity: 0.65, weight: 1 })
+          L.circleMarker([l.lat, l.lng], { radius: Math.max(6, Math.min(24, 5 + Math.sqrt(visits) * 3)), color: "#14532D", fillColor: "#10B981", fillOpacity: 0.65, weight: 1 })
             .addTo(dashMap).bindPopup(escapeHtml(placeName(l)) + ": " + visits + (visits === 1 ? " visit" : " visits"));
           bounds.push([l.lat, l.lng]);
         });
@@ -165,27 +246,62 @@
       });
     }
 
+    function renderChart(daysAsc) {
+      var box = el("chart");
+      if (!daysAsc.length) { box.innerHTML = '<p class="empty">No visits recorded yet in this range.</p>'; return; }
+      var max = Math.max.apply(null, daysAsc.map(function (d) { return d.visits || 0; }).concat([1]));
+      var W = 640, H = 180, pad = 24, bw = Math.max(4, (W - pad * 2) / daysAsc.length - 4);
+      var parts = ['<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Visits per day chart" preserveAspectRatio="none">'];
+      parts.push('<line x1="' + pad + '" y1="' + (H - 22) + '" x2="' + (W - pad) + '" y2="' + (H - 22) + '" stroke="#E5E7EB"/>');
+      daysAsc.forEach(function (d, i) {
+        var h = Math.round(((d.visits || 0) / max) * (H - 52));
+        var x = pad + i * ((W - pad * 2) / daysAsc.length);
+        var y = H - 22 - h;
+        parts.push('<rect x="' + x.toFixed(1) + '" y="' + y + '" width="' + bw.toFixed(1) + '" height="' + Math.max(h, (d.visits ? 2 : 0)) + '" rx="3" fill="#10B981"><title>' + escapeHtml(d.day) + ': ' + (d.visits || 0) + ' visits</title></rect>');
+      });
+      parts.push('</svg>');
+      parts.push('<div class="chart-axis"><span>' + escapeHtml(daysAsc[0].day) + '</span><span>Peak ' + max + ' / day</span><span>' + escapeHtml(daysAsc[daysAsc.length - 1].day) + '</span></div>');
+      box.innerHTML = parts.join("");
+    }
+
     function render(s) {
+      lastStats = s;
       var todayUtc = new Date().toISOString().slice(0, 10);
+      var perDayDesc = (s.per_day || []).slice();
       var today = null;
-      (s.per_day || []).forEach(function (d) { if (d.day === todayUtc) today = d; });
-      if (!today && s.per_day && s.per_day.length) today = s.per_day[0];
-      setText("visits-today", today ? today.visits : 0);
+      perDayDesc.forEach(function (d) { if (d.day === todayUtc) today = d; });
+      if (!today && perDayDesc.length) today = perDayDesc[0];
+
+      var filtered = currentRange === "today" ? perDayDesc.filter(function (d) { return d.day === todayUtc; }) : perDayDesc;
+      var sum = function (key) { return filtered.reduce(function (a, d) { return a + (d[key] || 0); }, 0); };
+
+      el("range-today").classList.toggle("active", currentRange === "today");
+      el("range-30").classList.toggle("active", currentRange === "30");
+      el("visits-label").textContent = currentRange === "today" ? "Visits — today (UTC)" : "Visits — last 30 days";
+      el("chart-note").textContent = currentRange === "today" ? "Today (UTC), from per-day counter data." : "Last 30 days (UTC), from per-day counter data.";
+
+      // In Today mode these three cards are derived only from today's per_day row; in 30-day mode from all per_day rows. No data is invented for days the counter did not return.
+      setText("visits-today", filtered.length ? sum("visits") : (currentRange === "today" ? 0 : (s.totals ? s.totals.visits : null)));
       setText("visits-total", s.totals ? s.totals.visits : null);
-      if (s.data_since) el("visits-total-lbl").textContent = "Visits since " + s.data_since + " (counter start or last reset)";
+      if (s.data_since) el("visits-total-lbl").firstChild.textContent = "Visits since " + s.data_since + ": ";
       setText("uniques-today", today ? today.unique_visitors : 0);
-      setText("call-clicks", s.totals ? s.totals.call_clicks : null);
+      setText("uniques-range", sum("unique_visitors"));
+      var rangeCallClicks = filtered.length ? sum("call_clicks") : (s.totals ? s.totals.call_clicks : null);
+      setText("call-clicks", rangeCallClicks);
+      setText("call-clicks-summary", rangeCallClicks);
       setText("intake-count", countOf(s.api_by_endpoint, "/v1/intake"));
       setText("api-calls", s.totals ? s.totals.api_calls : null);
       setText("mcp-calls", countOf(s.api_by_endpoint, "mcp"));
-      var uniqSum = (s.per_day || []).reduce(function (a, d) { return a + (d.unique_visitors || 0); }, 0);
-      setText("uniques-range", uniqSum);
+
       tableInto(el("top-pages"), s.top_pages, [{key:"name",label:"Page"},{key:"count",label:"Visits"}]);
       tableInto(el("referrers"), s.referrers, [{key:"name",label:"Referrer"},{key:"count",label:"Visits"}]);
       tableInto(el("api-by-endpoint"), s.api_by_endpoint, [{key:"name",label:"Endpoint"},{key:"count",label:"Calls"}]);
       tableInto(el("call-clicks-by-page"), s.call_clicks_by_page, [{key:"name",label:"Page"},{key:"count",label:"Clicks"}]);
-      var perDay = (s.per_day || []).map(function (d) { return {day:d.day, visits:d.visits, unique_visitors:d.unique_visitors, call_clicks:d.call_clicks, api_calls:d.api_calls}; });
+
+      var perDay = filtered.map(function (d) { return {day:d.day, visits:d.visits, unique_visitors:d.unique_visitors, call_clicks:d.call_clicks, api_calls:d.api_calls}; });
       tableInto(el("per-day"), perDay, [{key:"day",label:"Day"},{key:"visits",label:"Visits"},{key:"unique_visitors",label:"Unique"},{key:"call_clicks",label:"Call clicks"},{key:"api_calls",label:"API calls"}]);
+      renderChart(filtered.slice().sort(function (a, b) { return a.day < b.day ? -1 : 1; }));
+
       var locRows = (s.top_locations || []).map(function (l) { return {place: placeName(l), visits: l.visits}; });
       tableInto(el("top-locations"), locRows, [{key:"place",label:"Place"},{key:"visits",label:"Visits"}]);
       renderMap(s.top_locations || []);
@@ -231,6 +347,8 @@
       el("dash-pin").value = "";
       dash.hidden = true; loginPanel.hidden = false;
     });
+    el("range-today").addEventListener("click", function () { currentRange = "today"; if (lastStats) render(lastStats); });
+    el("range-30").addEventListener("click", function () { currentRange = "30"; if (lastStats) render(lastStats); });
 
     var saved = sessionStorage.getItem(STORE);
     if (saved) load(saved);
