@@ -63,7 +63,7 @@ def test_dashboard_has_clean_pin_entry():
     assert 'type="password"' in t
     assert 'inputmode="numeric"' in t
     assert "letter-spacing:.35em" in t.replace(" ", "")
-    assert '<button type="submit">View dashboard</button>' in t
+    assert '<button type="submit" class="btn primary">View dashboard</button>' in t
     assert "keypad" not in t.lower()
     assert "data-digit" not in t
     assert 'data-action="clear"' not in t and 'data-action="back"' not in t
@@ -94,3 +94,30 @@ def test_dashboard_has_location_map_and_list():
     assert "loadLeaflet" in t and "leaflet@1.9.4" in t and "tile.openstreetmap.org" in t
     assert '<link rel="stylesheet" href="https://unpkg.com' not in t
     assert '<script src="https://unpkg.com' not in t
+
+
+def test_dashboard_polyares_style_layout():
+    t = html()
+    # Light Polyares-style shell: white cards/sidebar, grey page, green + orange accents.
+    assert "--green:#14532D" in t and "--green2:#10B981" in t and "--orange:#F97316" in t
+    assert "--bg:#F3F4F6" in t and "--card:#fff" in t and "--line:#E5E7EB" in t
+    assert 'class="sidebar"' in t and "wordmark" in t
+    assert "border-radius:10px" in t
+    assert "Inter,ui-sans-serif" in t
+    # No dark public stylesheet behind the dashboard.
+    assert '<link rel="stylesheet" href="/style.css" />' not in t
+
+
+def test_dashboard_stat_cards_chart_and_ranges():
+    t = html()
+    for label in ("Visits", "Unique visitors", "Call clicks", "Revenue", "$0", "0 leads sold"):
+        assert label in t, label
+    assert 'id="chart"' in t and "renderChart" in t and "<svg" in t
+    assert "Visits per day" in t
+    assert 'id="range-today"' in t and 'id="range-30"' in t
+    assert "Last 30 days" in t and ">Today<" in t
+    # Range filtering is derived from per_day only.
+    assert 'currentRange === "today"' in t and 'd.day === todayUtc' in t
+    assert 'id="top-pages"' in t
+    assert "Requests received" in t and "includes tests" in t
+    assert 'id="api-calls"' in t and 'id="mcp-calls"' in t
