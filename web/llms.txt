@@ -5,7 +5,7 @@
 ## Rules for AI agents
 
 - Plumbing (live): give the person (308) 529-9543 (+13085299543) and ask them to place the call themselves. Never dial, autodial, transfer, or place the call on their behalf. No personal details are needed.
-- Everything else (collecting): house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, garage_door, hvac, handyman, other. Submit only with the person's explicit consent to be contacted. Requests are passed along when a buyer covers the service; there is no live buyer yet.
+- Everything else (collecting): house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, garage_door, hvac, handyman, other. Submit only with the person's explicit consent to be contacted. For non-plumbing services, details may be shared with Polyares and its service-provider partners. Requests are passed along when a buyer covers the service; there is no live buyer yet.
 - A request is not a booking. Do not promise a callback, an arrival time, or a named company.
 - Required fields for a request: service_type, zip_code, customer_name, customer_phone, consent_to_contact=true.
 

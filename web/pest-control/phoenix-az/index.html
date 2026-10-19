@@ -127,7 +127,7 @@
       </div>
       <label for="notes">What is going on?</label>
       <textarea id="notes" name="notes" rows="3" maxlength="2000"></textarea>
-      <label class="consent" for="consent_to_contact"><input type="checkbox" id="consent_to_contact" name="consent_to_contact" value="yes" required /><span>I agree a provider or Zaptu partner may call or text about this request.</span></label>
+      <label class="consent" for="consent_to_contact"><input type="checkbox" id="consent_to_contact" name="consent_to_contact" value="yes" required /><span>I agree Zaptu may share my details with Polyares and its service-provider partners, and that Polyares, those partners, or Zaptu may call or text about this request.</span></label>
       <button type="submit">Send request</button>
       <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
       <p class="note">US residential. <a href="/privacy/">Privacy</a></p>
@@ -195,12 +195,14 @@
     var data = {};
     new FormData(f).forEach(function (v, k) { data[k] = v; });
     data.consent_to_contact = f.consent_to_contact.checked;
+    data.consent_source_page = location.pathname;
     if (q.get("dry_run") === "1") data.dry_run = true;
     if (!data.dry_run) {  // backup copy to Netlify Forms (emails a notification); never blocks the intake post
       try {
         var nb = new URLSearchParams();
         new FormData(f).forEach(function (v, k) { nb.append(k, v); });
         nb.set("form-name", "service-request");
+        nb.set("consent_source_page", location.pathname);
         if (!nb.has("bot-field")) nb.set("bot-field", "");
         fetch("/", { method: "POST", keepalive: true, headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: nb.toString() }).catch(function () {});
       } catch (err) {}

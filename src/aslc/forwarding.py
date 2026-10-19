@@ -59,6 +59,9 @@ class WebhookForwarder:
             ),
             "notes": lead.request.notes,
             "consent_to_contact": lead.request.consent_to_contact,
+            "consent_timestamp": lead.consent_timestamp.isoformat() if lead.consent_timestamp else None,
+            "consent_wording_version": lead.consent_wording_version,
+            "consent_source_page": lead.consent_source_page,
             "source_agent": lead.request.source_agent,
         }
         try:

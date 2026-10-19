@@ -15,3 +15,8 @@ Last updated: 2026-10-19 (America/New_York)
 ## Money / traffic (honest baseline at last check)
 - Revenue: $0 earned so far, 0 leads sold. API/MCP call volume is mostly directory bots, not demand.
 - Plumbing is call-to-connect only; other categories are collecting with no live form buyer yet.
+
+## Polyares consent (2026-10-19)
+- Tom signed the Polyares partnership contract on 2026-10-19. Payout/payment details are still pending Tom (not yet added). No leads are sent to Polyares until payout rates/criteria are confirmed in writing (draft saved at /home/box/agent-data/shared/zaptu/polyares-rates-email-draft.md — not sent).
+- Non-plumbing request forms (site + MCP/catalog) now disclose that details may be shared with "Polyares and its service-provider partners" and that Polyares, those partners, or Zaptu may call/text. Plumbing/TCC wording is unchanged (call-to-connect, person dials).
+- Each non-plumbing lead now stores a server-stamped consent record on LeadRecord: `consent_timestamp` (= lead created_at), `consent_wording_version` (`2026-10-19-polyares-v1`), and `consent_source_page` (web page path sent by the form, else `source_agent`). Plumbing and no-consent rejected leads keep these as null. Existing intake payloads are unchanged (new request field `consent_source_page` is optional).

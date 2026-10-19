@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from .call_routing import CALL_TO_CONNECT
-from .models import ALL_SERVICE_TYPES, LeadResponse, ServiceRequest
+from .models import ALL_SERVICE_TYPES, CONSENT_DISCLOSURE, LeadResponse, ServiceRequest
 from .validation import COLLECTED_ONLY_SERVICES, ROUTABLE_SERVICES
 
 VERSION = "0.2.0"
@@ -34,7 +34,7 @@ REQUIRED_FIELDS = ["service_type", "zip_code", "customer_name", "customer_phone"
 AGENT_RULES = [
     "Plumbing is live: give the person the phone number and ask them to dial it themselves.",
     "Never dial, autodial, transfer, or place a call on the person's behalf.",
-    "Other services are collecting: submit only with the person's explicit consent to be contacted.",
+    "Other services are collecting: submit only with the person's explicit consent to be contacted. " + CONSENT_DISCLOSURE,
     "A request is not a booking. Do not promise a callback, an arrival time, or a named company.",
     "Zaptu does not perform the work. Contractors are independent.",
 ]
@@ -95,7 +95,7 @@ def services_catalog() -> dict[str, Any]:
                 "label": SERVICE_LABELS.get(key, key),
                 "mode": "request_form",
                 "status": "collecting",
-                "note": "Accepted and passed along when a buyer covers the service. No live buyer yet, so do not promise a callback.",
+                "note": "Accepted and passed along when a buyer covers the service. No live buyer yet, so do not promise a callback. " + CONSENT_DISCLOSURE,
             }
             for key in collecting
         ],
@@ -154,7 +154,7 @@ def openapi_spec() -> dict[str, Any]:
             "description": (
                 ABOUT
                 + " Plumbing returns a phone number the person must dial themselves; never dial for them. "
-                "Other services are collecting: requests are accepted and passed along when a buyer covers the service. "
+                "Other services are collecting: requests are accepted and passed along when a buyer covers the service. " + CONSENT_DISCLOSURE + " "
                 "A request is not a booking. Add \"dry_run\": true to validate without saving anything."
             ),
             "contact": {"email": CONTACT_EMAIL, "url": f"{SITE}/agents/"},
@@ -177,7 +177,7 @@ def openapi_spec() -> dict[str, Any]:
                         "JSON clients get JSON back. HTML form posts (application/x-www-form-urlencoded) are redirected "
                         "to the thanks page, or to the plumbing page for plumbing. For plumbing the response includes "
                         "call_to_connect: give the person the number and have them dial it. "
-                        "consent_to_contact must be true for non-plumbing services."
+                        "consent_to_contact must be true for non-plumbing services. " + CONSENT_DISCLOSURE
                     ),
                     "parameters": [
                         {"name": "dry_run", "in": "query", "required": False, "schema": {"type": "boolean"},
