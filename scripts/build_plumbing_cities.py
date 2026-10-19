@@ -885,6 +885,127 @@ for _k, _v in [("long-beach-ca", "anaheim-ca"), ("los-angeles-ca", "riverside-ca
     if _v not in SIBLINGS[_k]:
         SIBLINGS[_k].append(_v)
 
+# Batch 8 (2026-10-19)
+LOCAL8 = {
+    "silver-spring-md": {
+        "intro": "Silver Spring mixes older brick houses and garden apartments with newer high-rise condos, and cold winters alternate with humid summers. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In an apartment or condo building, a leak can reach the unit below. Check whether the building manager needs to know.",
+            "Older homes may have cast-iron drains or older supply pipes. Mention the age of the house if you know it.",
+            "On cold nights, pipes along exterior walls and in unheated spaces are more exposed. Know where the main shutoff is.",
+        ],
+        "focus": "leaks in multi-unit buildings, aging drain lines, and winter pipe freezes",
+    },
+    "kansas-city-ks": {
+        "intro": "Kansas City, Kansas has many older homes with basements, and the region's winters bring hard freezes while spring storms bring heavy rain. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Heavy rain can push water toward basement floor drains. Describe where any water appears.",
+            "Pipes in unheated basements and crawl spaces are more exposed on cold nights. Know where the main shutoff is.",
+            "Roots from mature trees can get into older sewer laterals. Mention backups that keep returning.",
+        ],
+        "focus": "basement drain backups, winter pipe freezes, and root-related sewer problems",
+    },
+    "ogden-ut": {
+        "intro": "Ogden sits at the foot of the Wasatch range, with cold, snowy winters, older homes near downtown, and hard water across the area. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Hard water leaves mineral buildup that can shorten the life of a water heater and clog faucet aerators and shower heads.",
+            "Pipes along exterior walls and in unheated spaces are more exposed on cold nights. Know where the main shutoff is.",
+            "Disconnect garden hoses and drain outdoor spigots before the first hard freeze.",
+        ],
+        "focus": "frozen pipes, water heater scale from hard water, and outdoor spigot freezes",
+    },
+    "saint-cloud-mn": {
+        "intro": "Saint Cloud winters are long and very cold, and many homes have basements where pipes, water heaters, and floor drains sit. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Pipes along exterior walls, in basements, and in unheated porches are more exposed on cold nights. Know where the main shutoff is.",
+            "A water heater that quits in winter is worth calling about quickly.",
+            "Spring snowmelt can push water toward basement floor drains. Describe where any water appears.",
+        ],
+        "focus": "frozen and burst pipes, water heater outages in winter, and basement drain backups",
+    },
+    "bethesda-md": {
+        "intro": "Bethesda has many older single-family homes under mature trees, along with newer condos near the town center, and winters bring regular freezes. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Roots from mature trees can get into older sewer laterals and cause backups that return.",
+            "In a condo building, a leak can reach the unit below. Check whether the building manager needs to know.",
+            "On cold nights, pipes along exterior walls and in unheated spaces are more exposed. Know where the main shutoff is.",
+        ],
+        "focus": "root-related sewer backups, leaks in condo buildings, and winter pipe freezes",
+    },
+    "spartanburg-sc": {
+        "intro": "Spartanburg has older mill-village houses alongside newer subdivisions, red clay soil, and humid summers with the occasional hard freeze. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Clay soil swells when wet and shrinks when dry, which can stress buried water and sewer lines.",
+            "Some homes outside the city use septic systems. Say whether you are on septic or city sewer when you call.",
+            "Winters are usually mild, but a hard freeze can split an outdoor spigot. Disconnect garden hoses beforehand.",
+        ],
+        "focus": "buried-line stress from clay, septic and sewer questions, and outdoor spigot freezes",
+    },
+    "fayetteville-nc": {
+        "intro": "Fayetteville has many rental homes and newer subdivisions on sandy soil, hot humid summers, and heavy rain from passing storms. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Some homes in the area use septic systems. Say whether you are on septic or city sewer when you call.",
+            "If you rent, let your landlord or property manager know about the problem as well.",
+            "Heavy rain can overload drains and sewer lines. Describe where any backup appears.",
+        ],
+        "focus": "septic and sewer questions, drain backups after heavy rain, and leaks in rental homes",
+    },
+    "denton-tx": {
+        "intro": "Denton mixes older homes near the square with fast-growing newer neighborhoods, many on slab foundations over clay soil, and summers are long and hot. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Clay soil shifts with dry and wet spells, which can stress slab foundations and the pipes under them.",
+            "An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
+            "Winters are usually mild, but a hard freeze can catch exposed pipes. Know where the main shutoff is.",
+        ],
+        "focus": "slab leaks, pipe stress from shifting clay soil, and rare hard freezes",
+    },
+}
+PLAN8 = {
+    "silver-spring-md": (["Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters", "Sewer lines"],
+                 {"Leaks": "In a Silver Spring apartment or condo, note whether the leak is inside your unit or coming from a ceiling or shared wall.",
+                  "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
+    "kansas-city-ks": (["Clogs and slow drains", "Burst or frozen pipes", "Sewer lines", "Leaks", "Water heaters"],
+                 {"Clogs and slow drains": "In Kansas City, Kansas, water coming up through a basement floor drain during heavy rain is worth describing on the call.",
+                  "Sewer lines": "In older neighborhoods, roots in the sewer lateral are a frequent reason backups return."}),
+    "ogden-ut": (["Burst or frozen pipes", "Water heaters", "Leaks", "Clogs and slow drains", "Sewer lines"],
+                 {"Burst or frozen pipes": "In an Ogden cold snap, pipes along outside walls and in unheated spaces are the usual trouble spots.",
+                  "Water heaters": "Hard water can leave sediment in the tank; note any rumbling or popping sounds."}),
+    "saint-cloud-mn": (["Burst or frozen pipes", "Water heaters", "Clogs and slow drains", "Leaks", "Sewer lines"],
+                 {"Burst or frozen pipes": "In a Saint Cloud cold snap, pipes in basements and along outside walls are the usual trouble spots.",
+                  "Water heaters": "A water heater that quits in winter is worth calling about quickly."}),
+    "bethesda-md": (["Sewer lines", "Leaks", "Burst or frozen pipes", "Clogs and slow drains", "Water heaters"],
+                 {"Sewer lines": "In older Bethesda neighborhoods, roots in the sewer lateral are a frequent reason backups return.",
+                  "Leaks": "In a condo, note whether the leak is inside your unit or coming from a ceiling or shared wall."}),
+    "spartanburg-sc": (["Sewer lines", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters"],
+                 {"Sewer lines": "If a Spartanburg-area home is on septic, slow drains throughout the house are worth mentioning on the call.",
+                  "Burst or frozen pipes": "A hard freeze can split an outdoor spigot even when indoor pipes are fine."}),
+    "fayetteville-nc": (["Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters", "Burst or frozen pipes"],
+                 {"Sewer lines": "If a Fayetteville-area home is on septic, slow drains throughout the house are worth mentioning on the call.",
+                  "Clogs and slow drains": "After heavy rain, note whether more than one drain is backing up."}),
+    "denton-tx": (["Leaks", "Sewer lines", "Water heaters", "Clogs and slow drains", "Burst or frozen pipes"],
+                 {"Leaks": "For Denton homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
+                  "Sewer lines": "Shifting clay soil can stress buried sewer lines; mention backups that keep returning."}),
+}
+SIB8 = {
+    "silver-spring-md": ["bethesda-md", "baltimore-md", "arlington-va"],
+    "kansas-city-ks": ["kansas-city-mo", "overland-park-ks", "oklahoma-city-ok"],
+    "ogden-ut": ["salt-lake-city-ut", "boise-id", "denver-co"],
+    "saint-cloud-mn": ["kansas-city-mo", "dayton-oh", "columbus-oh"],
+    "bethesda-md": ["silver-spring-md", "arlington-va", "alexandria-va"],
+    "spartanburg-sc": ["greenville-sc", "columbia-sc", "greensboro-nc"],
+    "fayetteville-nc": ["raleigh-nc", "durham-nc", "columbia-sc"],
+    "denton-tx": ["dallas-tx", "fort-worth-tx", "arlington-tx"],
+}
+
+LOCAL.update(LOCAL8)
+ISSUE_PLAN.update(PLAN8)
+SIBLINGS.update(SIB8)
+for _k, _v in [("baltimore-md", "silver-spring-md"), ("arlington-va", "bethesda-md"), ("kansas-city-mo", "kansas-city-ks"),
+               ("overland-park-ks", "kansas-city-ks"), ("salt-lake-city-ut", "ogden-ut"), ("greenville-sc", "spartanburg-sc"),
+               ("raleigh-nc", "fayetteville-nc"), ("dallas-tx", "denton-tx")]:
+    if _v not in SIBLINGS[_k]:
+        SIBLINGS[_k].append(_v)
+
 
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
