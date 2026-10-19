@@ -553,9 +553,9 @@ LOCAL5 = {
     "harrisburg-pa": {
         "intro": "Harrisburg winters bring regular freezes, and many homes have basements where supply lines, drains, and water heaters sit. The river valley also sees heavy spring rain. Call to be connected with a local plumbing professional.",
         "notes": [
-            "Pipes along exterior walls and in unheated basements are more exposed on cold nights. Know where the main shutoff is.",
-            "Older neighborhoods may still have cast-iron or clay drain lines. Mention the age of the house if you know it.",
-            "Spring rain can send water toward basement floor drains. Describe where any water appears.",
+            "Harrisburg sits along the Susquehanna River, and heavy rain can send water toward basements in low-lying neighborhoods. Describe where any water appears.",
+            "Row homes in older city neighborhoods share walls, so a leak can reach next door. Mention whether water is showing up on the other side.",
+            "Pipes in unheated basements and along outside walls are more exposed on cold nights. Know where the main shutoff is.",
         ],
         "focus": "winter pipe freezes, basement drain backups after spring rain, and water heater outages",
     },
@@ -648,9 +648,9 @@ LOCAL6 = {
     "greenville-sc": {
         "intro": "Greenville sits in the Upstate foothills, with red clay soil, humid summers, and a mix of older mill-village homes and newer subdivisions. Call to be connected with a local plumbing professional.",
         "notes": [
-            "Clay soil swells when wet and shrinks when dry, which can stress buried water and sewer lines.",
+            "Upstate winters can bring ice storms. If the power is out and the heat is off, pipes in crawl spaces can freeze.",
+            "Many homes sit over crawl spaces, where a slow leak can go unnoticed. Mention a musty smell or damp floors.",
             "Roots from mature trees can get into older sewer laterals. Mention backups that keep returning.",
-            "Winters are usually mild, but a hard freeze can split an outdoor spigot. Disconnect garden hoses beforehand.",
         ],
         "focus": "sewer laterals and root intrusion, buried-line stress from clay, and outdoor spigot freezes",
     },
@@ -693,9 +693,9 @@ LOCAL6 = {
     "stockton-ca": {
         "intro": "Stockton sits in the Central Valley, where hot, dry summers and hard water take a toll on water heaters and fixtures, and winter nights can still freeze outdoor lines. Call to be connected with a local plumbing professional.",
         "notes": [
-            "Hard water leaves mineral buildup that can shorten the life of a water heater and clog faucet aerators and shower heads.",
+            "Central Valley winters bring tule fog and cold nights near freezing, which can catch exposed outdoor pipes and hose bibs.",
+            "Long, dry summers mean heavy sprinkler use. A soggy patch of lawn or a hissing valve box can point to an irrigation line leak.",
             "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing on the call.",
-            "Drain outdoor spigots and disconnect garden hoses before a freeze, and know where the main shutoff is.",
         ],
         "focus": "water heater scale, slab leaks, and frozen outdoor lines",
     },
@@ -796,8 +796,8 @@ LOCAL7 = {
     "waterbury-ct": {
         "intro": "Waterbury has many older homes and multi-family houses on hilly streets, and cold, wet winters are hard on pipes and drains. Call to be connected with a local plumbing professional.",
         "notes": [
+            "Waterbury is built on hills along the Naugatuck River, so many homes sit above or below the street. Mention backups that keep returning on a sloped lot.",
             "In a multi-family house, a leak can travel between floors. Let neighbors or the owner know if water is moving.",
-            "Older homes may have cast-iron drain lines or older supply pipes. Mention the age of the house if you know it.",
             "On cold nights, pipes along exterior walls and in unheated basements are more exposed. Know where the main shutoff is.",
         ],
         "focus": "frozen pipes in older houses, drain problems in multi-family homes, and leaks between floors",
@@ -1114,6 +1114,25 @@ def jsonld(c: dict, url: str, title: str, desc: str, faqs: list | None = None) -
     return json.dumps(data, indent=2)
 
 
+def other_services_html(c: dict) -> str:
+    """Links to request-form pages for the same city (no partner names on plumbing pages)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_bsc", Path(__file__).with_name("build_service_cities.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    links = [f'        <li><a href="/{cat}/{c["slug"]}/">{esc(svc["label"])} in {esc(c["city"])}</a></li>'
+             for cat, svc in mod.SERVICES.items() if c["slug"] in svc["cities"]]
+    if not links:
+        return ""
+    body = "\n".join(links)
+    return f"""    <section>
+      <h2>Other home services in {esc(c['city'])}</h2>
+      <ul class="city-links">
+{body}
+      </ul>
+    </section>"""
+
+
 def city_page(c: dict) -> str:
     loc = LOCAL[c["slug"]]
     name = f"{c['city']}, {c['abbr']}"
@@ -1142,10 +1161,19 @@ def city_page(c: dict) -> str:
               "No water at all to the house." if warm else "No water after a freeze, which can mean a frozen or split pipe."]
     urgent_html = "\n".join(f"        <li>{esc(u)}</li>" for u in urgent)
     faq_html = "\n".join(f"      <h3>{esc(q)}</h3>\n      <p>{esc(a)}</p>" for q, a in faqs)
-    areas_html = ""
+    def _zip_label(z: str) -> str:
+        return z.replace("-", " to ") if "-" in z else f"{z}xx" if len(z) == 3 else z
+    zl = [_zip_label(z) for z in c["zip_areas"]]
+    zl_text = ", ".join(zl[:-1]) + f" and {zl[-1]}" if len(zl) > 1 else zl[0]
+    zips_html = f"""
+    <section>
+      <h2>ZIP codes in the {esc(c['city'])} area</h2>
+      <p>Our partner's current coverage list includes {c['zips']} ZIP codes with {esc(c['city'])} as the city name. This page covers the {esc(c['city'])} area, ZIP codes {esc(zl_text)}. Coverage can change, so have your ZIP code ready when you call.</p>
+    </section>"""
+    areas_html = zips_html
     if areas:
         items = "\n".join(f"        <li>{esc(a)}</li>" for a in areas)
-        areas_html = f"""
+        areas_html += f"""
     <section>
       <h2>Other covered areas near {esc(c['city'])}</h2>
       <p>The same number also reaches participating plumbing professionals in these nearby places, based on our partner's current ZIP code coverage. Coverage can change.</p>
@@ -1254,6 +1282,7 @@ def city_page(c: dict) -> str:
     </section>
 {areas_html}
 {siblings_html}
+{other_services_html(c)}
     <p class="note"><a href="/plumbing/">All plumbing locations</a> · For other services, <a href="/#request">send a request</a>.</p>
   </main>
   {footer()}
@@ -1272,11 +1301,14 @@ def index_page(cities: list[dict]) -> str:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plumbing — call a local professional | Zaptu</title>
-  <meta name="description" content="Need a plumber? Call to be connected with a local plumbing professional. Zaptu connects homeowners with independent contractors and does not perform the work." />
+  <title>Find a Plumber — Call a Local Professional | Zaptu</title>
+  <meta name="description" content="Need a plumber? Call to be connected with a local plumbing professional in {len(cities)} US cities. Zaptu does not perform the work." />
   <link rel="canonical" href="https://zaptu.ai/plumbing/" />
   <meta name="robots" content="index,follow" />
   <link rel="stylesheet" href="/style.css" />
+  <script type="application/ld+json">
+{{"@context": "https://schema.org", "@graph": [{{"@type": "CollectionPage", "@id": "https://zaptu.ai/plumbing/", "url": "https://zaptu.ai/plumbing/", "name": "Find a Plumber — Call a Local Professional | Zaptu", "isPartOf": {{"@type": "WebSite", "name": "Zaptu", "url": "https://zaptu.ai/"}}}}, {{"@type": "BreadcrumbList", "itemListElement": [{{"@type": "ListItem", "position": 1, "name": "Zaptu", "item": "https://zaptu.ai/"}}, {{"@type": "ListItem", "position": 2, "name": "Plumbing", "item": "https://zaptu.ai/plumbing/"}}]}}]}}
+  </script>
 </head>
 <body>
   <header>
