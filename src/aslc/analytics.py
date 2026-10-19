@@ -4,8 +4,10 @@ Unique visitors are counted with sha256(daily_salt + ip + user_agent). The salt 
 random, kept only in memory, and rotates every UTC day, so a hash cannot be linked
 to a person or across days. Raw IPs and user agents are never written to disk.
 
-Storage: SQLite at <data_dir>/analytics.sqlite3 (override with ZAPTU_ANALYTICS_DB).
-Only durable if that path is on a persistent disk.
+Storage: Postgres if DATABASE_URL is set (Supabase-compatible, table
+``events``), otherwise SQLite at <data_dir>/analytics.sqlite3 (override with
+ZAPTU_ANALYTICS_DB). The SQLite path is only durable on a persistent disk;
+Postgres survives Render restarts/redeploys.
 """
 
 from __future__ import annotations
@@ -21,7 +23,7 @@ from pathlib import Path
 from threading import Lock
 from urllib.parse import urlparse
 
-from . import config
+from . import config, db
 
 # sha256 of the token in the box secrets file. Env STATS_TOKEN (plain) or
 # STATS_TOKEN_SHA256 override it. Only the hash is in the (public) repo.
@@ -64,6 +66,27 @@ def _connect() -> sqlite3.Connection:
     )
     con.execute("CREATE INDEX IF NOT EXISTS events_day ON events(day)")
     return con
+
+
+# --- Postgres backend (DATABASE_URL set) ---
+# Seam for tests: monkeypatch analytics._pg_connect with a fake factory.
+
+def _pg_connect():
+    return db.connect_postgres()
+
+
+_PG_DDL = (
+    "CREATE TABLE IF NOT EXISTS events (day TEXT, ts TEXT, kind TEXT, name TEXT, "
+    "referrer TEXT, visitor TEXT)",
+    "CREATE INDEX IF NOT EXISTS events_day ON events(day)",
+)
+
+
+def _pg_ensure(con) -> None:
+    cur = con.cursor()
+    for stmt in _PG_DDL:
+        cur.execute(stmt)
+    con.commit()
 
 
 def _today() -> str:
@@ -118,15 +141,23 @@ def clean_path(path: str | None) -> str:
 
 def _insert(kind: str, name: str, referrer: str = "", visitor: str = "") -> None:
     now = datetime.now(timezone.utc)
+    params = (now.strftime("%Y-%m-%d"), now.strftime("%H:%M:%S"), kind, name[:200], referrer[:100], visitor)
     try:
+        if db.use_postgres():
+            con = _pg_connect()
+            try:
+                _pg_ensure(con)
+                cur = con.cursor()
+                cur.execute("INSERT INTO events VALUES (%s,%s,%s,%s,%s,%s)", params)
+                con.commit()
+            finally:
+                con.close()
+            return
         con = _connect()
         with con:
-            con.execute(
-                "INSERT INTO events VALUES (?,?,?,?,?,?)",
-                (now.strftime("%Y-%m-%d"), now.strftime("%H:%M:%S"), kind, name[:200], referrer[:100], visitor),
-            )
+            con.execute("INSERT INTO events VALUES (?,?,?,?,?,?)", params)
         con.close()
-    except sqlite3.Error:
+    except Exception:
         pass  # counting must never break the site or API
 
 
@@ -155,8 +186,25 @@ def token_ok(token: str | None) -> bool:
 def stats(days: int = 30) -> dict:
     days = max(1, min(days, 366))
     since = (datetime.now(timezone.utc) - timedelta(days=days - 1)).strftime("%Y-%m-%d")
-    con = _connect()
-    q = lambda sql: con.execute(sql, (since,)).fetchall()  # noqa: E731
+    pg = db.use_postgres()
+    ph = "%s" if pg else "?"
+    if pg:
+        con = _pg_connect()
+        _pg_ensure(con)
+
+        def q(sql):  # noqa: E306
+            cur = con.cursor()
+            cur.execute(sql.replace("?", ph), (since,))
+            return cur.fetchall()
+
+        def q_one(sql):
+            cur = con.cursor()
+            cur.execute(sql.replace("?", ph))
+            return cur.fetchone()
+    else:
+        con = _connect()
+        q = lambda sql: con.execute(sql, (since,)).fetchall()  # noqa: E731
+        q_one = lambda sql: con.execute(sql).fetchone()  # noqa: E731
     per_day = {
         d: {"visits": v, "unique_visitors": u, "call_clicks": 0, "api_calls": 0}
         for d, v, u in q("SELECT day, COUNT(*), COUNT(DISTINCT visitor) FROM events WHERE kind='pageview' AND day>=? GROUP BY day")
@@ -172,7 +220,7 @@ def stats(days: int = 30) -> dict:
     total = q("SELECT COUNT(*) FROM events WHERE kind='pageview' AND day>=?")[0][0]
     clicks = q("SELECT COUNT(*) FROM events WHERE kind='call_click' AND day>=?")[0][0]
     api = q("SELECT COUNT(*) FROM events WHERE kind='api' AND day>=?")[0][0]
-    first = con.execute("SELECT MIN(day) FROM events").fetchone()[0]
+    first = q_one("SELECT MIN(day) FROM events")[0]
     out = {
         "range": {"days": days, "since": since, "timezone": "UTC"},
         "data_since": first,
