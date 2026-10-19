@@ -34,6 +34,8 @@
     #dash-pin { text-align:center; font-size:24px; letter-spacing:.35em; padding:16px 12px 16px 20px; border-radius:12px; }
     #login-form button[type="submit"] { margin-top:16px; width:100%; }
     #login-panel .err { margin:12px 0 0; font-size:14px; }
+    #map { height:320px; border-radius:12px; background:#0b0d12; border:1px solid var(--line); }
+    #map .map-empty { padding:16px; color:var(--muted); font-size:14px; }
     @media (max-width:900px){ .dash-grid{grid-template-columns:1fr 1fr;} .dash-panels{grid-template-columns:1fr;} }
     @media (max-width:520px){ .dash-grid{grid-template-columns:1fr;} }
   </style>
@@ -92,6 +94,8 @@
         <section class="dash-panel"><h2>API and MCP calls by endpoint</h2><div id="api-by-endpoint"></div></section>
         <section class="dash-panel"><h2>Call clicks by page</h2><div id="call-clicks-by-page"></div></section>
         <section class="dash-panel"><h2>Per day (UTC)</h2><div id="per-day"></div></section>
+        <section class="dash-panel"><h2>Visits by place</h2><div id="top-locations"></div><p class="hint">Locations are approximate, from IP address, city-level only.</p></section>
+        <section class="dash-panel"><h2>Map</h2><div id="map"><p class="map-empty">Map loads after sign-in, when there are located visits.</p></div><p class="hint">Locations are approximate, from IP address, city-level only. Map tiles (OpenStreetMap via Leaflet) load only after you sign in with the PIN.</p></section>
         <section class="dash-panel"><h2>Notes</h2><p id="stats-notes" class="empty"></p><p class="empty">Counts are stored in the database and survive API restarts; nightly snapshots are a backup record.</p></section>
       </div>
     </section>
@@ -126,6 +130,40 @@
       table.appendChild(tbody); container.replaceChildren(table);
     }
     function countOf(rows, name) { for (var i = 0; i < (rows || []).length; i++) if (rows[i].name === name) return rows[i].count; return 0; }
+    function placeName(loc) { var parts = [loc.city, loc.region, loc.country].filter(function (x) { return x && x !== "unknown"; }); return parts.length ? parts.join(", ") : "Unknown"; }
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+    var leafletPromise = null, dashMap = null;
+    function loadLeaflet() {
+      if (window.L) return Promise.resolve(window.L);
+      if (leafletPromise) return leafletPromise;
+      leafletPromise = new Promise(function (resolve, reject) {
+        var css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.appendChild(css);
+        var js = document.createElement("script"); js.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        js.onload = function () { resolve(window.L); }; js.onerror = reject; document.head.appendChild(js);
+      });
+      return leafletPromise;
+    }
+    function renderMap(locations) {
+      var points = (locations || []).filter(function (l) { return typeof l.lat === "number" && typeof l.lng === "number"; });
+      var box = el("map");
+      if (!points.length) { box.innerHTML = ""; var p0 = document.createElement("p"); p0.className = "map-empty"; p0.textContent = "No mapped locations yet. The list above still shows visits by place."; box.appendChild(p0); return; }
+      loadLeaflet().then(function (L) {
+        box.innerHTML = "";
+        if (dashMap) { dashMap.remove(); dashMap = null; }
+        dashMap = L.map(box).setView([points[0].lat, points[0].lng], 3);
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors", maxZoom: 18 }).addTo(dashMap);
+        var bounds = [];
+        points.forEach(function (l) {
+          var visits = l.visits || 1;
+          L.circleMarker([l.lat, l.lng], { radius: Math.max(6, Math.min(24, 5 + Math.sqrt(visits) * 3)), color: "#c8f54a", fillColor: "#c8f54a", fillOpacity: 0.65, weight: 1 })
+            .addTo(dashMap).bindPopup(escapeHtml(placeName(l)) + ": " + visits + (visits === 1 ? " visit" : " visits"));
+          bounds.push([l.lat, l.lng]);
+        });
+        if (bounds.length > 1) dashMap.fitBounds(bounds, { padding: [24, 24] });
+      }).catch(function () {
+        box.innerHTML = ""; var p = document.createElement("p"); p.className = "map-empty"; p.textContent = "Map could not load. The list above still shows visits by place."; box.appendChild(p);
+      });
+    }
 
     function render(s) {
       var todayUtc = new Date().toISOString().slice(0, 10);
@@ -148,6 +186,9 @@
       tableInto(el("call-clicks-by-page"), s.call_clicks_by_page, [{key:"name",label:"Page"},{key:"count",label:"Clicks"}]);
       var perDay = (s.per_day || []).map(function (d) { return {day:d.day, visits:d.visits, unique_visitors:d.unique_visitors, call_clicks:d.call_clicks, api_calls:d.api_calls}; });
       tableInto(el("per-day"), perDay, [{key:"day",label:"Day"},{key:"visits",label:"Visits"},{key:"unique_visitors",label:"Unique"},{key:"call_clicks",label:"Call clicks"},{key:"api_calls",label:"API calls"}]);
+      var locRows = (s.top_locations || []).map(function (l) { return {place: placeName(l), visits: l.visits}; });
+      tableInto(el("top-locations"), locRows, [{key:"place",label:"Place"},{key:"visits",label:"Visits"}]);
+      renderMap(s.top_locations || []);
       el("stats-notes").textContent = s.notes || "";
       var range = s.range ? ("Showing the last " + s.range.days + " days (since " + s.range.since + ", " + (s.range.timezone || "UTC") + "). ") : "";
       el("dash-meta").textContent = range + "Counter data since " + (s.data_since || "unknown") + ". Updated " + new Date().toLocaleString() + ".";

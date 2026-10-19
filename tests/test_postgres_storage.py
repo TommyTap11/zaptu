@@ -24,7 +24,7 @@ class FakeCursor:
         params = params or ()
         s = " ".join(sql.split())
         self.con.queries.append((s, params))
-        if s.startswith(("CREATE TABLE", "CREATE INDEX")):
+        if s.startswith(("CREATE TABLE", "CREATE INDEX", "ALTER TABLE")):
             self._result = []
         elif s.startswith("INSERT INTO events"):
             self.con.events.append(params)  # (day, ts, kind, name, referrer, visitor)
@@ -49,6 +49,20 @@ class FakeCursor:
         kind = m.group(1) if m else None
         if kind:
             ev = [e for e in ev if e[2] == kind]
+        if "MAX(lat)" in s:  # top_locations aggregation
+            groups = {}
+            for e in ev:
+                key = ((e[6] if len(e) > 6 else None) or "unknown",
+                       (e[7] if len(e) > 7 else None) or "",
+                       (e[8] if len(e) > 8 else None) or "")
+                g = groups.setdefault(key, {"lat": None, "lng": None, "count": 0})
+                if len(e) > 9 and e[9] is not None:
+                    g["lat"] = e[9] if g["lat"] is None else max(g["lat"], e[9])
+                if len(e) > 10 and e[10] is not None:
+                    g["lng"] = e[10] if g["lng"] is None else max(g["lng"], e[10])
+                g["count"] += 1
+            rows = [(k[0], k[1], k[2], v["lat"], v["lng"], v["count"]) for k, v in groups.items()]
+            return sorted(rows, key=lambda r: -r[5])[:25]
         if "SELECT MIN(day)" in s:
             return [(min((e[0] for e in self.con.events), default=None),)]
         if s.startswith("SELECT COUNT(*)"):
@@ -239,3 +253,22 @@ def test_jsonl_leads_without_database_url(no_pg):
     assert storage.get_lead(rec.id).id == rec.id
     assert [r.id for r in storage.list_leads()] == [rec.id]
     assert (no_pg / "leads.jsonl").exists()
+
+
+def test_pg_location_columns_and_stats(fake_pg, monkeypatch):
+    from aslc import analytics
+
+    analytics._GEO_CACHE.clear()
+    monkeypatch.setattr(analytics, "_fetch_geo", lambda ip: {
+        "status": "success", "country": "United States", "regionName": "Arizona",
+        "city": "Mesa", "lat": 33.4152, "lon": -111.8315})
+    assert analytics.record_hit("pageview", "/", "", "8.8.4.4", UA)
+    # ALTER migrations were issued and the insert carries coarse location, no raw IP
+    alters = [q[0] for q in fake_pg.queries if q[0].startswith("ALTER TABLE events ADD COLUMN")]
+    assert len(alters) >= 5
+    inserts = [q for q in fake_pg.queries if q[0].startswith("INSERT INTO events")]
+    assert inserts[0][1][6:] == ("United States", "Arizona", "Mesa", 33.4152, -111.8315)
+    assert "8.8.4.4" not in str(inserts[0][1])
+    s = analytics.stats(30)
+    assert s["top_locations"] == [{"country": "United States", "region": "Arizona", "city": "Mesa",
+                                   "lat": 33.4152, "lng": -111.8315, "visits": 1}]

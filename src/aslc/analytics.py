@@ -1,8 +1,11 @@
-"""Privacy-friendly visit and usage counter (no cookies, no IPs, no third parties).
+"""Privacy-friendly visit and usage counter (no cookies, no stored IPs).
 
 Unique visitors are counted with sha256(daily_salt + ip + user_agent). The salt is
 random, kept only in memory, and rotates every UTC day, so a hash cannot be linked
 to a person or across days. Raw IPs and user agents are never written to disk.
+On a hit, the IP is used transiently (server-side, never stored) to derive a
+coarse city-level location via a free IP geolocation lookup; only country,
+region, city and approximate lat/lng are stored.
 
 Storage: Postgres if DATABASE_URL is set (Supabase-compatible, table
 ``events``), otherwise SQLite at <data_dir>/analytics.sqlite3 (override with
@@ -14,6 +17,8 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import ipaddress
+import json
 import os
 import re
 import secrets
@@ -21,7 +26,8 @@ import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from threading import Lock
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
+from urllib.request import Request as UrlRequest, urlopen
 
 from . import config, db
 
@@ -50,6 +56,79 @@ AI_HOSTS = {
 SITE_HOSTS = {"zaptu.ai", "www.zaptu.ai", "api.zaptu.ai"}
 ALLOWED_EVENTS = {"pageview", "call_click"}
 
+UNKNOWN_LOCATION: dict = {"country": "unknown", "region": "", "city": "", "lat": None, "lng": None}
+_LOCATION_COLUMNS = ("country", "region", "city", "lat", "lng")
+_GEO_CACHE: dict[str, dict] = {}
+_GEO_LOCK = Lock()
+_GEO_TIMEOUT = 1.5
+
+
+def _is_public_ip(ip: str) -> bool:
+    try:
+        addr = ipaddress.ip_address((ip or "").strip())
+    except ValueError:
+        return False
+    return bool(addr.is_global) and not (addr.is_private or addr.is_loopback or addr.is_link_local
+                                         or addr.is_reserved or addr.is_multicast or addr.is_unspecified)
+
+
+def _geo_cache_key(ip: str) -> str:
+    try:
+        addr = ipaddress.ip_address(ip.strip())
+    except ValueError:
+        return ip
+    bits = 24 if addr.version == 4 else 48
+    return str(ipaddress.ip_network(f"{addr}/{bits}", strict=False))
+
+
+def _clean_location(raw: dict | None) -> dict:
+    if not isinstance(raw, dict) or raw.get("status") not in (None, "success"):
+        return dict(UNKNOWN_LOCATION)
+    def txt(v):
+        return str(v or "").strip()[:100]
+    try:
+        lat = float(raw["lat"]) if raw.get("lat") is not None else None
+        lng = float(raw.get("lon", raw.get("lng"))) if (raw.get("lon") is not None or raw.get("lng") is not None) else None
+    except (TypeError, ValueError):
+        lat = lng = None
+    if lat is not None and not (-90 <= lat <= 90):
+        lat = None
+    if lng is not None and not (-180 <= lng <= 180):
+        lng = None
+    country = txt(raw.get("country")) or "unknown"
+    return {"country": country, "region": txt(raw.get("regionName") or raw.get("region")),
+            "city": txt(raw.get("city")), "lat": lat, "lng": lng}
+
+
+def _fetch_geo(ip: str) -> dict:
+    """Free ip-api.com lookup (server-side). Seam for tests; fail silently."""
+    url = f"http://ip-api.com/json/{quote(ip)}?fields=status,country,regionName,city,lat,lon"
+    req = UrlRequest(url, headers={"User-Agent": "zaptu-analytics/1.0"})
+    with urlopen(req, timeout=_GEO_TIMEOUT) as resp:  # noqa: S310 - fixed host, ip quoted
+        return json.loads(resp.read(4096).decode("utf-8", "replace"))
+
+
+def lookup_location(ip: str) -> dict:
+    """Coarse city-level location for a public IP; unknown for private/bad IPs."""
+    if os.getenv("ZAPTU_GEO_LOOKUP", "1").lower() in ("0", "false", "off", "no"):
+        return dict(UNKNOWN_LOCATION)
+    if not _is_public_ip(ip):
+        return dict(UNKNOWN_LOCATION)
+    key = _geo_cache_key(ip)
+    with _GEO_LOCK:
+        cached = _GEO_CACHE.get(key)
+    if cached is not None:
+        return dict(cached)
+    try:
+        loc = _clean_location(_fetch_geo(ip.strip()))
+    except Exception:
+        loc = dict(UNKNOWN_LOCATION)
+    with _GEO_LOCK:
+        if len(_GEO_CACHE) > 1024:
+            _GEO_CACHE.clear()
+        _GEO_CACHE[key] = loc
+    return dict(loc)
+
 
 def _db_path() -> Path:
     raw = os.getenv("ZAPTU_ANALYTICS_DB")
@@ -62,8 +141,14 @@ def _connect() -> sqlite3.Connection:
     con = sqlite3.connect(path, timeout=5)
     con.execute(
         "CREATE TABLE IF NOT EXISTS events (day TEXT, ts TEXT, kind TEXT, name TEXT, "
-        "referrer TEXT, visitor TEXT)"
+        "referrer TEXT, visitor TEXT, country TEXT, region TEXT, city TEXT, lat REAL, lng REAL)"
     )
+    # Migration-safe: add location columns to pre-existing tables.
+    existing = {r[1] for r in con.execute("PRAGMA table_info(events)")}
+    types = {"country": "TEXT", "region": "TEXT", "city": "TEXT", "lat": "REAL", "lng": "REAL"}
+    for col in _LOCATION_COLUMNS:
+        if col not in existing:
+            con.execute(f"ALTER TABLE events ADD COLUMN {col} {types[col]}")
     con.execute("CREATE INDEX IF NOT EXISTS events_day ON events(day)")
     return con
 
@@ -77,7 +162,13 @@ def _pg_connect():
 
 _PG_DDL = (
     "CREATE TABLE IF NOT EXISTS events (day TEXT, ts TEXT, kind TEXT, name TEXT, "
-    "referrer TEXT, visitor TEXT)",
+    "referrer TEXT, visitor TEXT, country TEXT, region TEXT, city TEXT, "
+    "lat DOUBLE PRECISION, lng DOUBLE PRECISION)",
+    "ALTER TABLE events ADD COLUMN IF NOT EXISTS country TEXT",
+    "ALTER TABLE events ADD COLUMN IF NOT EXISTS region TEXT",
+    "ALTER TABLE events ADD COLUMN IF NOT EXISTS city TEXT",
+    "ALTER TABLE events ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION",
+    "ALTER TABLE events ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION",
     "CREATE INDEX IF NOT EXISTS events_day ON events(day)",
 )
 
@@ -139,23 +230,26 @@ def clean_path(path: str | None) -> str:
     return p
 
 
-def _insert(kind: str, name: str, referrer: str = "", visitor: str = "") -> None:
+def _insert(kind: str, name: str, referrer: str = "", visitor: str = "", location: dict | None = None) -> None:
+    loc = location or UNKNOWN_LOCATION
     now = datetime.now(timezone.utc)
-    params = (now.strftime("%Y-%m-%d"), now.strftime("%H:%M:%S"), kind, name[:200], referrer[:100], visitor)
+    params = (now.strftime("%Y-%m-%d"), now.strftime("%H:%M:%S"), kind, name[:200], referrer[:100], visitor,
+              loc.get("country") or "unknown", loc.get("region") or "", loc.get("city") or "",
+              loc.get("lat"), loc.get("lng"))
     try:
         if db.use_postgres():
             con = _pg_connect()
             try:
                 _pg_ensure(con)
                 cur = con.cursor()
-                cur.execute("INSERT INTO events VALUES (%s,%s,%s,%s,%s,%s)", params)
+                cur.execute("INSERT INTO events VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", params)
                 con.commit()
             finally:
                 con.close()
             return
         con = _connect()
         with con:
-            con.execute("INSERT INTO events VALUES (?,?,?,?,?,?)", params)
+            con.execute("INSERT INTO events VALUES (?,?,?,?,?,?,?,?,?,?,?)", params)
         con.close()
     except Exception:
         pass  # counting must never break the site or API
@@ -165,7 +259,8 @@ def record_hit(event: str, path: str, referrer: str | None, ip: str, user_agent:
     """Returns True if counted, False if filtered (bot / unknown event)."""
     if event not in ALLOWED_EVENTS or is_bot(user_agent):
         return False
-    _insert(event, clean_path(path), classify_referrer(referrer), visitor_hash(ip, user_agent))
+    _insert(event, clean_path(path), classify_referrer(referrer), visitor_hash(ip, user_agent),
+            lookup_location(ip))
     return True
 
 
@@ -229,6 +324,15 @@ def stats(days: int = 30) -> dict:
         {"name": n, "count": c}
         for n, c in q(f"SELECT {col}, COUNT(*) c FROM events WHERE kind='{kind}' AND day>=? GROUP BY {col} ORDER BY c DESC LIMIT 25")
     ]
+    top_locations = [
+        {"country": country or "unknown", "region": region or "", "city": city or "",
+         "lat": lat, "lng": lng, "visits": c}
+        for country, region, city, lat, lng, c in q(
+            "SELECT COALESCE(country,'unknown'), COALESCE(region,''), COALESCE(city,''), MAX(lat), MAX(lng), COUNT(*) c "
+            "FROM events WHERE kind='pageview' AND day>=? "
+            "GROUP BY COALESCE(country,'unknown'), COALESCE(region,''), COALESCE(city,'') ORDER BY c DESC LIMIT 25"
+        )
+    ]
     total = q("SELECT COUNT(*) FROM events WHERE kind='pageview' AND day>=?")[0][0]
     clicks = q("SELECT COUNT(*) FROM events WHERE kind='call_click' AND day>=?")[0][0]
     api = q("SELECT COUNT(*) FROM events WHERE kind='api' AND day>=?")[0][0]
@@ -242,7 +346,9 @@ def stats(days: int = 30) -> dict:
         "referrers": top("pageview", "referrer"),
         "call_clicks_by_page": top("call_click", "name"),
         "api_by_endpoint": top("api", "name"),
-        "notes": "unique_visitors are per day (daily-rotating salted hash); bots filtered by user agent.",
+        "top_locations": top_locations,
+        "notes": "unique_visitors are per day (daily-rotating salted hash); bots filtered by user agent. "
+                 "Locations are approximate, from IP address, city-level only; raw IPs are never stored.",
     }
     con.close()
     return out

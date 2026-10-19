@@ -73,7 +73,7 @@ def test_dashboard_has_clean_pin_entry():
 def test_dashboard_uses_real_stats_fields_and_honest_labels():
     t = html()
     for field in ("data_since", "totals", "per_day", "unique_visitors", "call_clicks",
-                  "top_pages", "referrers", "api_by_endpoint", "call_clicks_by_page"):
+                  "top_pages", "referrers", "api_by_endpoint", "call_clicks_by_page", "top_locations"):
         assert field in t, field
     assert "Counts are stored in the database and survive API restarts; nightly snapshots are a backup record." in t
     assert "not tracked here yet" in t
@@ -82,3 +82,15 @@ def test_dashboard_uses_real_stats_fields_and_honest_labels():
 def test_seo_script_skips_dashboard():
     seo = (ROOT / "scripts" / "seo.py").read_text(encoding="utf-8")
     assert "dashboard" in seo and "PRIVATE" in seo
+
+
+def test_dashboard_has_location_map_and_list():
+    t = html()
+    assert 'id="top-locations"' in t and 'id="map"' in t
+    assert "Visits by place" in t
+    assert "Locations are approximate, from IP address, city-level only." in t
+    # Leaflet/OpenStreetMap is loaded dynamically only after PIN login succeeds
+    # (renderMap is called from render(), which runs only on a 200 stats reply).
+    assert "loadLeaflet" in t and "leaflet@1.9.4" in t and "tile.openstreetmap.org" in t
+    assert '<link rel="stylesheet" href="https://unpkg.com' not in t
+    assert '<script src="https://unpkg.com' not in t

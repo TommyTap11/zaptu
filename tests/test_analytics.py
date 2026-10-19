@@ -155,3 +155,63 @@ def test_counter_script_is_cookieless_beacon():
 def test_privacy_mentions_anonymous_counting():
     text = (WEB / "privacy" / "index.html").read_text(encoding="utf-8")
     assert "count visits anonymously" in text and "do not store IP addresses" in text
+
+
+def test_location_unknown_for_private_ip_without_lookup(monkeypatch):
+    from aslc import analytics
+
+    analytics._GEO_CACHE.clear()
+    monkeypatch.setattr(analytics, "_fetch_geo", lambda ip: (_ for _ in ()).throw(AssertionError("no lookup")))
+    assert analytics.lookup_location("10.0.0.5")["country"] == "unknown"
+    assert analytics.lookup_location("127.0.0.1")["country"] == "unknown"
+    assert analytics.lookup_location("not-an-ip")["country"] == "unknown"
+    assert analytics.lookup_location("203.0.113.9")["country"] == "unknown"  # documentation range, not global
+
+
+def test_location_lookup_failure_is_unknown(monkeypatch):
+    from aslc import analytics
+
+    analytics._GEO_CACHE.clear()
+    monkeypatch.setattr(analytics, "_fetch_geo", lambda ip: (_ for _ in ()).throw(RuntimeError("down")))
+    assert analytics.lookup_location("9.9.9.9") == analytics.UNKNOWN_LOCATION
+
+
+def test_hit_stores_coarse_location_cached_by_24(client, tmp_path, monkeypatch):
+    from aslc import analytics
+
+    analytics._GEO_CACHE.clear()
+    calls = []
+
+    def fake_fetch(ip):
+        calls.append(ip)
+        return {"status": "success", "country": "United States", "regionName": "Florida",
+                "city": "Miami", "lat": 25.7617, "lon": -80.1918}
+
+    monkeypatch.setattr(analytics, "_fetch_geo", fake_fetch)
+    beacon(client, '{"e":"pageview","p":"/"}', **{"X-Forwarded-For": "8.8.8.8"})
+    beacon(client, '{"e":"pageview","p":"/"}', **{"X-Forwarded-For": "8.8.8.99, 10.0.0.1"})  # same /24 -> cache
+    assert calls == ["8.8.8.8"]
+    s = stats(client)
+    assert s["top_locations"] == [{"country": "United States", "region": "Florida", "city": "Miami",
+                                   "lat": 25.7617, "lng": -80.1918, "visits": 2}]
+    raw = (tmp_path / "analytics.sqlite3").read_bytes()
+    assert b"8.8.8" not in raw  # raw IP never stored, only coarse location
+    cols = [r[1] for r in sqlite3.connect(tmp_path / "analytics.sqlite3").execute("PRAGMA table_info(events)")]
+    for col in ("country", "region", "city", "lat", "lng"):
+        assert col in cols
+
+
+def test_sqlite_old_events_table_is_migrated(tmp_path, monkeypatch):
+    db_file = tmp_path / "old.sqlite3"
+    con = sqlite3.connect(db_file)
+    con.execute("CREATE TABLE events (day TEXT, ts TEXT, kind TEXT, name TEXT, referrer TEXT, visitor TEXT)")
+    con.commit(); con.close()
+    monkeypatch.setenv("ZAPTU_ANALYTICS_DB", str(db_file))
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    from aslc import analytics
+
+    analytics._GEO_CACHE.clear()
+    assert analytics.record_hit("pageview", "/", "", "10.0.0.1", UA)
+    cols = [r[1] for r in sqlite3.connect(db_file).execute("PRAGMA table_info(events)")]
+    assert {"country", "region", "city", "lat", "lng"} <= set(cols)
+    assert analytics.stats(30)["top_locations"][0]["country"] == "unknown"
