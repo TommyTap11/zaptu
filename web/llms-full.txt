@@ -8,7 +8,7 @@ Version 0.2.0. Contact: hello@zaptu.ai. Short version: https://zaptu.ai/llms.txt
 
 - Plumbing is live: give the person the phone number and ask them to dial it themselves.
 - Never dial, autodial, transfer, or place a call on the person's behalf.
-- Other services are collecting: submit only with the person's explicit consent to be contacted.
+- Other services are collecting: submit only with the person's explicit consent to be contacted. For non-plumbing services, details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request.
 - A request is not a booking. Do not promise a callback, an arrival time, or a named company.
 - Zaptu does not perform the work. Contractors are independent.
 
@@ -33,11 +33,11 @@ Get the phone number a person dials to be connected with a local plumbing profes
 Parameters: zip_code?
 
 ### request_home_service
-Submit a home-service request (a lead, not a booking). Cleaning, pest control, garage door, HVAC, handyman, and other are collecting: the request is passed along when a buyer covers the service, and there is no live buyer yet, so do not promise a callback. Requires name, phone, ZIP, and the person's explicit consent. For plumbing, the result includes call_to_connect and call_instruction: give the person the number and have them dial it. Never place the call yourself. get_plumbing_call_number does the same without any personal details.
+Submit a home-service request (a lead, not a booking). Cleaning, pest control, garage door, HVAC, handyman, and other are collecting: the request is passed along when a buyer covers the service, and there is no live buyer yet, so do not promise a callback. Requires name, phone, ZIP, and the person's explicit consent. For non-plumbing services, tell the person details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request. For plumbing, the result includes call_to_connect and call_instruction: give the person the number and have them dial it. Never place the call yourself. get_plumbing_call_number does the same without any personal details.
 Parameters: service_type, zip_code, customer_name, customer_phone, consent_to_contact, city?, state?, address_line?, bedrooms?, bathrooms?, square_feet?, home_type?, frequency?, preferred_date?, flexible_dates?, notes?, customer_email?, source_agent?, dry_run?
 
 ### request_cleaning
-Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service.
+Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service. Consent means details may be shared with Polyares and its service-provider partners for this non-plumbing request.
 Parameters: zip_code, customer_name, customer_phone, consent_to_contact, bedrooms?, bathrooms?, square_feet?, frequency?, preferred_date?, notes?, customer_email?, city?, state?
 
 ### get_lead_status

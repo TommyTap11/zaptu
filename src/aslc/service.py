@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .call_routing import get_call_to_connect
 from .forwarding import active_forwarders
-from .models import LeadRecord, LeadResponse, LeadStatus, ServiceRequest
+from .models import CONSENT_WORDING_VERSION, LeadRecord, LeadResponse, LeadStatus, ServiceRequest
 from .storage import append_lead, get_lead
 from .validation import is_call_to_connect, is_collected_only, is_monetizable, validate_request
 
@@ -41,6 +41,11 @@ async def submit_request(req: ServiceRequest, *, dry_run: bool = False) -> LeadR
     """Run the intake pipeline. dry_run=True validates and answers without storing or forwarding."""
     problems = validate_request(req)
     lead = LeadRecord(request=req, validation_notes=problems, status=LeadStatus.validated)
+    # Stamp the consent record at intake (non-plumbing only; plumbing dials, no consent collected).
+    if req.consent_to_contact and not is_call_to_connect(req):
+        lead.consent_timestamp = lead.created_at
+        lead.consent_wording_version = CONSENT_WORDING_VERSION
+        lead.consent_source_page = req.consent_source_page or req.source_agent
 
     def save(record: LeadRecord) -> None:
         if not dry_run:

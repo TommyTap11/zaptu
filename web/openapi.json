@@ -3,7 +3,7 @@
   "info": {
     "title": "Zaptu API",
     "version": "0.2.0",
-    "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing returns a phone number the person must dial themselves; never dial for them. Other services are collecting: requests are accepted and passed along when a buyer covers the service. A request is not a booking. Add \"dry_run\": true to validate without saving anything.",
+    "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing returns a phone number the person must dial themselves; never dial for them. Other services are collecting: requests are accepted and passed along when a buyer covers the service. For non-plumbing services, details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request. A request is not a booking. Add \"dry_run\": true to validate without saving anything.",
     "contact": {
       "email": "hello@zaptu.ai",
       "url": "https://zaptu.ai/agents/"
@@ -41,7 +41,7 @@
       "post": {
         "operationId": "submitServiceRequest",
         "summary": "Submit a home-service request (lead, not a booking)",
-        "description": "JSON clients get JSON back. HTML form posts (application/x-www-form-urlencoded) are redirected to the thanks page, or to the plumbing page for plumbing. For plumbing the response includes call_to_connect: give the person the number and have them dial it. consent_to_contact must be true for non-plumbing services.",
+        "description": "JSON clients get JSON back. HTML form posts (application/x-www-form-urlencoded) are redirected to the thanks page, or to the plumbing page for plumbing. For plumbing the response includes call_to_connect: give the person the number and have them dial it. consent_to_contact must be true for non-plumbing services. For non-plumbing services, details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request.",
         "parameters": [
           {
             "name": "dry_run",
@@ -365,7 +365,7 @@
             "title": "Customer Email"
           },
           "consent_to_contact": {
-            "description": "True if the customer consented to be called or texted about this request (TCPA).",
+            "description": "True if the customer consented to be called or texted about this request (TCPA). For non-plumbing services this includes sharing details with Polyares and its service-provider partners.",
             "title": "Consent To Contact",
             "type": "boolean"
           },
@@ -381,6 +381,20 @@
             "default": null,
             "description": "Agent or product that originated the request, e.g. muse.",
             "title": "Source Agent"
+          },
+          "consent_source_page": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional page/path where consent was collected, e.g. /pest-control/phoenix-az/. Server falls back to source_agent.",
+            "title": "Consent Source Page"
           }
         },
         "required": [

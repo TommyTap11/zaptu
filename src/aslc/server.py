@@ -64,8 +64,10 @@ for them. No name, phone, or consent is needed for this.
 
 EVERYTHING ELSE (collecting: cleaning, pest control, garage door, HVAC, handyman, other):
 collect ZIP, name, phone, and the person's explicit consent to be contacted, then call
-request_home_service. These requests are passed along when a buyer covers the service;
-there is no live buyer yet. Do not promise a callback, an arrival time, or a named company.
+request_home_service. Tell the person: for non-plumbing services, details may be shared
+with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu
+may call or text about this request. These requests are passed along when a buyer covers
+the service; there is no live buyer yet. Do not promise a callback, an arrival time, or a named company.
 
 Use the tool result's message when you tell the person what happened.
 list_supported_services returns the full catalog.
@@ -602,7 +604,7 @@ async def request_home_service(
     customer_phone: Annotated[str, Field(description="US phone number for follow-up contact about this request.")],
     consent_to_contact: Annotated[
         bool,
-        Field(description="Must be true for non-plumbing services: the person agreed to a call or text about this request."),
+        Field(description="Must be true for non-plumbing services: the person agreed that details may be shared with Polyares and its service-provider partners, and that Polyares, those partners, or Zaptu may call or text about this request."),
     ],
     city: str | None = None,
     state: Annotated[str | None, Field(description="2-letter US state code.")] = None,
@@ -626,6 +628,9 @@ async def request_home_service(
     Cleaning, pest control, garage door, HVAC, handyman, and other are collecting: the request is
     passed along when a buyer covers the service, and there is no live buyer yet, so do
     not promise a callback. Requires name, phone, ZIP, and the person's explicit consent.
+    For non-plumbing services, tell the person details may be shared with Polyares and
+    its service-provider partners, and Polyares, those partners, or Zaptu may call or
+    text about this request.
 
     For plumbing, the result includes call_to_connect and call_instruction: give the
     person the number and have them dial it. Never place the call yourself.
@@ -672,7 +677,7 @@ async def request_cleaning(
     zip_code: Annotated[str, Field(description="US 5-digit ZIP for the home.")],
     customer_name: Annotated[str, Field(description="Customer's full name.")],
     customer_phone: Annotated[str, Field(description="US phone number.")],
-    consent_to_contact: Annotated[bool, Field(description="Must be true: the person agreed to a call or text about this request.")],
+    consent_to_contact: Annotated[bool, Field(description="Must be true: the person agreed that details may be shared with Polyares and its service-provider partners, and that Polyares, those partners, or Zaptu may call or text about this request.")],
     bedrooms: int | None = None,
     bathrooms: float | None = None,
     square_feet: int | None = None,
@@ -683,7 +688,7 @@ async def request_cleaning(
     city: str | None = None,
     state: str | None = None,
 ) -> str:
-    """Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service."""
+    """Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service. Consent means details may be shared with Polyares and its service-provider partners for this non-plumbing request."""
     analytics.record_api("mcp_tool:request_cleaning")
     return await request_home_service(
         service_type="house_cleaning" if frequency == "one_time" else "recurring_cleaning",

@@ -40,6 +40,15 @@ Frequency = Literal["one_time", "weekly", "biweekly", "monthly"]
 HomeType = Literal["apartment", "condo", "townhouse", "single_family", "other"]
 
 
+# Consent disclosure shown for non-plumbing requests (wording version stamped on each lead).
+CONSENT_WORDING_VERSION = "2026-10-19-polyares-v1"
+CONSENT_DISCLOSURE = (
+    "For non-plumbing services, details may be shared with Polyares and its "
+    "service-provider partners, and Polyares, those partners, or Zaptu may call "
+    "or text about this request."
+)
+
+
 class ServiceRequest(BaseModel):
     """A structured home-service request from an AI agent or the website form."""
 
@@ -75,11 +84,16 @@ class ServiceRequest(BaseModel):
     )
     customer_email: str | None = None
     consent_to_contact: bool = Field(
-        description="True if the customer consented to be called or texted about this request (TCPA)."
+        description="True if the customer consented to be called or texted about this request (TCPA). For non-plumbing services this includes sharing details with Polyares and its service-provider partners."
     )
 
     source_agent: str | None = Field(
         default=None, description="Agent or product that originated the request, e.g. muse."
+    )
+    consent_source_page: str | None = Field(
+        default=None,
+        max_length=500,
+        description="Optional page/path where consent was collected, e.g. /pest-control/phoenix-az/. Server falls back to source_agent.",
     )
 
     @field_validator("zip_code")
@@ -159,6 +173,11 @@ class LeadRecord(BaseModel):
     forward_targets: list[str] = Field(default_factory=list)
     forward_results: list[dict] = Field(default_factory=list)
     public_message: str = ""
+    # Consent record for non-plumbing leads (stamped server-side in submit_request).
+    # Plumbing is call-to-connect (person dials; no consent collected), so these stay None there.
+    consent_timestamp: datetime | None = None
+    consent_wording_version: str | None = None
+    consent_source_page: str | None = None
 
 
 class LeadResponse(BaseModel):

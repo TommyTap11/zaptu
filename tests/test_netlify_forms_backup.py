@@ -33,5 +33,5 @@ def test_netlify_detection_form_on_home():
     m = re.search(r'<form name="service-request" netlify netlify-honeypot="bot-field" hidden>(.*?)</form>', t, re.S)
     assert m
     for field in ["form-name", "bot-field", "customer_name", "customer_phone", "zip_code",
-                  "service_type", "city", "state", "bedrooms", "notes", "consent_to_contact"]:
+                  "service_type", "city", "state", "bedrooms", "notes", "consent_to_contact", "consent_source_page"]:
         assert f'name="{field}"' in m.group(1), field

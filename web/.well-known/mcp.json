@@ -46,7 +46,7 @@
   "rules": [
     "Plumbing is live: give the person the phone number and ask them to dial it themselves.",
     "Never dial, autodial, transfer, or place a call on the person's behalf.",
-    "Other services are collecting: submit only with the person's explicit consent to be contacted.",
+    "Other services are collecting: submit only with the person's explicit consent to be contacted. For non-plumbing services, details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request.",
     "A request is not a booking. Do not promise a callback, an arrival time, or a named company.",
     "Zaptu does not perform the work. Contractors are independent."
   ]
