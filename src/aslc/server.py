@@ -12,6 +12,7 @@ Exposes:
   MCP  /mcp                 streamable HTTP, stateless, no auth
   POST /v1/hit              anonymous page-view / call-click beacon (no cookies, no IPs stored)
   GET  /v1/stats            visit + usage stats (Bearer stats token)
+  GET  /v1/dashboard-stats  same stats for the dashboard (X-Dashboard-Pin header)
 
 CORS is open (no credentials) so browser-based agent clients can call the public API.
 """
@@ -475,6 +476,17 @@ async def stats_http(request: Request) -> Response:
     header = request.headers.get("authorization", "")
     token = header.removeprefix("Bearer ").strip() if header.startswith("Bearer ") else request.headers.get("x-stats-token")
     if not analytics.token_ok(token):
+        return _unauthorized()
+    try:
+        days = int(request.query_params.get("days", "30"))
+    except ValueError:
+        days = 30
+    return JSONResponse(analytics.stats(days), headers={"Cache-Control": "no-store"})
+
+
+@mcp.custom_route("/v1/dashboard-stats", methods=["GET"])
+async def dashboard_stats_http(request: Request) -> Response:
+    if not analytics.dashboard_pin_ok(request.headers.get("x-dashboard-pin")):
         return _unauthorized()
     try:
         days = int(request.query_params.get("days", "30"))
