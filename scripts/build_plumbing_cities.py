@@ -764,6 +764,127 @@ for _k, _v in [("columbia-sc", "greenville-sc"), ("los-angeles-ca", "long-beach-
     if _v not in SIBLINGS[_k]:
         SIBLINGS[_k].append(_v)
 
+# Batch 7 (2026-10-19)
+LOCAL7 = {
+    "anaheim-ca": {
+        "intro": "Anaheim has neighborhoods of mid-century tract homes alongside newer developments, many on slab foundations, and the area's hard water is tough on water heaters and fixtures. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Hard water leaves mineral buildup that can shorten the life of a water heater and clog faucet aerators and shower heads.",
+            "An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
+            "Older homes may still have galvanized supply lines or cast-iron drains. Mention the age of the house if you know it.",
+        ],
+        "focus": "slab leaks, water heater scale, and aging supply lines",
+    },
+    "irvine-ca": {
+        "intro": "Irvine is made up of planned neighborhoods with many condos and townhomes that share walls, and hard water wears on water heaters and fixtures over time. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a condo or townhome, a leak can reach a neighbor's unit. Check whether your association needs to know before work starts.",
+            "Hard water leaves mineral buildup in water heaters, aerators, and shower heads.",
+            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing on the call.",
+        ],
+        "focus": "leaks in shared-wall homes, water heater scale, and slab leaks",
+    },
+    "riverside-ca": {
+        "intro": "Riverside's hot, dry summers and hard water both show up in plumbing, and the city mixes older homes near downtown with newer tracts on slab foundations. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Mineral buildup can clog faucet aerators and shower heads and leave sediment in a tank water heater.",
+            "An unexplained jump in the water bill, or a warm spot on the floor, can point to a leak under the slab.",
+            "Roots from mature trees can get into older sewer laterals. Mention backups that keep returning.",
+        ],
+        "focus": "water heater sediment, slab leaks, and root-related sewer backups",
+    },
+    "waterbury-ct": {
+        "intro": "Waterbury has many older homes and multi-family houses on hilly streets, and cold, wet winters are hard on pipes and drains. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a multi-family house, a leak can travel between floors. Let neighbors or the owner know if water is moving.",
+            "Older homes may have cast-iron drain lines or older supply pipes. Mention the age of the house if you know it.",
+            "On cold nights, pipes along exterior walls and in unheated basements are more exposed. Know where the main shutoff is.",
+        ],
+        "focus": "frozen pipes in older houses, drain problems in multi-family homes, and leaks between floors",
+    },
+    "allentown-pa": {
+        "intro": "Allentown has many row homes and older houses with basements, and Lehigh Valley winters bring hard freezes that can catch pipes off guard. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "In a row home, a leak can reach a shared wall. Mention whether water is showing up next door.",
+            "Pipes in unheated basements and along outside walls are more exposed on cold nights. Know where the main shutoff is.",
+            "Heavy rain can send water toward basement floor drains. Describe where any water appears.",
+        ],
+        "focus": "winter pipe freezes, basement drain backups, and leaks in older row homes",
+    },
+    "manchester-nh": {
+        "intro": "Manchester winters are long and cold, and the city has many older multi-family buildings and homes with basements where pipes and water heaters sit. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Pipes along exterior walls, in basements, and in unheated porches are more exposed on cold nights. Know where the main shutoff is.",
+            "Disconnect garden hoses and drain outdoor spigots before the first hard freeze.",
+            "In a multi-unit building, water can reach the unit below. Check whether the owner or manager needs to know.",
+        ],
+        "focus": "frozen and burst pipes, water heater outages in winter, and leaks in multi-unit buildings",
+    },
+    "port-saint-lucie-fl": {
+        "intro": "Port Saint Lucie has a warm, humid climate, heavy summer rain, and many homes on slab foundations. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Some homes in the area use septic systems. Say whether you are on septic or city sewer when you call.",
+            "An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
+            "Heavy rain can overload drains and sewer lines. Describe where any backup appears.",
+        ],
+        "focus": "septic and sewer questions, slab leaks, and drain backups after heavy rain",
+    },
+    "athens-ga": {
+        "intro": "Athens mixes older in-town houses under mature trees with newer homes on red clay soil, and humid summers with the occasional hard freeze. Call to be connected with a local plumbing professional.",
+        "notes": [
+            "Roots from mature trees can get into older sewer laterals and cause backups that return.",
+            "Clay soil swells when wet and shrinks when dry, which can stress buried water and sewer lines.",
+            "Winters are usually mild, but a hard freeze can split an outdoor spigot. Disconnect garden hoses beforehand.",
+        ],
+        "focus": "root-related sewer backups, buried-line stress from clay, and outdoor spigot freezes",
+    },
+}
+PLAN7 = {
+    "anaheim-ca": (["Leaks", "Water heaters", "Clogs and slow drains", "Sewer lines", "Burst or frozen pipes"],
+                 {"Leaks": "For Anaheim homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
+                  "Water heaters": "Hard water can leave sediment in the tank; note any rumbling or popping sounds."}),
+    "irvine-ca": (["Leaks", "Water heaters", "Clogs and slow drains", "Sewer lines", "Burst or frozen pipes"],
+                 {"Leaks": "In an Irvine condo or townhome, note whether the leak is inside your unit or coming from a shared wall or ceiling.",
+                  "Water heaters": "Hard water can leave sediment in the tank; note any rumbling or popping sounds."}),
+    "riverside-ca": (["Water heaters", "Leaks", "Sewer lines", "Clogs and slow drains", "Burst or frozen pipes"],
+                 {"Water heaters": "In Riverside, hard water can leave sediment in the tank; note any rumbling or popping sounds.",
+                  "Leaks": "A slab leak can show up as a damp patch of flooring or a spike in the water bill."}),
+    "waterbury-ct": (["Burst or frozen pipes", "Clogs and slow drains", "Leaks", "Sewer lines", "Water heaters"],
+                 {"Burst or frozen pipes": "In a Waterbury cold snap, pipes along outside walls and in unheated basements are the usual trouble spots.",
+                  "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
+    "allentown-pa": (["Burst or frozen pipes", "Clogs and slow drains", "Leaks", "Sewer lines", "Water heaters"],
+                 {"Burst or frozen pipes": "In an Allentown cold snap, pipes in unheated basements and along outside walls are the usual trouble spots.",
+                  "Clogs and slow drains": "Water coming up through a basement floor drain during heavy rain is worth describing on the call."}),
+    "manchester-nh": (["Burst or frozen pipes", "Water heaters", "Clogs and slow drains", "Leaks", "Sewer lines"],
+                 {"Burst or frozen pipes": "In a Manchester cold snap, pipes in basements and along outside walls are the usual trouble spots.",
+                  "Water heaters": "A water heater that quits in winter is worth calling about quickly."}),
+    "port-saint-lucie-fl": (["Leaks", "Sewer lines", "Clogs and slow drains", "Water heaters", "Burst or frozen pipes"],
+                 {"Leaks": "For Port Saint Lucie homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
+                  "Sewer lines": "If the home is on septic, slow drains throughout the house are worth mentioning on the call."}),
+    "athens-ga": (["Sewer lines", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters"],
+                 {"Sewer lines": "In older Athens neighborhoods, roots in the sewer lateral are a frequent reason backups return.",
+                  "Burst or frozen pipes": "A hard freeze can split an outdoor spigot even when indoor pipes are fine."}),
+}
+SIB7 = {
+    "anaheim-ca": ["irvine-ca", "riverside-ca", "long-beach-ca"],
+    "irvine-ca": ["anaheim-ca", "long-beach-ca", "san-diego-ca"],
+    "riverside-ca": ["anaheim-ca", "irvine-ca", "los-angeles-ca"],
+    "waterbury-ct": ["new-haven-ct", "boston-ma", "harrisburg-pa"],
+    "allentown-pa": ["harrisburg-pa", "new-haven-ct", "baltimore-md"],
+    "manchester-nh": ["boston-ma", "waterbury-ct", "new-haven-ct"],
+    "port-saint-lucie-fl": ["west-palm-beach-fl", "fort-lauderdale-fl", "fort-myers-fl"],
+    "athens-ga": ["atlanta-ga", "marietta-ga", "greenville-sc"],
+}
+
+LOCAL.update(LOCAL7)
+ISSUE_PLAN.update(PLAN7)
+SIBLINGS.update(SIB7)
+for _k, _v in [("long-beach-ca", "anaheim-ca"), ("los-angeles-ca", "riverside-ca"), ("san-diego-ca", "irvine-ca"),
+               ("new-haven-ct", "waterbury-ct"), ("harrisburg-pa", "allentown-pa"), ("boston-ma", "manchester-nh"),
+               ("west-palm-beach-fl", "port-saint-lucie-fl"), ("atlanta-ga", "athens-ga")]:
+    if _v not in SIBLINGS[_k]:
+        SIBLINGS[_k].append(_v)
+
 
 def esc(s: str) -> str:
     return html.escape(s, quote=True)
@@ -879,7 +1000,8 @@ def city_page(c: dict) -> str:
     order, extra = ISSUE_PLAN[c["slug"]]
     base = dict(ISSUES)
     warm = c["slug"] in {"miami-fl", "fort-lauderdale-fl", "phoenix-az", "los-angeles-ca", "las-vegas-nv", "san-diego-ca",
-            "west-palm-beach-fl", "boca-raton-fl", "san-francisco-ca", "fresno-ca", "mesa-az", "long-beach-ca", "fort-myers-fl", "stockton-ca", "santa-barbara-ca"}
+            "west-palm-beach-fl", "boca-raton-fl", "san-francisco-ca", "fresno-ca", "mesa-az", "long-beach-ca", "fort-myers-fl", "stockton-ca", "santa-barbara-ca",
+            "anaheim-ca", "irvine-ca", "riverside-ca", "port-saint-lucie-fl"}
     label = lambda t: "Burst pipes" if warm and t == "Burst or frozen pipes" else t
     issues = "\n".join(
         f"        <li><strong>{esc(label(t))}.</strong> {esc(base[t])}" + (f" {esc(extra[t])}" if t in extra else "") + "</li>"
