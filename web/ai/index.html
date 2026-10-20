@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Request a Plumber or Cleaner From Your AI Assistant | Zaptu</title>
+  <meta name="description" content="Ask an AI assistant for a plumber, house cleaner or pest control. Zaptu's MCP server sends a contact request or gives a number you dial. Not a booking." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://zaptu.ai/ai/" />
+  <!-- seo:og -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Zaptu" />
+  <meta property="og:title" content="Request a Plumber or Cleaner From Your AI Assistant | Zaptu" />
+  <meta property="og:description" content="Ask an AI assistant for a plumber, house cleaner or pest control. Zaptu's MCP server sends a contact request or gives a number you dial. Not a booking." />
+  <meta property="og:url" content="https://zaptu.ai/ai/" />
+  <meta property="og:image" content="https://zaptu.ai/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Request a Plumber or Cleaner From Your AI Assistant | Zaptu" />
+  <meta name="twitter:description" content="Ask an AI assistant for a plumber, house cleaner or pest control. Zaptu's MCP server sends a contact request or gives a number you dial. Not a booking." />
+  <meta name="twitter:image" content="https://zaptu.ai/og-image.png" />
+  <!-- /seo:og -->
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+  <!-- seo:icons -->
+  <link rel="icon" href="/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#07080b" />
+  <script src="/z.js" defer></script>
+  <!-- /seo:icons -->
+  <link rel="stylesheet" href="/style.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://zaptu.ai/ai/",
+      "url": "https://zaptu.ai/ai/",
+      "name": "Request a plumber, cleaner or pest control from your AI assistant",
+      "description": "How an AI assistant connects to Zaptu over MCP or REST to send a home-service contact request, or to give a person a plumbing number to dial.",
+      "isPartOf": {"@type": "WebSite", "name": "Zaptu", "url": "https://zaptu.ai/"}
+    },
+    {
+      "@type": "WebAPI",
+      "name": "Zaptu home-service request API and MCP server",
+      "description": "Remote MCP server (streamable HTTP, no sign-in) and REST intake for US residential home-service contact requests. Plumbing returns a number the person dials. Zaptu does not perform the work and does not book appointments.",
+      "url": "https://zaptu.ai/ai/",
+      "documentation": "https://zaptu.ai/agents/",
+      "termsOfService": "https://zaptu.ai/privacy/",
+      "provider": {"@type": "Organization", "name": "Zaptu", "url": "https://zaptu.ai/", "email": "hello@zaptu.ai"},
+      "potentialAction": {"@type": "Action", "name": "Connect over MCP", "target": "https://api.zaptu.ai/mcp"}
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Zaptu", "item": "https://zaptu.ai/"},
+        {"@type": "ListItem", "position": 2, "name": "AI assistants", "item": "https://zaptu.ai/ai/"}
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "Can my AI assistant request a plumber?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, if the assistant can use MCP tools or call a web API. For plumbing, the get_plumbing_call_number tool returns (308) 529-9543. The person dials that number themselves to be connected with a local plumbing professional. The assistant never places the call."}},
+        {"@type": "Question", "name": "Is there an MCP server for home services?", "acceptedAnswer": {"@type": "Answer", "text": "Zaptu runs a remote MCP server at https://api.zaptu.ai/mcp. It uses streamable HTTP, needs no sign-in, and has five tools: get_plumbing_call_number, request_home_service, request_cleaning, get_lead_status and list_supported_services. It is listed in the official MCP Registry as ai.zaptu/zaptu."}},
+        {"@type": "Question", "name": "Does the assistant book an appointment?", "acceptedAnswer": {"@type": "Answer", "text": "No. Zaptu sends a contact request or gives a number to dial. It never books an appointment, sets an arrival time, or names a company. Any timing and costs are agreed directly between the person and the provider."}},
+        {"@type": "Question", "name": "What does the person have to agree to?", "acceptedAnswer": {"@type": "Answer", "text": "For any service other than plumbing, the person must explicitly agree to be contacted. Their details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about the request. Plumbing needs no personal details because the person makes the call."}},
+        {"@type": "Question", "name": "Does Zaptu do the work?", "acceptedAnswer": {"@type": "Answer", "text": "No. Zaptu passes requests to independent local providers and does not perform the work, check licensing, or set prices."}}
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">Zaptu</a>
+    <nav aria-label="Main">
+      <a href="/plumbing/">Plumbing</a>
+      <a href="/cleaning/">Cleaning</a>
+      <a href="/pest-control/">Pest control</a>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/agents/">For agents</a>
+    </nav>
+  </header>
+  <main>
+    <p class="eyebrow"><a href="/">Zaptu</a> / AI assistants</p>
+    <h1>Request a plumber, cleaner or pest control from your AI assistant</h1>
+    <p class="lede">Zaptu lets an AI assistant help a person reach a local home-service provider in the US. For plumbing, the assistant gives the person a number to dial. For cleaning, pest control and other services, the assistant sends a contact request with the person&rsquo;s consent. Zaptu does not perform the work, and a request is never a booked appointment or an arrival time.</p>
+
+    <section>
+      <h2>What Zaptu does</h2>
+      <ul>
+        <li><strong>Plumbing:</strong> the assistant gives the person (308) 529-9543. The person dials it to be connected with a local plumbing professional. The assistant never dials, transfers, or places the call.</li>
+        <li><strong>Other services:</strong> the assistant collects the ZIP code, name, phone and consent, then submits a contact request. The request is passed along when a participating provider covers that service and ZIP code.</li>
+        <li><strong>Contact only:</strong> no booking, no arrival time, no named company, and no price. A callback is not promised.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Supported services</h2>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Service</th><th scope="col">service_type</th><th scope="col">How it works</th></tr></thead>
+        <tbody>
+          <tr><td>Plumbing</td><td><code>plumbing</code></td><td>The person dials a number</td></tr>
+          <tr><td>House cleaning, deep clean, move-in / move-out, recurring</td><td><code>house_cleaning</code>, <code>deep_cleaning</code>, <code>move_in_out_cleaning</code>, <code>recurring_cleaning</code></td><td>Contact request with consent</td></tr>
+          <tr><td>Pest control</td><td><code>pest_control</code></td><td>Contact request with consent</td></tr>
+          <tr><td>Garage door, HVAC, handyman, other</td><td><code>garage_door</code>, <code>hvac</code>, <code>handyman</code>, <code>other</code></td><td>Contact request with consent</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>US residential only. The live list is at <a href="https://api.zaptu.ai/v1/services">api.zaptu.ai/v1/services</a>.</p>
+    </section>
+
+    <section>
+      <h2>Connect over MCP</h2>
+      <p>Endpoint: <code>https://api.zaptu.ai/mcp</code>. Streamable HTTP, stateless, no sign-in or API key.</p>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Tool</th><th scope="col">What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>get_plumbing_call_number</code></td><td>Returns the plumbing number and what to tell the person. Read-only; no personal details.</td></tr>
+          <tr><td><code>request_home_service</code></td><td>Submits a contact request for any service. Needs <code>service_type</code>, <code>zip_code</code>, <code>customer_name</code>, <code>customer_phone</code> and <code>consent_to_contact=true</code>. Supports <code>dry_run</code>.</td></tr>
+          <tr><td><code>request_cleaning</code></td><td>Shortcut for a house cleaning request.</td></tr>
+          <tr><td><code>get_lead_status</code></td><td>Looks up a request by <code>lead_id</code>.</td></tr>
+          <tr><td><code>list_supported_services</code></td><td>Lists services, how each one works, and the rules for assistants.</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Claude</h3>
+      <p>In Claude (web or desktop, on plans that support custom connectors): Settings &rarr; Connectors &rarr; Add custom connector. Name it Zaptu and use the URL <code>https://api.zaptu.ai/mcp</code>.</p>
+      <p>To use the Claude Desktop config file instead, connect through the <code>mcp-remote</code> bridge (needs Node.js), in <code>claude_desktop_config.json</code>:</p>
+      <pre>{
+  "mcpServers": {
+    "zaptu": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://api.zaptu.ai/mcp"]
+    }
+  }
+}</pre>
+
+      <h3>Cursor</h3>
+      <p>Add this to <code>~/.cursor/mcp.json</code> (all projects) or <code>.cursor/mcp.json</code> (one project):</p>
+      <pre>{
+  "mcpServers": {
+    "zaptu": { "url": "https://api.zaptu.ai/mcp" }
+  }
+}</pre>
+
+      <h3>ChatGPT</h3>
+      <p>In ChatGPT on the web: Plugins &rarr; the plus button &rarr; Add custom MCP server. Enter the name Zaptu and the URL <code>https://api.zaptu.ai/mcp</code>, choose no authentication, and confirm. What is available depends on the plan and workspace settings; OpenAI lists full MCP support, including tools that submit data, as a beta for Business, Enterprise and Edu workspaces.</p>
+
+      <h3>Other MCP clients</h3>
+      <p>Any client that supports remote streamable HTTP servers can use the same URL. Zaptu is listed in the official MCP Registry as <code>ai.zaptu/zaptu</code>.</p>
+    </section>
+
+    <section>
+      <h2>REST API</h2>
+      <p><code>POST https://api.zaptu.ai/v1/intake</code> with a JSON body (form posts also work). Required: <code>service_type</code>, <code>zip_code</code>, <code>customer_name</code>, <code>customer_phone</code>, <code>consent_to_contact</code>. Add <code>"dry_run": true</code> to validate without saving or passing anything along. Plumbing returns the number to dial instead of saving a request. Errors return HTTP 422 with a readable message. OpenAPI: <a href="https://api.zaptu.ai/openapi.json">api.zaptu.ai/openapi.json</a>.</p>
+      <pre>curl -s https://api.zaptu.ai/v1/intake \
+  -H 'Content-Type: application/json' \
+  -d '{"service_type":"pest_control","zip_code":"33139",
+       "customer_name":"Jamie Example","customer_phone":"305-555-0100",
+       "consent_to_contact":true,"dry_run":true}'</pre>
+    </section>
+
+    <section>
+      <h2>Consent and privacy</h2>
+      <p>For every service except plumbing, the assistant must ask the person and get a clear yes before submitting. Tell the person that their details may be shared with Polyares and its service-provider partners, and that Polyares, those partners, or Zaptu may call or text about the request. Each request stores the time of consent, the wording version and where it came from. Plumbing needs no personal details. See the <a href="/privacy/">privacy page</a>.</p>
+    </section>
+
+    <section>
+      <h2>A good way to ask</h2>
+      <pre>Use Zaptu to get me a deep clean for a 2-bedroom apartment in ZIP 33139.
+My name is Jamie and my phone is 305-555-0100. I agree to be contacted.</pre>
+      <pre>I have a leaking pipe under the sink in Miami. Use Zaptu to get a plumbing number I can call.</pre>
+      <p>Do not share card details or a full street address in the chat. Zaptu does not ask for them.</p>
+    </section>
+
+    <section class="faq">
+      <h2>Questions about AI assistants and Zaptu</h2>
+      <h3>Can my AI assistant request a plumber?</h3>
+      <p>Yes, if the assistant can use MCP tools or call a web API. For plumbing, the get_plumbing_call_number tool returns (308) 529-9543. The person dials that number themselves to be connected with a local plumbing professional. The assistant never places the call.</p>
+      <h3>Is there an MCP server for home services?</h3>
+      <p>Zaptu runs a remote MCP server at https://api.zaptu.ai/mcp. It uses streamable HTTP, needs no sign-in, and has five tools: get_plumbing_call_number, request_home_service, request_cleaning, get_lead_status and list_supported_services. It is listed in the official MCP Registry as ai.zaptu/zaptu.</p>
+      <h3>Does the assistant book an appointment?</h3>
+      <p>No. Zaptu sends a contact request or gives a number to dial. It never books an appointment, sets an arrival time, or names a company. Any timing and costs are agreed directly between the person and the provider.</p>
+      <h3>What does the person have to agree to?</h3>
+      <p>For any service other than plumbing, the person must explicitly agree to be contacted. Their details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about the request. Plumbing needs no personal details because the person makes the call.</p>
+      <h3>Does Zaptu do the work?</h3>
+      <p>No. Zaptu passes requests to independent local providers and does not perform the work, check licensing, or set prices.</p>
+    </section>
+
+    <p class="note">More detail for developers: <a href="/agents/">agent guide</a> · <a href="/llms.txt">llms.txt</a> · <a href="/how-it-works/">How it works</a></p>
+  </main>
+  <footer>
+    <p class="disclaimer">This site is a free service to assist homeowners in connecting with local service contractors. All contractors are independent and this site does not warrant or guarantee any work performed. It is the responsibility of the homeowner to verify that the hired contractor furnishes the necessary license and insurance required for the work being performed. All persons depicted in a photo or video are actors or models and not contractors listed on this site.</p>
+    <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/cleaning/">Cleaning</a> · <a href="/pest-control/">Pest control</a> · <a href="/garage-door/">Garage door</a> · <a href="/hvac/">HVAC</a> · <a href="/handyman/">Handyman</a> · <a href="/how-it-works/">How it works</a> · <a href="/agents/">For agents</a> · <a href="/ai/">AI assistants</a> · <a href="/privacy/">Privacy</a> · <a href="mailto:hello@zaptu.ai">Contact</a></p>
+  </footer>
+</body>
+</html>

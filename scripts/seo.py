@@ -30,6 +30,7 @@ FOOTER_LINKS = [
     ("/handyman/", "Handyman"),
     ("/how-it-works/", "How it works"),
     ("/agents/", "For agents"),
+    ("/ai/", "AI assistants"),
     ("/privacy/", "Privacy"),
     (f"mailto:{CONTACT_EMAIL}", "Contact"),
 ]

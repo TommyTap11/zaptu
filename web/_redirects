@@ -3,6 +3,7 @@ http://www.zaptu.ai/*   https://zaptu.ai/:splat  301!
 # seo:redirects
 https://zaptuai.netlify.app/*  https://zaptu.ai/:splat  301!
 /agents/index.html  /agents/  301!
+/ai/index.html  /ai/  301!
 /cleaning/atlanta-ga/index.html  /cleaning/atlanta-ga/  301!
 /cleaning/dallas-tx/index.html  /cleaning/dallas-tx/  301!
 /cleaning/fort-lauderdale-fl/index.html  /cleaning/fort-lauderdale-fl/  301!

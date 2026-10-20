@@ -21,6 +21,7 @@ What to say for plumbing: "Call (308) 529-9543 to be connected with a local plum
 
 ## Docs
 
+- [AI assistants](https://zaptu.ai/ai/): request a plumber, cleaner or pest control from an AI assistant; setup for Claude, Cursor, ChatGPT
 - [Agent guide](https://zaptu.ai/agents/): tools, examples, errors
 - [Full agent reference](https://zaptu.ai/llms-full.txt)
 - [How it works](https://zaptu.ai/how-it-works/)
