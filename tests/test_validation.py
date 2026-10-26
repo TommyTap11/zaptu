@@ -61,15 +61,19 @@ def test_cleaning_without_size_is_warning_not_block():
     assert is_monetizable(req, problems)
 
 
-def test_plumbing_call_to_connect_not_form_monetized():
-    from aslc.validation import is_call_to_connect
-
+def test_plumbing_is_routable_like_cleaning_and_pest():
     req = _base(service_type="plumbing")
     problems = validate_request(req)
-    assert not is_monetizable(req, problems)
+    assert problems == []
+    assert is_monetizable(req, problems)
     assert not is_collected_only(req)
-    assert is_call_to_connect(req)
-    assert any("call-to-connect" in p.lower() for p in problems)
+
+
+def test_plumbing_without_consent_not_monetizable():
+    req = _base(service_type="plumbing", consent_to_contact=False)
+    problems = validate_request(req)
+    assert any(p.startswith("Customer must consent") for p in problems)
+    assert not is_monetizable(req, problems)
 
 
 def test_handyman_and_other_accepted():

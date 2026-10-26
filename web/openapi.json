@@ -3,7 +3,7 @@
   "info": {
     "title": "Zaptu API",
     "version": "0.2.0",
-    "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing returns a phone number the person must dial themselves; never dial for them. Other services are collecting: requests are accepted and passed along when a buyer covers the service. For non-plumbing services, details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request. A request is not a booking. Add \"dry_run\": true to validate without saving anything.",
+    "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Every service, plumbing included, is a contact request: requests are accepted and passed along when a buyer covers the service. Details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request. A request is not a booking. Add \"dry_run\": true to validate without saving anything.",
     "contact": {
       "email": "hello@zaptu.ai",
       "url": "https://zaptu.ai/agents/"
@@ -22,7 +22,7 @@
     "/v1/services": {
       "get": {
         "operationId": "listServices",
-        "summary": "Which services are live vs collecting, the plumbing number, and agent rules",
+        "summary": "Which services Zaptu accepts requests for, and agent rules",
         "responses": {
           "200": {
             "description": "Service catalog",
@@ -41,7 +41,7 @@
       "post": {
         "operationId": "submitServiceRequest",
         "summary": "Submit a home-service request (lead, not a booking)",
-        "description": "JSON clients get JSON back. HTML form posts (application/x-www-form-urlencoded) are redirected to the thanks page, or to the plumbing page for plumbing. For plumbing the response includes call_to_connect: give the person the number and have them dial it. consent_to_contact must be true for non-plumbing services. For non-plumbing services, details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request.",
+        "description": "JSON clients get JSON back. HTML form posts (application/x-www-form-urlencoded) are redirected to the thanks page. consent_to_contact must be true for every service. Details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request.",
         "parameters": [
           {
             "name": "dry_run",
@@ -107,7 +107,7 @@
         },
         "responses": {
           "202": {
-            "description": "Accepted (received, collected, or call_to_connect)",
+            "description": "Accepted (received or collected)",
             "content": {
               "application/json": {
                 "schema": {
@@ -127,7 +127,7 @@
             }
           },
           "303": {
-            "description": "Form post redirect to the thanks page or plumbing page"
+            "description": "Form post redirect to the thanks page"
           },
           "422": {
             "description": "Invalid or rejected request with a readable message",
@@ -365,7 +365,7 @@
             "title": "Customer Email"
           },
           "consent_to_contact": {
-            "description": "True if the customer consented to be called or texted about this request (TCPA). For non-plumbing services this includes sharing details with Polyares and its service-provider partners.",
+            "description": "True if the customer consented to be called or texted about this request (TCPA). This includes sharing details with Polyares and its service-provider partners.",
             "title": "Consent To Contact",
             "type": "boolean"
           },
@@ -445,42 +445,6 @@
             ],
             "default": null,
             "title": "Estimated Payout Hint"
-          },
-          "call_to_connect": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Call To Connect"
-          },
-          "call_to_connect_display": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Call To Connect Display"
-          },
-          "call_instruction": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Call Instruction"
           },
           "dry_run": {
             "default": false,

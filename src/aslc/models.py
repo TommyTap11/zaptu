@@ -40,10 +40,10 @@ Frequency = Literal["one_time", "weekly", "biweekly", "monthly"]
 HomeType = Literal["apartment", "condo", "townhouse", "single_family", "other"]
 
 
-# Consent disclosure shown for non-plumbing requests (wording version stamped on each lead).
+# Consent disclosure shown for every request (wording version stamped on each lead).
 CONSENT_WORDING_VERSION = "2026-10-19-polyares-v1"
 CONSENT_DISCLOSURE = (
-    "For non-plumbing services, details may be shared with Polyares and its "
+    "Details may be shared with Polyares and its "
     "service-provider partners, and Polyares, those partners, or Zaptu may call "
     "or text about this request."
 )
@@ -84,7 +84,7 @@ class ServiceRequest(BaseModel):
     )
     customer_email: str | None = None
     consent_to_contact: bool = Field(
-        description="True if the customer consented to be called or texted about this request (TCPA). For non-plumbing services this includes sharing details with Polyares and its service-provider partners."
+        description="True if the customer consented to be called or texted about this request (TCPA). This includes sharing details with Polyares and its service-provider partners."
     )
 
     source_agent: str | None = Field(
@@ -159,7 +159,7 @@ class LeadStatus(str, Enum):
     validated = "validated"
     forwarded = "forwarded"
     collected = "collected"  # accepted form, vertical not yet routed to a buyer
-    call_to_connect = "call_to_connect"  # return tracking number; consumer dials
+    call_to_connect = "call_to_connect"  # legacy: plumbing records stored before 2026-10-26
     rejected = "rejected"
     error = "error"
 
@@ -173,8 +173,7 @@ class LeadRecord(BaseModel):
     forward_targets: list[str] = Field(default_factory=list)
     forward_results: list[dict] = Field(default_factory=list)
     public_message: str = ""
-    # Consent record for non-plumbing leads (stamped server-side in submit_request).
-    # Plumbing is call-to-connect (person dials; no consent collected), so these stay None there.
+    # Consent record (stamped server-side in submit_request when consent_to_contact is true).
     consent_timestamp: datetime | None = None
     consent_wording_version: str | None = None
     consent_source_page: str | None = None
@@ -186,8 +185,4 @@ class LeadResponse(BaseModel):
     message: str
     next_steps: list[str]
     estimated_payout_hint: str | None = None
-    # Present for call-to-connect verticals (e.g. plumbing). Agent must NOT dial.
-    call_to_connect: str | None = None  # E.164, e.g. +13085299543
-    call_to_connect_display: str | None = None  # e.g. (308) 529-9543
-    call_instruction: str | None = None
     dry_run: bool = False

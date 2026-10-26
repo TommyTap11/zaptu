@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Zaptu for AI agents — MCP server and API</title>
-  <meta name="description" content="How AI assistants use Zaptu: for plumbing the person dials; other services take a consented request. MCP server, REST intake and OpenAPI." />
+  <meta name="description" content="How AI assistants use Zaptu: every service, plumbing included, takes a consented contact request. MCP server, REST intake and OpenAPI." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://zaptu.ai/agents/" />
   <!-- seo:og -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Zaptu" />
   <meta property="og:title" content="Zaptu for AI agents — MCP server and API" />
-  <meta property="og:description" content="How AI assistants use Zaptu: for plumbing the person dials; other services take a consented request. MCP server, REST intake and OpenAPI." />
+  <meta property="og:description" content="How AI assistants use Zaptu: every service, plumbing included, takes a consented contact request. MCP server, REST intake and OpenAPI." />
   <meta property="og:url" content="https://zaptu.ai/agents/" />
   <meta property="og:image" content="https://zaptu.ai/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Zaptu for AI agents — MCP server and API" />
-  <meta name="twitter:description" content="How AI assistants use Zaptu: for plumbing the person dials; other services take a consented request. MCP server, REST intake and OpenAPI." />
+  <meta name="twitter:description" content="How AI assistants use Zaptu: every service, plumbing included, takes a consented contact request. MCP server, REST intake and OpenAPI." />
   <meta name="twitter:image" content="https://zaptu.ai/og-image.png" />
   <!-- /seo:og -->
   <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
@@ -47,14 +47,14 @@
   <main class="doc">
     <p class="eyebrow">For AI agents</p>
     <h1>Zaptu for AI agents</h1>
-    <p class="lede">Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing is live: the person calls a number. Other services are collecting requests.</p>
+    <p class="lede">Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Every service, plumbing included, is a contact request sent with the person&rsquo;s consent.</p>
     <p>For a plain overview with setup steps for Claude, Cursor and ChatGPT, see <a href="/ai/">Zaptu for AI assistants</a>.</p>
 
     <section>
       <h2>The short version</h2>
       <ol>
-        <li><strong>Plumbing is live.</strong> Give the person <strong>(308) 529-9543</strong> and ask them to dial it themselves. Never dial, autodial, transfer, or place the call for them. No personal details are needed.</li>
-        <li><strong>Everything else is collecting</strong> (cleaning, pest control, garage door, HVAC, handyman, other). Collect ZIP, name, phone, and the person&rsquo;s explicit consent to be contacted, then submit. Tell the person that for non-plumbing services details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about the request. Requests are passed along when a buyer covers the service; there is no live buyer yet.</li>
+        <li><strong>Every service is a contact request</strong> (plumbing, cleaning, pest control, garage door, HVAC, handyman, other). Collect ZIP, name, phone, and the person&rsquo;s explicit consent to be contacted, then submit. Tell the person that details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about the request. Requests are passed along when a participating provider covers the ZIP code; there is no live buyer yet.</li>
+        <li><strong>Never place a call.</strong> Do not dial, autodial, transfer, or place a call for the person.</li>
         <li><strong>A request is not a booking.</strong> Do not promise a callback, an arrival time, or a named company. Use the <code>message</code> field from the response when you tell the person what happened.</li>
       </ol>
     </section>
@@ -65,7 +65,7 @@
       <table>
         <thead><tr><th scope="col">service_type</th><th scope="col">Status</th><th scope="col">What to do</th></tr></thead>
         <tbody>
-          <tr><td><code>plumbing</code></td><td>Live (call to connect)</td><td>Give the number; the person dials. Call <code>get_plumbing_call_number</code>.</td></tr>
+          <tr><td><code>plumbing</code></td><td>Collecting</td><td>Submit with consent. Describe the problem in <code>notes</code>.</td></tr>
           <tr><td><code>house_cleaning</code>, <code>deep_cleaning</code>, <code>move_in_out_cleaning</code>, <code>recurring_cleaning</code></td><td>Collecting</td><td>Submit with consent. Add bedrooms or square feet if known.</td></tr>
           <tr><td><code>pest_control</code></td><td>Collecting</td><td>Submit with consent.</td></tr>
           <tr><td><code>garage_door</code></td><td>Collecting</td><td>Submit with consent.</td></tr>
@@ -78,11 +78,8 @@
 
     <section>
       <h2>What to tell the person</h2>
-      <p><strong>Plumbing:</strong></p>
-      <pre>Call (308) 529-9543 to be connected with a local plumbing professional.
-Please place the call yourself. Zaptu does not perform the work and this is not a booking.</pre>
-      <p><strong>Other services, after you submit:</strong></p>
-      <pre>Your request was sent to Zaptu. It is passed along when a buyer covers that service.
+      <p><strong>After you submit (any service):</strong></p>
+      <pre>Your request was sent to Zaptu. It is passed along when a participating provider covers your ZIP code.
 This is not a booking, and no one has been scheduled.</pre>
     </section>
 
@@ -98,11 +95,10 @@ This is not a booking, and no one has been scheduled.</pre>
       <table>
         <thead><tr><th scope="col">Tool</th><th scope="col">Use it for</th></tr></thead>
         <tbody>
-          <tr><td><code>get_plumbing_call_number</code></td><td>Plumbing. Returns the number, a tel link, and <code>what_to_tell_the_user</code>. Read-only; no personal details.</td></tr>
           <tr><td><code>request_home_service</code></td><td>Submit a request for any service. Needs <code>service_type</code>, <code>zip_code</code>, <code>customer_name</code>, <code>customer_phone</code>, <code>consent_to_contact=true</code>. Add <code>dry_run=true</code> to test.</td></tr>
           <tr><td><code>request_cleaning</code></td><td>Shortcut for house cleaning.</td></tr>
           <tr><td><code>get_lead_status</code></td><td>Look up a request by <code>lead_id</code>.</td></tr>
-          <tr><td><code>list_supported_services</code></td><td>Live vs collecting services and the rules.</td></tr>
+          <tr><td><code>list_supported_services</code></td><td>Supported services and the rules.</td></tr>
         </tbody>
       </table>
       </div>
@@ -117,13 +113,6 @@ This is not a booking, and no one has been scheduled.</pre>
        "customer_name":"Jamie Example","customer_phone":"305-555-0100",
        "consent_to_contact":true,"bedrooms":2,"dry_run":true}'</pre>
       <p><code>dry_run</code> validates and answers without saving or passing anything along. Leave it out for a real request.</p>
-      <p>Plumbing response (abridged):</p>
-      <pre>{
-  "status": "call_to_connect",
-  "call_to_connect": "+13085299543",
-  "call_to_connect_display": "(308) 529-9543",
-  "call_instruction": "Give the person this phone number and ask them to place the call themselves. ..."
-}</pre>
       <p>Errors return HTTP 422 with a readable <code>message</code> and a <code>fields</code> map, for example <code>{"error": "invalid_request", "message": "Phone must be a 10-digit US number, like 305-555-0100.", "fields": {"customer_phone": "..."}}</code>. Too many requests returns 429.</p>
     </section>
 

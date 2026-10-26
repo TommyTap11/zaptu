@@ -1,8 +1,7 @@
 """Build cleaning, garage-door, pest-control, HVAC, and handyman hubs, plus city pages where coverage exists.
 
-No buyer phone numbers exist for these categories, so pages use the request form only and must
-never show the plumbing tracking number. HVAC and handyman have hubs only: there is no city
-coverage data, and none is invented. Copy rules (The Client Connector, applied site-wide):
+Pages use the request form only (no phone numbers). HVAC and handyman have hubs only: there
+is no city coverage data, and none is invented. Copy rules (applied site-wide):
 no "free" outside the approved disclaimer, no prices, no superlatives, no guarantees or reviews,
 never imply Zaptu does the work, and no first-person wording that sounds like the provider.
 

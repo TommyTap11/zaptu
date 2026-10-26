@@ -137,7 +137,7 @@ def test_mask_phone():
 
 
 @pytest.mark.asyncio
-async def test_plumbing_call_to_connect(tmp_path, monkeypatch):
+async def test_plumbing_goes_through_normal_intake(tmp_path, monkeypatch):
     _reload_settings(monkeypatch, tmp_path, ZAPTU_MOCK_FORWARDER="0", LEAD_WEBHOOK_URL=None)
     req = ServiceRequest(
         service_type="plumbing",
@@ -149,13 +149,7 @@ async def test_plumbing_call_to_connect(tmp_path, monkeypatch):
         notes="clogged drain",
     )
     result = await submit_request(req)
-    assert result.status == LeadStatus.call_to_connect
-    assert result.call_to_connect == "+13085299543"
-    assert result.call_to_connect_display == "(308) 529-9543"
-    assert result.call_instruction
-    assert "do not" in result.call_instruction.lower()
-    assert "dial" in result.call_instruction.lower() or "place the call" in result.call_instruction.lower()
-    assert "(308) 529-9543" in result.message
-    assert "not a booking" in result.message.lower()
-    # Must not look like a form forward
+    assert result.status == LeadStatus.received
+    assert "not a confirmed appointment" in result.message
+    assert not hasattr(result, "call_to_connect")
     assert result.estimated_payout_hint is None

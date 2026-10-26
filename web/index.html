@@ -68,18 +68,18 @@
   <main>
     <p class="eyebrow">Local home services</p>
     <h1>Get connected with a local pro.</h1>
-    <p class="lede">Call to be connected with a local plumbing professional, or send a request for other home services. We connect you with independent local contractors — we do not perform the work, and this is never a confirmed appointment.</p>
+    <p class="lede">Send a request for plumbing, cleaning, pest control and other home services. We connect you with independent local contractors — we do not perform the work, and this is never a confirmed appointment.</p>
     <div class="hero-call">
-      <a class="btn-call" href="tel:+13085299543">Plumbing: call (308) 529-9543</a>
-      <p><strong>You place the call.</strong> It connects you with a local plumbing professional. Not a booking by Zaptu.</p>
+      <a class="btn-call" href="#request">Send a request</a>
+      <p><strong>It is a contact request.</strong> A local professional may contact you about it. Not a booking by Zaptu.</p>
     </div>
     <div class="plans">
-      <a class="plan live" href="/plumbing/">
-        <span class="tag">Live</span>
+      <a class="plan" href="/plumbing/">
+        <span class="tag">Collecting</span>
         <h2>Plumbing</h2>
-        <p>Call to be connected with a local plumbing professional.</p>
-        <ul><li>You place the call</li><li>Leaks, clogs, water heaters, sewer lines</li><li>Not a booking by Zaptu</li></ul>
-        <span class="btn">Call for plumbing</span>
+        <p>Leaks, clogs, water heaters, sewer lines.</p>
+        <ul><li>US residential</li><li>Passed along when a provider covers the ZIP</li><li>Not a booking by Zaptu</li></ul>
+        <span class="btn ghost">Request plumbing</span>
       </a>
       <a class="plan" href="/cleaning/">
         <span class="tag">Collecting</span>
@@ -107,7 +107,7 @@
     <!-- cities:start -->
     <section class="home-cities">
       <h2><a href="/plumbing/">Plumbing by city</a></h2>
-      <p>Call to be connected with a local plumbing professional. City pages:</p>
+      <p>Send a request to be connected with a local plumbing professional. City pages:</p>
       <ul class="city-links">
         <li><a href="/plumbing/alexandria-va/">Alexandria, VA</a></li>
         <li><a href="/plumbing/allentown-pa/">Allentown, PA</a></li>
@@ -181,7 +181,7 @@
       <input type="hidden" name="form-name" value="service-request" />
       <p class="hp" aria-hidden="true"><label>Do not fill <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
       <h2>Send a request</h2>
-      <p class="hint">For cleaning, pest control, garage door, HVAC, handyman, and other home services. Plumbing? <a href="tel:+13085299543">Call (308) 529-9543</a> instead.</p>
+      <p class="hint">For plumbing, cleaning, pest control, garage door, HVAC, handyman, and other home services.</p>
       <label for="customer_name">Name</label>
       <input id="customer_name" name="customer_name" required minlength="2" maxlength="120" autocomplete="name" />
       <div class="row">
@@ -198,6 +198,7 @@
         <div>
           <label for="service_type">Service</label>
           <select id="service_type" name="service_type">
+            <option value="plumbing">Plumbing</option>
             <option value="house_cleaning">House cleaning</option>
             <option value="deep_cleaning">Deep clean</option>
             <option value="move_in_out_cleaning">Move-in / move-out</option>
@@ -261,7 +262,7 @@
     fetch(f.action, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
-        if (x.ok && x.j.status !== "rejected") { location.href = x.j.status === "call_to_connect" ? "/plumbing/" : "/thanks/"; return; }
+        if (x.ok && x.j.status !== "rejected") { location.href = "/thanks/"; return; }
         var fields = (x.j && x.j.fields) || {};
         Object.keys(fields).forEach(function (k) { if (f[k] && f[k].setAttribute) f[k].setAttribute("aria-invalid", "true"); });
         st.textContent = (x.j && x.j.message) || "Something went wrong. Please try again.";

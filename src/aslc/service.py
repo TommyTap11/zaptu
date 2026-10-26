@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from .call_routing import get_call_to_connect
 from .forwarding import active_forwarders
 from .models import CONSENT_WORDING_VERSION, LeadRecord, LeadResponse, LeadStatus, ServiceRequest
 from .storage import append_lead, get_lead
-from .validation import is_call_to_connect, is_collected_only, is_monetizable, validate_request
+from .validation import is_collected_only, is_monetizable, validate_request
 
 # Honest copy only — promise contact, never a booked job / invented provider / ETA.
 NEXT_STEPS_RECEIVED = [
@@ -19,13 +18,6 @@ NEXT_STEPS_COLLECTED = [
     "Your request was saved.",
     "This service type is collected but not yet routed to a buyer.",
     "We will route it when coverage is live for that vertical.",
-]
-
-NEXT_STEPS_CALL_TO_CONNECT = [
-    "Give the person the call_to_connect number from this response.",
-    "Ask them to place the call themselves — do not dial for them.",
-    "This connects them with a local professional via our affiliate partner.",
-    "This is not a booking by Zaptu.",
 ]
 
 NEXT_STEPS_REJECTED = [
@@ -41,8 +33,8 @@ async def submit_request(req: ServiceRequest, *, dry_run: bool = False) -> LeadR
     """Run the intake pipeline. dry_run=True validates and answers without storing or forwarding."""
     problems = validate_request(req)
     lead = LeadRecord(request=req, validation_notes=problems, status=LeadStatus.validated)
-    # Stamp the consent record at intake (non-plumbing only; plumbing dials, no consent collected).
-    if req.consent_to_contact and not is_call_to_connect(req):
+    # Stamp the consent record at intake (every service, plumbing included).
+    if req.consent_to_contact:
         lead.consent_timestamp = lead.created_at
         lead.consent_wording_version = CONSENT_WORDING_VERSION
         lead.consent_source_page = req.consent_source_page or req.source_agent
@@ -64,28 +56,6 @@ async def submit_request(req: ServiceRequest, *, dry_run: bool = False) -> LeadR
             ]
             resp.dry_run = True
         return resp
-
-    # Pay-per-call: the person dials the tracking number. Nobody contacts them, so this
-    # does not depend on consent_to_contact. Plumbing form leads are never forwarded.
-    if is_call_to_connect(req):
-        campaign = get_call_to_connect(req.service_type)
-        assert campaign is not None
-        lead.status = LeadStatus.call_to_connect
-        lead.public_message = (
-            f"For {req.service_type} in ZIP {req.zip_code}, give the person "
-            f"{campaign.display} and ask them to call that number themselves. "
-            "Do not place the call for them. This is not a booking by Zaptu."
-        )
-        save(lead)
-        return respond(
-            lead_id=lead.id,
-            status=lead.status,
-            message=lead.public_message,
-            next_steps=NEXT_STEPS_CALL_TO_CONNECT,
-            call_to_connect=campaign.phone_e164,
-            call_to_connect_display=campaign.display,
-            call_instruction=campaign.instruction,
-        )
 
     # Hard reject (no consent / bad ZIP / past date).
     if any(p.startswith("Customer must consent") for p in problems) or any(

@@ -97,15 +97,15 @@ def test_home_organization_has_email_only():
     assert org["url"] == "https://zaptu.ai/"
 
 
-def test_home_form_is_accessible_and_plumbing_calls():
+def test_home_form_is_accessible_and_offers_plumbing():
     t = (WEB / "index.html").read_text()
     form = t[t.index('<form id="request"'): t.index("</form>")]
     assert 'action="https://api.zaptu.ai/v1/intake"' in form
     for fid in ("customer_name", "customer_phone", "zip_code", "service_type", "bedrooms", "notes", "consent_to_contact"):
         assert f'id="{fid}"' in form and f'for="{fid}"' in form, fid
-    assert 'value="plumbing"' not in form  # plumbing is a call, not a form lead
+    assert 'value="plumbing"' in form  # plumbing uses the same intake form since 2026-10-26
     assert 'role="status"' in form
-    assert t.count('href="tel:+13085299543"') >= 2
+    assert 'href="tel:' not in t
 
 
 TEXT_FILES = [WEB / "llms.txt", WEB / "llms-full.txt", WEB / "openapi.json", WEB / ".well-known" / "mcp.json",

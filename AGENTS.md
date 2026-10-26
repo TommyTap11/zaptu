@@ -11,7 +11,8 @@ Brand: Zaptu (zaptu.ai). This repo is vertical 1 — the home-services lead rout
 - Do not hold user OAuth tokens in this phase.
 - Agent-facing metadata (service catalog, OpenAPI, server cards, mcp.json) lives in `src/aslc/catalog.py`.
   After changing tools or catalog, run `python3 scripts/build_discovery.py` (static copies in `web/`); tests fail on drift.
-- Site regeneration: `python3 scripts/build_plumbing_cities.py && python3 scripts/seo.py`. `seo.py` owns the shared
+- Site regeneration: `python3 scripts/build_plumbing_cities.py && python3 scripts/build_service_cities.py && python3 scripts/seo.py`
+  (in that order: the plumbing script rewrites the tail of llms.txt). `seo.py` owns the shared
   header nav, footer links (incl. Contact mailto:hello@zaptu.ai), and icon/manifest tags on every page.
-- Plumbing returns the call-to-connect number without needing consent (nobody contacts the person); every other
-  service still requires `consent_to_contact=true`.
+- Every service, plumbing included, goes through the same /v1/intake form and requires `consent_to_contact=true`
+  (Polyares consent wording). The Client Connector call-to-connect number was dropped on 2026-10-26; do not re-add it.

@@ -1,20 +1,20 @@
 # Zaptu
 
-> Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing is live: the person dials (308) 529-9543. Other services are collecting requests.
+> Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Every service, plumbing included, is a contact request sent with the person's consent.
 
 ## Rules for AI agents
 
-- Plumbing (live): give the person (308) 529-9543 (+13085299543) and ask them to place the call themselves. Never dial, autodial, transfer, or place the call on their behalf. No personal details are needed.
-- Everything else (collecting): house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, garage_door, hvac, handyman, other. Submit only with the person's explicit consent to be contacted. For non-plumbing services, details may be shared with Polyares and its service-provider partners. Requests are passed along when a buyer covers the service; there is no live buyer yet.
+- All services (collecting): plumbing, house_cleaning, deep_cleaning, move_in_out_cleaning, recurring_cleaning, pest_control, garage_door, hvac, handyman, other. Submit only with the person's explicit consent to be contacted. Details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about the request. Requests are passed along when a participating provider covers the ZIP code; there is no live buyer yet.
+- Never dial, autodial, transfer, or place a call on the person's behalf.
 - A request is not a booking. Do not promise a callback, an arrival time, or a named company.
 - Required fields for a request: service_type, zip_code, customer_name, customer_phone, consent_to_contact=true.
 
-What to say for plumbing: "Call (308) 529-9543 to be connected with a local plumbing professional. Please place the call yourself. Zaptu does not perform the work and this is not a booking."
+What to say after submitting: "Your request was sent to Zaptu. It is passed along when a participating provider covers your ZIP code. This is not a booking, and no one has been scheduled."
 
 ## Connect
 
-- [MCP server](https://api.zaptu.ai/mcp): streamable HTTP, stateless, no sign-in. Tools: get_plumbing_call_number, request_home_service, request_cleaning, get_lead_status, list_supported_services
-- [Service catalog (JSON)](https://api.zaptu.ai/v1/services): live vs collecting, the plumbing number, and the rules
+- [MCP server](https://api.zaptu.ai/mcp): streamable HTTP, stateless, no sign-in. Tools: request_home_service, request_cleaning, get_lead_status, list_supported_services
+- [Service catalog (JSON)](https://api.zaptu.ai/v1/services): supported services and the rules
 - [Request intake](https://api.zaptu.ai/v1/intake): POST JSON; add "dry_run": true to validate without saving
 - [OpenAPI](https://api.zaptu.ai/openapi.json)
 - [MCP discovery](https://zaptu.ai/.well-known/mcp.json) and [server card](https://api.zaptu.ai/.well-known/mcp/server-card.json)
@@ -25,12 +25,12 @@ What to say for plumbing: "Call (308) 529-9543 to be connected with a local plum
 - [Agent guide](https://zaptu.ai/agents/): tools, examples, errors
 - [Full agent reference](https://zaptu.ai/llms-full.txt)
 - [How it works](https://zaptu.ai/how-it-works/)
-- [Plumbing](https://zaptu.ai/plumbing/): call to connect
+- [Plumbing](https://zaptu.ai/plumbing/): request form
 - [Privacy](https://zaptu.ai/privacy/)
 - Contact: hello@zaptu.ai
 
 ## Plumbing city pages
-Same call-to-connect number (308) 529-9543 on every page; the person dials.
+Request form only (service_type plumbing); no phone number.
 - [Plumber in Alexandria, VA](https://zaptu.ai/plumbing/alexandria-va/)
 - [Plumber in Allentown, PA](https://zaptu.ai/plumbing/allentown-pa/)
 - [Plumber in Anaheim, CA](https://zaptu.ai/plumbing/anaheim-ca/)
