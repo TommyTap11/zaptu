@@ -2,15 +2,14 @@
 
 Used by the MCP tools, the REST discovery endpoints (/v1/services, /openapi.json,
 server cards), and scripts/build_discovery.py, which writes static copies to web/.
-Copy rules (The Client Connector): no prices, no superlatives, no guarantees, never
-imply Zaptu performs the work, and the person always dials the plumbing number.
+Copy rules: no prices, no superlatives, no guarantees, and never imply Zaptu performs
+the work or that a request is a booking. Every service, plumbing included, is a contact request.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from .call_routing import CALL_TO_CONNECT
 from .models import ALL_SERVICE_TYPES, CONSENT_DISCLOSURE, LeadResponse, ServiceRequest
 from .validation import COLLECTED_ONLY_SERVICES, ROUTABLE_SERVICES
 
@@ -22,7 +21,7 @@ CONTACT_EMAIL = "hello@zaptu.ai"
 REGISTRY_NAME = "ai.zaptu/zaptu"  # reverse-DNS name for MCP registries (domain-owned)
 PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26"]
 
-SHORT_DESCRIPTION = "Connect people with independent local home-service contractors. For plumbing, the person dials."
+SHORT_DESCRIPTION = "Send home-service contact requests (plumbing, cleaning, pest and more) to local contractors."
 
 ABOUT = (
     "Zaptu connects people with independent local home-service contractors. "
@@ -32,9 +31,8 @@ ABOUT = (
 REQUIRED_FIELDS = ["service_type", "zip_code", "customer_name", "customer_phone", "consent_to_contact"]
 
 AGENT_RULES = [
-    "Plumbing is live: give the person the phone number and ask them to dial it themselves.",
+    "Every service, plumbing included, is a contact request: submit only with the person's explicit consent to be contacted. " + CONSENT_DISCLOSURE,
     "Never dial, autodial, transfer, or place a call on the person's behalf.",
-    "Other services are collecting: submit only with the person's explicit consent to be contacted. " + CONSENT_DISCLOSURE,
     "A request is not a booking. Do not promise a callback, an arrival time, or a named company.",
     "Zaptu does not perform the work. Contractors are independent.",
 ]
@@ -53,42 +51,12 @@ SERVICE_LABELS = {
 }
 
 
-def plumbing_answer(zip_code: str | None = None) -> dict[str, Any]:
-    """What an agent needs to hand a person the plumbing number. No personal data required."""
-    c = CALL_TO_CONNECT["plumbing"]
-    where = f" for ZIP {zip_code}" if zip_code else ""
-    return {
-        "service_type": "plumbing",
-        "status": "call_to_connect",
-        "call_to_connect": c.phone_e164,
-        "call_to_connect_display": c.display,
-        "tel_link": c.tel_href,
-        "what_to_tell_the_user": (
-            f"To be connected with a local plumbing professional{where}, call {c.display}. "
-            "Please place the call yourself. Zaptu does not perform the work and this is not a booking."
-        ),
-        "call_instruction": c.instruction,
-        "coverage_note": "Availability depends on the caller's ZIP code and the time of day.",
-        "web_page": f"{SITE}/plumbing/",
-    }
-
-
 def services_catalog() -> dict[str, Any]:
     collecting = sorted(ROUTABLE_SERVICES | COLLECTED_ONLY_SERVICES, key=ALL_SERVICE_TYPES.index)
     return {
         "name": "Zaptu",
         "about": ABOUT,
         "version": VERSION,
-        "live": [
-            {
-                "service_type": key,
-                "label": SERVICE_LABELS.get(key, key),
-                "mode": "call_to_connect",
-                **{k: v for k, v in plumbing_answer().items() if k not in {"service_type", "status"}},
-                "how": "Call get_plumbing_call_number (MCP) or GET /v1/services and read the number to the person. No personal details needed.",
-            }
-            for key in CALL_TO_CONNECT
-        ],
         "collecting": [
             {
                 "service_type": key,
@@ -153,8 +121,8 @@ def openapi_spec() -> dict[str, Any]:
             "version": VERSION,
             "description": (
                 ABOUT
-                + " Plumbing returns a phone number the person must dial themselves; never dial for them. "
-                "Other services are collecting: requests are accepted and passed along when a buyer covers the service. " + CONSENT_DISCLOSURE + " "
+                + " "
+                "Every service, plumbing included, is a contact request: requests are accepted and passed along when a buyer covers the service. " + CONSENT_DISCLOSURE + " "
                 "A request is not a booking. Add \"dry_run\": true to validate without saving anything."
             ),
             "contact": {"email": CONTACT_EMAIL, "url": f"{SITE}/agents/"},
@@ -165,7 +133,7 @@ def openapi_spec() -> dict[str, Any]:
             "/v1/services": {
                 "get": {
                     "operationId": "listServices",
-                    "summary": "Which services are live vs collecting, the plumbing number, and agent rules",
+                    "summary": "Which services Zaptu accepts requests for, and agent rules",
                     "responses": {"200": {"description": "Service catalog", "content": {"application/json": {"schema": {"type": "object"}}}}},
                 }
             },
@@ -175,9 +143,7 @@ def openapi_spec() -> dict[str, Any]:
                     "summary": "Submit a home-service request (lead, not a booking)",
                     "description": (
                         "JSON clients get JSON back. HTML form posts (application/x-www-form-urlencoded) are redirected "
-                        "to the thanks page, or to the plumbing page for plumbing. For plumbing the response includes "
-                        "call_to_connect: give the person the number and have them dial it. "
-                        "consent_to_contact must be true for non-plumbing services. " + CONSENT_DISCLOSURE
+                        "to the thanks page. consent_to_contact must be true for every service. " + CONSENT_DISCLOSURE
                     ),
                     "parameters": [
                         {"name": "dry_run", "in": "query", "required": False, "schema": {"type": "boolean"},
@@ -202,11 +168,11 @@ def openapi_spec() -> dict[str, Any]:
                         },
                     },
                     "responses": {
-                        "202": {"description": "Accepted (received, collected, or call_to_connect)",
+                        "202": {"description": "Accepted (received or collected)",
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LeadResponse"}}}},
                         "200": {"description": "dry_run result; nothing stored",
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LeadResponse"}}}},
-                        "303": {"description": "Form post redirect to the thanks page or plumbing page"},
+                        "303": {"description": "Form post redirect to the thanks page"},
                         "422": {"description": "Invalid or rejected request with a readable message",
                                 "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}},
                         "429": {"description": "Too many requests", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}},
@@ -224,12 +190,11 @@ def openapi_spec() -> dict[str, Any]:
 
 def mcp_manifest() -> dict[str, Any]:
     """Zaptu's own discovery document at /.well-known/mcp.json."""
-    plumbing = plumbing_answer()
     return {
         "name": "zaptu",
         "title": "Zaptu",
         "version": VERSION,
-        "description": ABOUT + " Plumbing returns a phone number the person dials; agents must not place the call.",
+        "description": ABOUT + " Every service, plumbing included, is a contact request sent with the person's consent.",
         "website": f"{SITE}/",
         "docs": f"{SITE}/agents/",
         "llms": f"{SITE}/llms.txt",
@@ -243,7 +208,6 @@ def mcp_manifest() -> dict[str, Any]:
         "services": f"{API}/v1/services",
         "openapi": f"{API}/openapi.json",
         "server_card": f"{API}/.well-known/mcp/server-card.json",
-        "live": {"plumbing": {"call_to_connect": plumbing["call_to_connect"], "display": plumbing["call_to_connect_display"], "rule": plumbing["call_instruction"]}},
         "collecting": [s["service_type"] for s in services_catalog()["collecting"]],
         "required_fields": REQUIRED_FIELDS,
         "rules": AGENT_RULES,

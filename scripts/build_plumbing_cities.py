@@ -1,6 +1,7 @@
 """Build /plumbing/<slug>/ city pages from scripts/plumbing_cities.json.
 
-Copy rules (The Client Connector): no "free" outside the approved disclaimer, no prices,
+Every page uses the same /v1/intake request form as the cleaning and pest pages (no phone
+number). Copy rules: no "free" outside the approved disclaimer, no prices,
 no superlatives, no reviews, no licensed/insured/guaranteed/response-time claims, never
 imply Zaptu does the work or that a named company is coming.
 """
@@ -16,8 +17,6 @@ ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 DATA = json.loads((Path(__file__).with_name("plumbing_cities.json")).read_text())
 
-PHONE_DISPLAY = "(308) 529-9543"
-PHONE_TEL = "tel:+13085299543"
 DISCLAIMER = (
     "This site is a free service to assist homeowners in connecting with local service "
     "contractors. All contractors are independent and this site does not warrant or "
@@ -30,7 +29,7 @@ DISCLAIMER = (
 # City-specific copy. Hedged, general knowledge only; no stats, no named companies.
 LOCAL = {
     "miami-fl": {
-        "intro": "Miami has everything from older single-family homes to high-rise condos, and a plumbing problem in a tower is handled differently from one in a house. Call to be connected with a local plumbing professional who can talk through what you are seeing.",
+        "intro": "Miami has everything from older single-family homes to high-rise condos, and a plumbing problem in a tower is handled differently from one in a house. Send a request to be connected with a local plumbing professional who can talk through what you are seeing.",
         "notes": [
             "In a condo or apartment, a leak can reach the unit below. Check whether your building management or association needs to know before work starts.",
             "Heavy rain can overwhelm drains. If water is coming up through a floor drain or shower, stop running water until the line is checked.",
@@ -39,34 +38,34 @@ LOCAL = {
         "focus": "clogs and drain backups after storms, leaks in condo units, and water heater problems",
     },
     "fort-lauderdale-fl": {
-        "intro": "Fort Lauderdale homes sit in a low, wet landscape crossed by canals, which makes drainage and sewer problems a common reason people pick up the phone. Call to be connected with a local plumbing professional.",
+        "intro": "Fort Lauderdale homes sit in a low, wet landscape crossed by canals, which makes drainage and sewer problems a common reason people pick up the phone. Send a request to be connected with a local plumbing professional.",
         "notes": [
-            "Some older properties in Broward County still use septic systems. Say whether you are on septic or city sewer when you call.",
+            "Some older properties in Broward County still use septic systems. Say whether you are on septic or city sewer in your request.",
             "After heavy rain, slow drains throughout the house can point to a main line issue rather than a single clog.",
             "Outdoor pipes and fittings near the water can corrode, so mention rust or green buildup on visible lines.",
         ],
         "focus": "sewer and septic questions, slow drains after rain, and leaking fixtures",
     },
     "denver-co": {
-        "intro": "Denver's cold snaps are hard on pipes, especially in exterior walls, crawl spaces, and garages. If you have a leak, a frozen line, or a water heater that quit, call to be connected with a local plumbing professional.",
+        "intro": "Denver's cold snaps are hard on pipes, especially in exterior walls, crawl spaces, and garages. If you have a leak, a frozen line, or a water heater that quit, send a request to be connected with a local plumbing professional.",
         "notes": [
             "When temperatures fall below freezing, disconnect garden hoses and know where your main shutoff valve is before a pipe splits.",
             "A frozen pipe that thaws can start leaking hours later. Watch ceilings and walls near the line once it warms up.",
-            "Water heaters work harder in winter; no hot water or a pilot that keeps going out is worth describing in detail on the call.",
+            "Water heaters work harder in winter; no hot water or a pilot that keeps going out is worth describing in detail in your request.",
         ],
         "focus": "frozen or burst pipes, water heater outages, and leaks in basements and crawl spaces",
     },
     "atlanta-ga": {
-        "intro": "Atlanta's tree cover is part of the city's character, and those same roots can work their way into sewer lines. Whether it is a backed-up drain or a leak under the sink, call to be connected with a local plumbing professional.",
+        "intro": "Atlanta's tree cover is part of the city's character, and those same roots can work their way into sewer lines. Whether it is a backed-up drain or a leak under the sink, send a request to be connected with a local plumbing professional.",
         "notes": [
             "Repeated backups in a basement or ground-floor drain often point to the main sewer line rather than a single fixture.",
             "Clay soil can shift with wet and dry seasons, which can stress buried water and sewer lines.",
-            "Older in-town homes may still have older pipe materials. If you know what your pipes are made of, share it on the call.",
+            "Older in-town homes may still have older pipe materials. If you know what your pipes are made of, share it in your request.",
         ],
         "focus": "sewer line backups, root intrusion, and leaking supply lines",
     },
     "dallas-tx": {
-        "intro": "Many Dallas homes are built on slab foundations over clay soil that swells and shrinks with the weather, so leaks under the slab are a familiar worry. Call to be connected with a local plumbing professional.",
+        "intro": "Many Dallas homes are built on slab foundations over clay soil that swells and shrinks with the weather, so leaks under the slab are a familiar worry. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Signs of a slab leak can include a warm spot on the floor, the sound of running water when everything is off, or a water bill that jumps without explanation.",
             "Occasional hard freezes in North Texas can catch exposed pipes off guard. Know where your main shutoff is.",
@@ -75,7 +74,7 @@ LOCAL = {
         "focus": "slab leaks, water heater replacement questions, and freeze damage",
     },
     "phoenix-az": {
-        "intro": "In Phoenix, hard water and summer heat both take a toll on plumbing, from scale in water heaters to fixtures that stop flowing freely. Call to be connected with a local plumbing professional.",
+        "intro": "In Phoenix, hard water and summer heat both take a toll on plumbing, from scale in water heaters to fixtures that stop flowing freely. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Hard water leaves mineral buildup that can shorten the life of water heaters and clog aerators and shower heads.",
             "Many homes in the Valley sit on slab foundations, so an unexplained jump in the water bill can be worth mentioning.",
@@ -84,7 +83,7 @@ LOCAL = {
         "focus": "water heater scale and failures, slab leaks, and fixture clogs from mineral buildup",
     },
     "los-angeles-ca": {
-        "intro": "Los Angeles has a lot of older housing, and pipes that have been in place for decades can start to leak or clog. Call to be connected with a local plumbing professional for your part of the city.",
+        "intro": "Los Angeles has a lot of older housing, and pipes that have been in place for decades can start to leak or clog. Send a request to be connected with a local plumbing professional for your part of the city.",
         "notes": [
             "Some older homes still have galvanized steel supply lines, which can narrow with rust and reduce water pressure.",
             "Know where your main water shutoff is. It matters for leaks and for earthquake preparedness.",
@@ -93,16 +92,16 @@ LOCAL = {
         "focus": "low water pressure, leaks from aging pipes, and water heater replacement",
     },
     "las-vegas-nv": {
-        "intro": "Las Vegas water is known for being hard, and that mineral content shows up in water heaters, faucets, and appliances. Call to be connected with a local plumbing professional in the valley.",
+        "intro": "Las Vegas water is known for being hard, and that mineral content shows up in water heaters, faucets, and appliances. Send a request to be connected with a local plumbing professional in the valley.",
         "notes": [
-            "Sediment in a tank water heater can cause popping noises and less hot water. Describe what you hear when you call.",
+            "Sediment in a tank water heater can cause popping noises and less hot water. Describe what you hear in your request.",
             "Mineral buildup can clog faucet aerators and shower heads and wear out valves sooner.",
             "Desert heat is hard on outdoor plumbing and irrigation lines, so mention any wet spots in the yard.",
         ],
         "focus": "water heater sediment, mineral buildup, and outdoor line leaks",
     },
     "boston-ma": {
-        "intro": "Boston's older homes and multi-family buildings bring their own plumbing questions, and New England winters add frozen pipes to the list. Call to be connected with a local plumbing professional.",
+        "intro": "Boston's older homes and multi-family buildings bring their own plumbing questions, and New England winters add frozen pipes to the list. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a multi-unit building, a leak can travel between floors. Let neighbors or the building owner know if water is moving.",
             "Older homes may have cast-iron drain lines or older supply pipes. Mention the age of the house if you know it.",
@@ -111,7 +110,7 @@ LOCAL = {
         "focus": "frozen pipes, drain problems in older buildings, and leaks between units",
     },
     "san-diego-ca": {
-        "intro": "San Diego homes range from coastal cottages to newer inland developments, and plumbing problems vary with age and location. Call to be connected with a local plumbing professional.",
+        "intro": "San Diego homes range from coastal cottages to newer inland developments, and plumbing problems vary with age and location. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Older neighborhoods may have clay or cast-iron sewer laterals that can crack or collect roots over time.",
             "Water in much of Southern California is on the hard side, which can lead to scale in water heaters and fixtures.",
@@ -133,7 +132,7 @@ ISSUES = [
 # Per-city issue order (keys into ISSUES titles) and one extra city-specific line per lead issue.
 ISSUE_PLAN = {
     "miami-fl": (["Clogs and slow drains", "Leaks", "Water heaters", "Sewer lines", "Burst or frozen pipes"],
-                 {"Clogs and slow drains": "In Miami, drains that back up during a downpour are worth calling about even if they clear afterward.",
+                 {"Clogs and slow drains": "In Miami, drains that back up during a downpour are worth reporting even if they clear afterward.",
                   "Leaks": "Condo owners should note whether the leak is inside the unit or coming from a shared wall or ceiling."}),
     "fort-lauderdale-fl": (["Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters", "Burst or frozen pipes"],
                  {"Sewer lines": "Tell the professional whether the home is on septic or connected to city sewer.",
@@ -143,7 +142,7 @@ ISSUE_PLAN = {
                   "Water heaters": "Heavy winter use can expose a water heater that was already struggling."}),
     "atlanta-ga": (["Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters", "Burst or frozen pipes"],
                  {"Sewer lines": "In older Atlanta neighborhoods with mature trees, roots are a frequent suspect when backups keep coming back.",
-                  "Clogs and slow drains": "If a plunger clears it for a day or two and it returns, say so on the call."}),
+                  "Clogs and slow drains": "If a plunger clears it for a day or two and it returns, say so in your request."}),
     "dallas-tx": (["Leaks", "Water heaters", "Burst or frozen pipes", "Clogs and slow drains", "Sewer lines"],
                  {"Leaks": "For Dallas homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
                   "Burst or frozen pipes": "During a North Texas freeze, open cabinet doors under sinks on exterior walls and know how to shut off the main."}),
@@ -182,25 +181,25 @@ SIBLINGS = {
 # Batch 2 (2026-10-12)
 LOCAL2 = {
     "boulder-co": {
-        "intro": "Boulder sits right against the foothills, and its cold nights and big temperature swings are hard on pipes in exterior walls, crawl spaces, and garages. Call to be connected with a local plumbing professional.",
+        "intro": "Boulder sits right against the foothills, and its cold nights and big temperature swings are hard on pipes in exterior walls, crawl spaces, and garages. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Before a hard freeze, disconnect garden hoses and know where your main shutoff valve is.",
-            "Homes in the foothills and canyons may use a well or septic system. Say which you have when you call.",
+            "Homes in the foothills and canyons may use a well or septic system. Say which you have in your request.",
             "Older homes near downtown and the university can have older supply and drain lines, so mention the age of the house if you know it.",
         ],
         "focus": "frozen or burst pipes, water heater outages, and leaks in older homes",
     },
     "fort-collins-co": {
-        "intro": "Fort Collins winters bring regular freezes, and pipes in crawl spaces, garages, and outside walls feel it first. Call to be connected with a local plumbing professional.",
+        "intro": "Fort Collins winters bring regular freezes, and pipes in crawl spaces, garages, and outside walls feel it first. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Turn off and drain sprinkler lines and outdoor spigots before the first hard freeze.",
             "A frozen pipe can start leaking hours after it thaws, so keep an eye on nearby walls and ceilings.",
-            "Homes outside town may be on a well or septic system. Mention it on the call.",
+            "Homes outside town may be on a well or septic system. Mention it in your request.",
         ],
         "focus": "frozen pipes, sprinkler and outdoor line problems, and water heater issues",
     },
     "fort-worth-tx": {
-        "intro": "Many Fort Worth homes sit on slab foundations over clay soil that swells and shrinks with the weather, so leaks under the slab are a common concern. Call to be connected with a local plumbing professional.",
+        "intro": "Many Fort Worth homes sit on slab foundations over clay soil that swells and shrinks with the weather, so leaks under the slab are a common concern. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "A warm spot on the floor, running-water sounds when everything is off, or a water bill that jumps can point to a slab leak.",
             "Hard freezes in North Texas are not frequent, but they can catch exposed pipes unprepared. Know where your main shutoff is.",
@@ -209,7 +208,7 @@ LOCAL2 = {
         "focus": "slab leaks, freeze damage, and main line backups",
     },
     "west-palm-beach-fl": {
-        "intro": "West Palm Beach has older bungalows, newer subdivisions, and waterfront condos, and plumbing questions differ for each. Call to be connected with a local plumbing professional.",
+        "intro": "West Palm Beach has older bungalows, newer subdivisions, and waterfront condos, and plumbing questions differ for each. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Some properties in Palm Beach County use septic systems. Say whether you are on septic or city sewer.",
             "Heavy summer rain can push water back up through floor drains. Stop running water until the line is checked.",
@@ -218,7 +217,7 @@ LOCAL2 = {
         "focus": "drain backups after storms, septic and sewer questions, and leaking fixtures",
     },
     "sacramento-ca": {
-        "intro": "Sacramento has many older neighborhoods with mature trees, and both age and roots can affect supply and sewer lines. Call to be connected with a local plumbing professional.",
+        "intro": "Sacramento has many older neighborhoods with mature trees, and both age and roots can affect supply and sewer lines. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Repeated backups in the same drain often point to roots or a problem in the sewer lateral.",
             "Hot summers are hard on outdoor plumbing and irrigation lines. Mention any wet patches in the yard.",
@@ -227,7 +226,7 @@ LOCAL2 = {
         "focus": "sewer lateral and root problems, leaks from aging pipes, and water heater replacement",
     },
     "san-antonio-tx": {
-        "intro": "San Antonio's water is on the hard side, and many homes sit on slabs over shifting soil, so scale and under-slab leaks come up often. Call to be connected with a local plumbing professional.",
+        "intro": "San Antonio's water is on the hard side, and many homes sit on slabs over shifting soil, so scale and under-slab leaks come up often. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Mineral buildup can shorten the life of water heaters and clog aerators and shower heads.",
             "An unexplained rise in the water bill or a damp spot on the floor can be worth mentioning for a home on a slab.",
@@ -236,7 +235,7 @@ LOCAL2 = {
         "focus": "water heater scale, slab leaks, and freeze damage",
     },
     "kansas-city-mo": {
-        "intro": "Kansas City sees cold winters and stormy springs, so frozen pipes and wet basements are both familiar problems. Call to be connected with a local plumbing professional.",
+        "intro": "Kansas City sees cold winters and stormy springs, so frozen pipes and wet basements are both familiar problems. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "If your home has a sump pump, check that it runs before the spring storm season.",
             "Pipes along exterior walls and in unheated basements are more likely to freeze on cold nights.",
@@ -245,7 +244,7 @@ LOCAL2 = {
         "focus": "frozen pipes, basement drain and sump problems, and sewer line backups",
     },
     "oklahoma-city-ok": {
-        "intro": "Oklahoma City weather swings from summer heat to winter ice, and clay soil moves with it, which can stress pipes in and under the house. Call to be connected with a local plumbing professional.",
+        "intro": "Oklahoma City weather swings from summer heat to winter ice, and clay soil moves with it, which can stress pipes in and under the house. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Shifting soil can stress slab foundations and buried lines, so mention any new cracks or damp spots.",
             "During ice storms, open cabinet doors under sinks on outside walls and know where the main shutoff is.",
@@ -254,7 +253,7 @@ LOCAL2 = {
         "focus": "slab and buried line leaks, freeze damage, and sewer backups",
     },
     "san-francisco-ca": {
-        "intro": "San Francisco has a large share of older buildings, including Victorians and multi-unit flats, and pipes that have been in place for decades can leak or clog. Call to be connected with a local plumbing professional.",
+        "intro": "San Francisco has a large share of older buildings, including Victorians and multi-unit flats, and pipes that have been in place for decades can leak or clog. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a multi-unit building, a leak can travel between floors. Let neighbors or the building owner know if water is moving.",
             "Older buildings may have galvanized supply lines or cast-iron drains. Mention the age of the building if you know it.",
@@ -263,7 +262,7 @@ LOCAL2 = {
         "focus": "leaks in older buildings, drain problems, and water heater replacement",
     },
     "boca-raton-fl": {
-        "intro": "Boca Raton has many condos and planned communities alongside single-family homes, and who handles a plumbing problem can depend on where it starts. Call to be connected with a local plumbing professional.",
+        "intro": "Boca Raton has many condos and planned communities alongside single-family homes, and who handles a plumbing problem can depend on where it starts. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a condo or HOA community, check whether the association needs to know before work starts.",
             "Heavy rain can overwhelm drains. If water comes up through a floor drain or shower, stop running water until it is checked.",
@@ -283,7 +282,7 @@ PLAN2 = {
                  {"Leaks": "For Fort Worth homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
                   "Sewer lines": "Soil movement can stress buried sewer lines, so mention repeat backups."}),
     "west-palm-beach-fl": (["Clogs and slow drains", "Sewer lines", "Leaks", "Water heaters", "Burst or frozen pipes"],
-                 {"Clogs and slow drains": "In West Palm Beach, drains that back up during a downpour are worth calling about even if they clear afterward.",
+                 {"Clogs and slow drains": "In West Palm Beach, drains that back up during a downpour are worth reporting even if they clear afterward.",
                   "Sewer lines": "Tell the professional whether the home is on septic or connected to city sewer."}),
     "sacramento-ca": (["Sewer lines", "Leaks", "Water heaters", "Clogs and slow drains", "Burst or frozen pipes"],
                  {"Sewer lines": "In older Sacramento neighborhoods with large trees, roots are a frequent suspect when backups keep returning.",
@@ -302,7 +301,7 @@ PLAN2 = {
                   "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
     "boca-raton-fl": (["Leaks", "Clogs and slow drains", "Water heaters", "Sewer lines", "Burst or frozen pipes"],
                  {"Leaks": "Condo owners in Boca Raton should note whether the leak is inside the unit or coming from a shared wall or ceiling.",
-                  "Clogs and slow drains": "Drains that back up during a downpour are worth calling about even if they clear afterward."}),
+                  "Clogs and slow drains": "Drains that back up during a downpour are worth reporting even if they clear afterward."}),
 }
 SIB2 = {
     "boulder-co": ["denver-co", "fort-collins-co", "phoenix-az"],
@@ -329,7 +328,7 @@ for _k, _v in {"denver-co": "boulder-co", "dallas-tx": "fort-worth-tx", "fort-la
 # Batch 3 (2026-10-13)
 LOCAL3 = {
     "memphis-tn": {
-        "intro": "Memphis has many older homes with mature trees, along with humid summers, heavy spring rain, and the occasional winter ice storm, all of which can affect pipes and drains. Call to be connected with a local plumbing professional.",
+        "intro": "Memphis has many older homes with mature trees, along with humid summers, heavy spring rain, and the occasional winter ice storm, all of which can affect pipes and drains. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Tree roots can work their way into older sewer lines, so repeat backups in the same drain are worth mentioning.",
             "During an ice storm or hard freeze, open cabinet doors under sinks on outside walls and know where your main shutoff valve is.",
@@ -338,7 +337,7 @@ LOCAL3 = {
         "focus": "sewer backups and root problems, freeze damage, and leaking fixtures",
     },
     "portland-or": {
-        "intro": "Portland's long, wet season puts a steady load on drains, sewer lines, and basements, and older homes with mature trees add their own plumbing questions. Call to be connected with a local plumbing professional.",
+        "intro": "Portland's long, wet season puts a steady load on drains, sewer lines, and basements, and older homes with mature trees add their own plumbing questions. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Water in a basement during the rainy months can come from a drain or sewer line, not only from outside. Describe where it appears.",
             "Roots from large street and yard trees can get into older sewer lines and cause repeat backups.",
@@ -347,7 +346,7 @@ LOCAL3 = {
         "focus": "basement drain and sewer problems, root intrusion, and leaks in older homes",
     },
     "salt-lake-city-ut": {
-        "intro": "Salt Lake City winters bring regular freezes, and the water in much of the valley is on the hard side, so frozen lines and water heater scale both come up. Call to be connected with a local plumbing professional.",
+        "intro": "Salt Lake City winters bring regular freezes, and the water in much of the valley is on the hard side, so frozen lines and water heater scale both come up. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Before the first hard freeze, drain sprinkler lines and outdoor spigots and disconnect garden hoses.",
             "Hard water can leave mineral buildup in water heaters and clog faucet aerators and shower heads.",
@@ -356,7 +355,7 @@ LOCAL3 = {
         "focus": "frozen pipes, water heater scale and failures, and basement leaks",
     },
     "baltimore-md": {
-        "intro": "Baltimore has a large stock of older rowhomes, and shared walls, old drain lines, and cold winters shape a lot of plumbing problems. Call to be connected with a local plumbing professional.",
+        "intro": "Baltimore has a large stock of older rowhomes, and shared walls, old drain lines, and cold winters shape a lot of plumbing problems. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a rowhome, a leak can reach the house next door. Let your neighbor know if water may be crossing a shared wall.",
             "Older homes may have cast-iron or clay drain lines and older supply pipes. Mention the age of the house if you know it.",
@@ -368,7 +367,7 @@ LOCAL3 = {
 PLAN3 = {
     "memphis-tn": (["Sewer lines", "Clogs and slow drains", "Leaks", "Burst or frozen pipes", "Water heaters"],
                  {"Sewer lines": "In older Memphis neighborhoods with large trees, roots are a frequent suspect when backups keep returning.",
-                  "Clogs and slow drains": "If more than one drain slows down after heavy rain, say so on the call."}),
+                  "Clogs and slow drains": "If more than one drain slows down after heavy rain, say so in your request."}),
     "portland-or": (["Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters", "Burst or frozen pipes"],
                  {"Sewer lines": "In Portland's rainy months, water coming up through a basement floor drain can point to the sewer line.",
                   "Clogs and slow drains": "If a plunger clears it for a day or two and it returns, mention that."}),
@@ -400,7 +399,7 @@ for _k, _v in [("kansas-city-mo", "memphis-tn"), ("oklahoma-city-ok", "memphis-t
 # Batch 4 (2026-10-15)
 LOCAL4 = {
     "marietta-ga": {
-        "intro": "Marietta sits northwest of Atlanta, with older in-town houses and newer subdivisions built over Georgia clay and under a heavy tree canopy. Call to be connected with a local plumbing professional.",
+        "intro": "Marietta sits northwest of Atlanta, with older in-town houses and newer subdivisions built over Georgia clay and under a heavy tree canopy. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay soil swells when it is wet and shrinks when it dries, which can stress buried water and sewer lines.",
             "Mature trees in established neighborhoods can send roots into older sewer lines. Mention backups that keep returning.",
@@ -409,7 +408,7 @@ LOCAL4 = {
         "focus": "sewer backups from roots, clay-soil line stress, and leaks under slabs or in crawl spaces",
     },
     "arlington-tx": {
-        "intro": "Arlington sits between Dallas and Fort Worth, and many homes are built on slab foundations over clay soil that moves with the weather. Call to be connected with a local plumbing professional.",
+        "intro": "Arlington sits between Dallas and Fort Worth, and many homes are built on slab foundations over clay soil that moves with the weather. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "A warm spot on the floor, running-water sounds when fixtures are off, or a water bill that jumps can point to a leak under the slab.",
             "Hard freezes in North Texas are infrequent, but they can split exposed pipes. Know where the main shutoff is.",
@@ -418,7 +417,7 @@ LOCAL4 = {
         "focus": "slab leaks, exposed-pipe freeze damage, and main sewer line backups",
     },
     "dayton-oh": {
-        "intro": "Dayton winters bring regular freezes, and many homes have basements where supply lines, drains, and water heaters sit. Call to be connected with a local plumbing professional.",
+        "intro": "Dayton winters bring regular freezes, and many homes have basements where supply lines, drains, and water heaters sit. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Pipes along exterior walls and in unheated spaces are more exposed on cold nights. Know where the main shutoff is.",
             "Older neighborhoods may still have cast-iron or clay drain lines. Mention the age of the house if you know it.",
@@ -427,7 +426,7 @@ LOCAL4 = {
         "focus": "frozen pipes, basement drain backups, and leaks in older homes",
     },
     "columbus-oh": {
-        "intro": "Columbus mixes older neighborhoods with newer suburbs, and cold winters plus clay soil both show up in plumbing calls. Call to be connected with a local plumbing professional.",
+        "intro": "Columbus mixes older neighborhoods with newer suburbs, and cold winters plus clay soil both show up in plumbing calls. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "During a hard freeze, open cabinet doors under sinks on outside walls and know how to shut off the main.",
             "Clay around central Ohio can shift between wet and dry spells, which can stress buried lines.",
@@ -436,7 +435,7 @@ LOCAL4 = {
         "focus": "frozen supply lines, sump and sewer trouble, and water heater outages",
     },
     "raleigh-nc": {
-        "intro": "Raleigh's red clay, humid summers, and a canopy of pines and hardwoods shape plumbing problems in both older neighborhoods and newer subdivisions. Call to be connected with a local plumbing professional.",
+        "intro": "Raleigh's red clay, humid summers, and a canopy of pines and hardwoods shape plumbing problems in both older neighborhoods and newer subdivisions. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay soil swells in wet weather and shrinks when it dries, which can stress buried water and sewer lines.",
             "Tree roots can enter older sewer laterals. Describe backups that return after they seem to clear.",
@@ -445,16 +444,16 @@ LOCAL4 = {
         "focus": "sewer laterals and root intrusion, buried-line stress, and outdoor spigot freezes",
     },
     "boise-id": {
-        "intro": "Boise winters bring regular freezes, and sprinkler lines and outdoor spigots need to be drained before the first one. Call to be connected with a local plumbing professional.",
+        "intro": "Boise winters bring regular freezes, and sprinkler lines and outdoor spigots need to be drained before the first one. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Drain sprinkler lines and outdoor spigots, and disconnect garden hoses, before temperatures stay below freezing.",
             "A pipe that froze can start leaking after it thaws. Check crawl spaces, garages, and exterior walls once it warms.",
-            "Homes toward the foothills may be on a well. Say so when you call.",
+            "Homes toward the foothills may be on a well. Say so in your request.",
         ],
         "focus": "frozen pipes, sprinkler and outdoor line damage, and crawl-space leaks",
     },
     "columbia-sc": {
-        "intro": "Columbia has hot, humid summers, red clay soil, and mature trees, with an ice storm some winters. Call to be connected with a local plumbing professional.",
+        "intro": "Columbia has hot, humid summers, red clay soil, and mature trees, with an ice storm some winters. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay that swells and shrinks can stress pipes under a slab and in the yard. Mention new damp spots or a jump in the water bill.",
             "Roots from yard and street trees can get into older sewer lines and cause backups that return.",
@@ -463,7 +462,7 @@ LOCAL4 = {
         "focus": "clay-soil pipe stress, root-related sewer backups, and ice-storm freeze damage",
     },
     "knoxville-tn": {
-        "intro": "Knoxville sits in a valley against the foothills, with older houses, winter cold snaps, and trees that can reach sewer lines. Call to be connected with a local plumbing professional.",
+        "intro": "Knoxville sits in a valley against the foothills, with older houses, winter cold snaps, and trees that can reach sewer lines. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Cold snaps can freeze pipes in crawl spaces, garages, and exterior walls. Know where your main shutoff valve is.",
             "Older neighborhoods often have longer sewer laterals. Repeat backups can point to roots or a break in that line.",
@@ -481,7 +480,7 @@ PLAN4 = {
                   "Burst or frozen pipes": "During a North Texas freeze, open cabinet doors under sinks on exterior walls and know how to shut off the main."}),
     "dayton-oh": (["Burst or frozen pipes", "Clogs and slow drains", "Sewer lines", "Leaks", "Water heaters"],
                  {"Burst or frozen pipes": "In a Dayton cold snap, pipes in unheated basements and along outside walls are the usual trouble spots.",
-                  "Clogs and slow drains": "Water coming up through a basement floor drain during spring rain is worth describing on the call."}),
+                  "Clogs and slow drains": "Water coming up through a basement floor drain during spring rain is worth describing in your request."}),
     "columbus-oh": (["Burst or frozen pipes", "Water heaters", "Sewer lines", "Leaks", "Clogs and slow drains"],
                  {"Burst or frozen pipes": "In Columbus, let faucets on outside walls drip during a hard freeze and know where the main shutoff is.",
                   "Water heaters": "No hot water after a cold night can mean the tank, the supply line, or both. Say what you are seeing."}),
@@ -524,7 +523,7 @@ for _k, _v in [("atlanta-ga", "marietta-ga"), ("dallas-tx", "arlington-tx"), ("f
 # Batch 5 (2026-10-15)
 LOCAL5 = {
     "arlington-va": {
-        "intro": "Arlington mixes older garden apartments, mid-rise buildings, and houses between the Potomac and Fairfax County. A leak in a stacked unit travels differently from one in a single-family home. Call to be connected with a local plumbing professional.",
+        "intro": "Arlington mixes older garden apartments, mid-rise buildings, and houses between the Potomac and Fairfax County. A leak in a stacked unit travels differently from one in a single-family home. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a multi-unit building, water can reach the unit below. Check whether building management needs to know before work starts.",
             "Older buildings may still have galvanized supply lines or cast-iron drains. Mention the age of the building if you know it.",
@@ -533,7 +532,7 @@ LOCAL5 = {
         "focus": "leaks between units, drain problems in older buildings, and freeze damage",
     },
     "greensboro-nc": {
-        "intro": "Greensboro sits in the Piedmont, with red clay soil, humid summers, and a mix of older neighborhoods and newer subdivisions. Call to be connected with a local plumbing professional.",
+        "intro": "Greensboro sits in the Piedmont, with red clay soil, humid summers, and a mix of older neighborhoods and newer subdivisions. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay soil swells when it is wet and shrinks when it dries, which can stress buried water and sewer lines.",
             "Mature trees can send roots into older sewer laterals. Mention backups that keep returning.",
@@ -542,7 +541,7 @@ LOCAL5 = {
         "focus": "sewer laterals and root intrusion, buried-line stress from clay, and outdoor spigot freezes",
     },
     "winston-salem-nc": {
-        "intro": "Winston Salem spreads across Piedmont hills, with older in-town houses, mill neighborhoods, and newer subdivisions on clay soil. Call to be connected with a local plumbing professional.",
+        "intro": "Winston Salem spreads across Piedmont hills, with older in-town houses, mill neighborhoods, and newer subdivisions on clay soil. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay that shifts between wet and dry spells can stress pipes under a slab and in the yard.",
             "Roots from yard and street trees can get into older sewer lines and cause backups that return.",
@@ -551,7 +550,7 @@ LOCAL5 = {
         "focus": "clay-soil pipe stress, root-related sewer backups, and crawl-space leaks",
     },
     "harrisburg-pa": {
-        "intro": "Harrisburg winters bring regular freezes, and many homes have basements where supply lines, drains, and water heaters sit. The river valley also sees heavy spring rain. Call to be connected with a local plumbing professional.",
+        "intro": "Harrisburg winters bring regular freezes, and many homes have basements where supply lines, drains, and water heaters sit. The river valley also sees heavy spring rain. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Harrisburg sits along the Susquehanna River, and heavy rain can send water toward basements in low-lying neighborhoods. Describe where any water appears.",
             "Row homes in older city neighborhoods share walls, so a leak can reach next door. Mention whether water is showing up on the other side.",
@@ -560,7 +559,7 @@ LOCAL5 = {
         "focus": "winter pipe freezes, basement drain backups after spring rain, and water heater outages",
     },
     "new-haven-ct": {
-        "intro": "New Haven mixes older homes and multi-family buildings with cold, wet winters that are hard on pipes and drains. Call to be connected with a local plumbing professional.",
+        "intro": "New Haven mixes older homes and multi-family buildings with cold, wet winters that are hard on pipes and drains. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a multi-unit house, a leak can travel between floors. Let neighbors or the owner know if water is moving.",
             "Older homes may have cast-iron drain lines or older supply pipes. Mention the age of the house if you know it.",
@@ -569,16 +568,16 @@ LOCAL5 = {
         "focus": "frozen pipes in older houses, drain problems in multi-family buildings, and leaks between floors",
     },
     "fresno-ca": {
-        "intro": "Fresno sits in the San Joaquin Valley, where hot, dry summers and hard water take a toll on water heaters and fixtures, and winter nights can still freeze outdoor lines. Call to be connected with a local plumbing professional.",
+        "intro": "Fresno sits in the San Joaquin Valley, where hot, dry summers and hard water take a toll on water heaters and fixtures, and winter nights can still freeze outdoor lines. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Hard water leaves mineral buildup that can shorten the life of a water heater and clog faucet aerators and shower heads.",
-            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing on the call.",
+            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing in your request.",
             "Drain outdoor spigots and disconnect garden hoses before a freeze, and know where the main shutoff is.",
         ],
         "focus": "water heater scale, slab leaks, and frozen outdoor lines",
     },
     "alexandria-va": {
-        "intro": "Alexandria has many older homes, from early houses to garden apartments, and cold snaps can freeze pipes in exterior walls and crawl spaces. Call to be connected with a local plumbing professional.",
+        "intro": "Alexandria has many older homes, from early houses to garden apartments, and cold snaps can freeze pipes in exterior walls and crawl spaces. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Older homes may still have galvanized supply lines or cast-iron drains. Mention the age of the house if you know it.",
             "In a multi-unit building, water can reach the unit below. Check whether building management needs to know.",
@@ -587,7 +586,7 @@ LOCAL5 = {
         "focus": "leaks in older homes, drain line problems, and freeze damage along exterior walls",
     },
     "mesa-az": {
-        "intro": "Mesa's desert heat and hard water both show up in plumbing, from scale in water heaters to fixtures that stop flowing freely. Many homes sit on slab foundations. Call to be connected with a local plumbing professional.",
+        "intro": "Mesa's desert heat and hard water both show up in plumbing, from scale in water heaters to fixtures that stop flowing freely. Many homes sit on slab foundations. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Mineral buildup can clog faucet aerators and shower heads and leave sediment in a tank water heater.",
             "An unexplained jump in the water bill, or a warm spot on the floor, can point to a leak under the slab.",
@@ -608,7 +607,7 @@ PLAN5 = {
                   "Leaks": "Clay soil that shifts between wet and dry spells can stress buried supply lines."}),
     "harrisburg-pa": (["Burst or frozen pipes", "Clogs and slow drains", "Sewer lines", "Leaks", "Water heaters"],
                  {"Burst or frozen pipes": "In a Harrisburg cold snap, pipes in unheated basements and along outside walls are the usual trouble spots.",
-                  "Clogs and slow drains": "Water coming up through a basement floor drain during spring rain is worth describing on the call."}),
+                  "Clogs and slow drains": "Water coming up through a basement floor drain during spring rain is worth describing in your request."}),
     "new-haven-ct": (["Burst or frozen pipes", "Clogs and slow drains", "Leaks", "Sewer lines", "Water heaters"],
                  {"Burst or frozen pipes": "In a New Haven cold snap, pipes along outside walls and in unheated basements are the usual trouble spots.",
                   "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
@@ -646,7 +645,7 @@ for _k, _v in [("phoenix-az", "mesa-az"), ("raleigh-nc", "greensboro-nc"), ("ral
 # Batch 6 (2026-10-16)
 LOCAL6 = {
     "greenville-sc": {
-        "intro": "Greenville sits in the Upstate foothills, with red clay soil, humid summers, and a mix of older mill-village homes and newer subdivisions. Call to be connected with a local plumbing professional.",
+        "intro": "Greenville sits in the Upstate foothills, with red clay soil, humid summers, and a mix of older mill-village homes and newer subdivisions. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Upstate winters can bring ice storms. If the power is out and the heat is off, pipes in crawl spaces can freeze.",
             "Many homes sit over crawl spaces, where a slow leak can go unnoticed. Mention a musty smell or damp floors.",
@@ -655,7 +654,7 @@ LOCAL6 = {
         "focus": "sewer laterals and root intrusion, buried-line stress from clay, and outdoor spigot freezes",
     },
     "long-beach-ca": {
-        "intro": "Long Beach has many older homes and apartment buildings near the coast, where salt air and hard water both wear on pipes and fixtures. Call to be connected with a local plumbing professional.",
+        "intro": "Long Beach has many older homes and apartment buildings near the coast, where salt air and hard water both wear on pipes and fixtures. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Hard water leaves mineral buildup that can shorten the life of a water heater and clog aerators and shower heads.",
             "In an apartment building, water can reach the unit below. Check whether the owner or manager needs to know.",
@@ -664,7 +663,7 @@ LOCAL6 = {
         "focus": "leaks in older buildings, water heater scale, and drain problems in apartments",
     },
     "durham-nc": {
-        "intro": "Durham mixes older in-town houses with newer subdivisions on Piedmont clay, and humid summers with occasional hard freezes. Call to be connected with a local plumbing professional.",
+        "intro": "Durham mixes older in-town houses with newer subdivisions on Piedmont clay, and humid summers with occasional hard freezes. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay that shifts between wet and dry spells can stress pipes under a slab and in the yard.",
             "Roots from yard and street trees can get into older sewer lines and cause backups that return.",
@@ -673,7 +672,7 @@ LOCAL6 = {
         "focus": "clay-soil pipe stress, root-related sewer backups, and crawl-space leaks",
     },
     "spokane-wa": {
-        "intro": "Spokane winters bring long stretches below freezing, and many homes have basements or crawl spaces where pipes and water heaters sit. Call to be connected with a local plumbing professional.",
+        "intro": "Spokane winters bring long stretches below freezing, and many homes have basements or crawl spaces where pipes and water heaters sit. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Pipes along exterior walls, in crawl spaces, and in unheated garages are more exposed on cold nights. Know where the main shutoff is.",
             "Disconnect garden hoses and drain outdoor spigots before the first hard freeze.",
@@ -682,7 +681,7 @@ LOCAL6 = {
         "focus": "frozen and burst pipes, basement drain problems, and water heater outages in winter",
     },
     "fort-myers-fl": {
-        "intro": "Fort Myers has a warm, humid climate, heavy summer rain, and many homes on slab foundations. Call to be connected with a local plumbing professional.",
+        "intro": "Fort Myers has a warm, humid climate, heavy summer rain, and many homes on slab foundations. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
             "Heavy rain can overload drains and sewer lines. Describe where any backup appears.",
@@ -691,16 +690,16 @@ LOCAL6 = {
         "focus": "slab leaks, drain backups after heavy rain, and water heater sediment",
     },
     "stockton-ca": {
-        "intro": "Stockton sits in the Central Valley, where hot, dry summers and hard water take a toll on water heaters and fixtures, and winter nights can still freeze outdoor lines. Call to be connected with a local plumbing professional.",
+        "intro": "Stockton sits in the Central Valley, where hot, dry summers and hard water take a toll on water heaters and fixtures, and winter nights can still freeze outdoor lines. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Central Valley winters bring tule fog and cold nights near freezing, which can catch exposed outdoor pipes and hose bibs.",
             "Long, dry summers mean heavy sprinkler use. A soggy patch of lawn or a hissing valve box can point to an irrigation line leak.",
-            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing on the call.",
+            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing in your request.",
         ],
         "focus": "water heater scale, slab leaks, and frozen outdoor lines",
     },
     "overland-park-ks": {
-        "intro": "Overland Park has cold winters, hot summers, and many homes with basements where supply lines, drains, and water heaters sit. Call to be connected with a local plumbing professional.",
+        "intro": "Overland Park has cold winters, hot summers, and many homes with basements where supply lines, drains, and water heaters sit. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Pipes along exterior walls and in unfinished basements are more exposed on cold nights. Know where the main shutoff is.",
             "Heavy spring storms can send water toward basement floor drains. Describe where any water appears.",
@@ -709,7 +708,7 @@ LOCAL6 = {
         "focus": "winter pipe freezes, basement drain backups after storms, and water heater outages",
     },
     "santa-barbara-ca": {
-        "intro": "Santa Barbara has many older homes between the mountains and the coast, and hard water and salt air both wear on pipes and fixtures. Call to be connected with a local plumbing professional.",
+        "intro": "Santa Barbara has many older homes between the mountains and the coast, and hard water and salt air both wear on pipes and fixtures. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Older homes may still have galvanized supply lines or cast-iron drains. Mention the age of the house if you know it.",
             "Hard water leaves mineral buildup in water heaters, aerators, and shower heads.",
@@ -730,16 +729,16 @@ PLAN6 = {
                   "Leaks": "Clay soil that shifts between wet and dry spells can stress buried supply lines."}),
     "spokane-wa": (["Burst or frozen pipes", "Water heaters", "Clogs and slow drains", "Leaks", "Sewer lines"],
                  {"Burst or frozen pipes": "In a Spokane cold snap, pipes in crawl spaces and along outside walls are the usual trouble spots.",
-                  "Water heaters": "A water heater that quits in winter is worth calling about quickly."}),
+                  "Water heaters": "A water heater that quits in winter is worth reporting quickly."}),
     "fort-myers-fl": (["Leaks", "Clogs and slow drains", "Water heaters", "Sewer lines", "Burst or frozen pipes"],
                  {"Leaks": "For Fort Myers homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
-                  "Clogs and slow drains": "Drains that back up after heavy rain are worth describing on the call."}),
+                  "Clogs and slow drains": "Drains that back up after heavy rain are worth describing in your request."}),
     "stockton-ca": (["Water heaters", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Sewer lines"],
                  {"Water heaters": "In Stockton, hard water can leave sediment in the tank; note any rumbling or popping sounds.",
                   "Leaks": "For homes on a slab, describe any warm or damp spots on the floor and changes in the water bill."}),
     "overland-park-ks": (["Burst or frozen pipes", "Clogs and slow drains", "Sewer lines", "Leaks", "Water heaters"],
                  {"Burst or frozen pipes": "In an Overland Park cold snap, pipes in unfinished basements and along outside walls are the usual trouble spots.",
-                  "Clogs and slow drains": "Water coming up through a basement floor drain during a storm is worth describing on the call."}),
+                  "Clogs and slow drains": "Water coming up through a basement floor drain during a storm is worth describing in your request."}),
     "santa-barbara-ca": (["Leaks", "Water heaters", "Clogs and slow drains", "Sewer lines", "Burst or frozen pipes"],
                  {"Leaks": "Low pressure together with rusty water in an older Santa Barbara home can point to aging supply lines.",
                   "Water heaters": "Hard water can leave sediment in the tank; note any rumbling or popping sounds."}),
@@ -767,7 +766,7 @@ for _k, _v in [("columbia-sc", "greenville-sc"), ("los-angeles-ca", "long-beach-
 # Batch 7 (2026-10-19)
 LOCAL7 = {
     "anaheim-ca": {
-        "intro": "Anaheim has neighborhoods of mid-century tract homes alongside newer developments, many on slab foundations, and the area's hard water is tough on water heaters and fixtures. Call to be connected with a local plumbing professional.",
+        "intro": "Anaheim has neighborhoods of mid-century tract homes alongside newer developments, many on slab foundations, and the area's hard water is tough on water heaters and fixtures. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Hard water leaves mineral buildup that can shorten the life of a water heater and clog faucet aerators and shower heads.",
             "An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
@@ -776,16 +775,16 @@ LOCAL7 = {
         "focus": "slab leaks, water heater scale, and aging supply lines",
     },
     "irvine-ca": {
-        "intro": "Irvine is made up of planned neighborhoods with many condos and townhomes that share walls, and hard water wears on water heaters and fixtures over time. Call to be connected with a local plumbing professional.",
+        "intro": "Irvine is made up of planned neighborhoods with many condos and townhomes that share walls, and hard water wears on water heaters and fixtures over time. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a condo or townhome, a leak can reach a neighbor's unit. Check whether your association needs to know before work starts.",
             "Hard water leaves mineral buildup in water heaters, aerators, and shower heads.",
-            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing on the call.",
+            "Many homes sit on slab foundations. A warm spot on the floor or a water bill that jumps is worth describing in your request.",
         ],
         "focus": "leaks in shared-wall homes, water heater scale, and slab leaks",
     },
     "riverside-ca": {
-        "intro": "Riverside's hot, dry summers and hard water both show up in plumbing, and the city mixes older homes near downtown with newer tracts on slab foundations. Call to be connected with a local plumbing professional.",
+        "intro": "Riverside's hot, dry summers and hard water both show up in plumbing, and the city mixes older homes near downtown with newer tracts on slab foundations. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Mineral buildup can clog faucet aerators and shower heads and leave sediment in a tank water heater.",
             "An unexplained jump in the water bill, or a warm spot on the floor, can point to a leak under the slab.",
@@ -794,7 +793,7 @@ LOCAL7 = {
         "focus": "water heater sediment, slab leaks, and root-related sewer backups",
     },
     "waterbury-ct": {
-        "intro": "Waterbury has many older homes and multi-family houses on hilly streets, and cold, wet winters are hard on pipes and drains. Call to be connected with a local plumbing professional.",
+        "intro": "Waterbury has many older homes and multi-family houses on hilly streets, and cold, wet winters are hard on pipes and drains. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Waterbury is built on hills along the Naugatuck River, so many homes sit above or below the street. Mention backups that keep returning on a sloped lot.",
             "In a multi-family house, a leak can travel between floors. Let neighbors or the owner know if water is moving.",
@@ -803,7 +802,7 @@ LOCAL7 = {
         "focus": "frozen pipes in older houses, drain problems in multi-family homes, and leaks between floors",
     },
     "allentown-pa": {
-        "intro": "Allentown has many row homes and older houses with basements, and Lehigh Valley winters bring hard freezes that can catch pipes off guard. Call to be connected with a local plumbing professional.",
+        "intro": "Allentown has many row homes and older houses with basements, and Lehigh Valley winters bring hard freezes that can catch pipes off guard. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In a row home, a leak can reach a shared wall. Mention whether water is showing up next door.",
             "Pipes in unheated basements and along outside walls are more exposed on cold nights. Know where the main shutoff is.",
@@ -812,7 +811,7 @@ LOCAL7 = {
         "focus": "winter pipe freezes, basement drain backups, and leaks in older row homes",
     },
     "manchester-nh": {
-        "intro": "Manchester winters are long and cold, and the city has many older multi-family buildings and homes with basements where pipes and water heaters sit. Call to be connected with a local plumbing professional.",
+        "intro": "Manchester winters are long and cold, and the city has many older multi-family buildings and homes with basements where pipes and water heaters sit. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Pipes along exterior walls, in basements, and in unheated porches are more exposed on cold nights. Know where the main shutoff is.",
             "Disconnect garden hoses and drain outdoor spigots before the first hard freeze.",
@@ -821,16 +820,16 @@ LOCAL7 = {
         "focus": "frozen and burst pipes, water heater outages in winter, and leaks in multi-unit buildings",
     },
     "port-saint-lucie-fl": {
-        "intro": "Port Saint Lucie has a warm, humid climate, heavy summer rain, and many homes on slab foundations. Call to be connected with a local plumbing professional.",
+        "intro": "Port Saint Lucie has a warm, humid climate, heavy summer rain, and many homes on slab foundations. Send a request to be connected with a local plumbing professional.",
         "notes": [
-            "Some homes in the area use septic systems. Say whether you are on septic or city sewer when you call.",
+            "Some homes in the area use septic systems. Say whether you are on septic or city sewer in your request.",
             "An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
             "Heavy rain can overload drains and sewer lines. Describe where any backup appears.",
         ],
         "focus": "septic and sewer questions, slab leaks, and drain backups after heavy rain",
     },
     "athens-ga": {
-        "intro": "Athens mixes older in-town houses under mature trees with newer homes on red clay soil, and humid summers with the occasional hard freeze. Call to be connected with a local plumbing professional.",
+        "intro": "Athens mixes older in-town houses under mature trees with newer homes on red clay soil, and humid summers with the occasional hard freeze. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Roots from mature trees can get into older sewer laterals and cause backups that return.",
             "Clay soil swells when wet and shrinks when dry, which can stress buried water and sewer lines.",
@@ -854,13 +853,13 @@ PLAN7 = {
                   "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
     "allentown-pa": (["Burst or frozen pipes", "Clogs and slow drains", "Leaks", "Sewer lines", "Water heaters"],
                  {"Burst or frozen pipes": "In an Allentown cold snap, pipes in unheated basements and along outside walls are the usual trouble spots.",
-                  "Clogs and slow drains": "Water coming up through a basement floor drain during heavy rain is worth describing on the call."}),
+                  "Clogs and slow drains": "Water coming up through a basement floor drain during heavy rain is worth describing in your request."}),
     "manchester-nh": (["Burst or frozen pipes", "Water heaters", "Clogs and slow drains", "Leaks", "Sewer lines"],
                  {"Burst or frozen pipes": "In a Manchester cold snap, pipes in basements and along outside walls are the usual trouble spots.",
-                  "Water heaters": "A water heater that quits in winter is worth calling about quickly."}),
+                  "Water heaters": "A water heater that quits in winter is worth reporting quickly."}),
     "port-saint-lucie-fl": (["Leaks", "Sewer lines", "Clogs and slow drains", "Water heaters", "Burst or frozen pipes"],
                  {"Leaks": "For Port Saint Lucie homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
-                  "Sewer lines": "If the home is on septic, slow drains throughout the house are worth mentioning on the call."}),
+                  "Sewer lines": "If the home is on septic, slow drains throughout the house are worth mentioning in your request."}),
     "athens-ga": (["Sewer lines", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters"],
                  {"Sewer lines": "In older Athens neighborhoods, roots in the sewer lateral are a frequent reason backups return.",
                   "Burst or frozen pipes": "A hard freeze can split an outdoor spigot even when indoor pipes are fine."}),
@@ -888,7 +887,7 @@ for _k, _v in [("long-beach-ca", "anaheim-ca"), ("los-angeles-ca", "riverside-ca
 # Batch 8 (2026-10-19)
 LOCAL8 = {
     "silver-spring-md": {
-        "intro": "Silver Spring mixes older brick houses and garden apartments with newer high-rise condos, and cold winters alternate with humid summers. Call to be connected with a local plumbing professional.",
+        "intro": "Silver Spring mixes older brick houses and garden apartments with newer high-rise condos, and cold winters alternate with humid summers. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "In an apartment or condo building, a leak can reach the unit below. Check whether the building manager needs to know.",
             "Older homes may have cast-iron drains or older supply pipes. Mention the age of the house if you know it.",
@@ -897,7 +896,7 @@ LOCAL8 = {
         "focus": "leaks in multi-unit buildings, aging drain lines, and winter pipe freezes",
     },
     "kansas-city-ks": {
-        "intro": "Kansas City, Kansas has many older homes with basements, and the region's winters bring hard freezes while spring storms bring heavy rain. Call to be connected with a local plumbing professional.",
+        "intro": "Kansas City, Kansas has many older homes with basements, and the region's winters bring hard freezes while spring storms bring heavy rain. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Heavy rain can push water toward basement floor drains. Describe where any water appears.",
             "Pipes in unheated basements and crawl spaces are more exposed on cold nights. Know where the main shutoff is.",
@@ -906,7 +905,7 @@ LOCAL8 = {
         "focus": "basement drain backups, winter pipe freezes, and root-related sewer problems",
     },
     "ogden-ut": {
-        "intro": "Ogden sits at the foot of the Wasatch range, with cold, snowy winters, older homes near downtown, and hard water across the area. Call to be connected with a local plumbing professional.",
+        "intro": "Ogden sits at the foot of the Wasatch range, with cold, snowy winters, older homes near downtown, and hard water across the area. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Hard water leaves mineral buildup that can shorten the life of a water heater and clog faucet aerators and shower heads.",
             "Pipes along exterior walls and in unheated spaces are more exposed on cold nights. Know where the main shutoff is.",
@@ -915,16 +914,16 @@ LOCAL8 = {
         "focus": "frozen pipes, water heater scale from hard water, and outdoor spigot freezes",
     },
     "saint-cloud-mn": {
-        "intro": "Saint Cloud winters are long and very cold, and many homes have basements where pipes, water heaters, and floor drains sit. Call to be connected with a local plumbing professional.",
+        "intro": "Saint Cloud winters are long and very cold, and many homes have basements where pipes, water heaters, and floor drains sit. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Pipes along exterior walls, in basements, and in unheated porches are more exposed on cold nights. Know where the main shutoff is.",
-            "A water heater that quits in winter is worth calling about quickly.",
+            "A water heater that quits in winter is worth reporting quickly.",
             "Spring snowmelt can push water toward basement floor drains. Describe where any water appears.",
         ],
         "focus": "frozen and burst pipes, water heater outages in winter, and basement drain backups",
     },
     "bethesda-md": {
-        "intro": "Bethesda has many older single-family homes under mature trees, along with newer condos near the town center, and winters bring regular freezes. Call to be connected with a local plumbing professional.",
+        "intro": "Bethesda has many older single-family homes under mature trees, along with newer condos near the town center, and winters bring regular freezes. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Roots from mature trees can get into older sewer laterals and cause backups that return.",
             "In a condo building, a leak can reach the unit below. Check whether the building manager needs to know.",
@@ -933,25 +932,25 @@ LOCAL8 = {
         "focus": "root-related sewer backups, leaks in condo buildings, and winter pipe freezes",
     },
     "spartanburg-sc": {
-        "intro": "Spartanburg has older mill-village houses alongside newer subdivisions, red clay soil, and humid summers with the occasional hard freeze. Call to be connected with a local plumbing professional.",
+        "intro": "Spartanburg has older mill-village houses alongside newer subdivisions, red clay soil, and humid summers with the occasional hard freeze. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay soil swells when wet and shrinks when dry, which can stress buried water and sewer lines.",
-            "Some homes outside the city use septic systems. Say whether you are on septic or city sewer when you call.",
+            "Some homes outside the city use septic systems. Say whether you are on septic or city sewer in your request.",
             "Winters are usually mild, but a hard freeze can split an outdoor spigot. Disconnect garden hoses beforehand.",
         ],
         "focus": "buried-line stress from clay, septic and sewer questions, and outdoor spigot freezes",
     },
     "fayetteville-nc": {
-        "intro": "Fayetteville has many rental homes and newer subdivisions on sandy soil, hot humid summers, and heavy rain from passing storms. Call to be connected with a local plumbing professional.",
+        "intro": "Fayetteville has many rental homes and newer subdivisions on sandy soil, hot humid summers, and heavy rain from passing storms. Send a request to be connected with a local plumbing professional.",
         "notes": [
-            "Some homes in the area use septic systems. Say whether you are on septic or city sewer when you call.",
+            "Some homes in the area use septic systems. Say whether you are on septic or city sewer in your request.",
             "If you rent, let your landlord or property manager know about the problem as well.",
             "Heavy rain can overload drains and sewer lines. Describe where any backup appears.",
         ],
         "focus": "septic and sewer questions, drain backups after heavy rain, and leaks in rental homes",
     },
     "denton-tx": {
-        "intro": "Denton mixes older homes near the square with fast-growing newer neighborhoods, many on slab foundations over clay soil, and summers are long and hot. Call to be connected with a local plumbing professional.",
+        "intro": "Denton mixes older homes near the square with fast-growing newer neighborhoods, many on slab foundations over clay soil, and summers are long and hot. Send a request to be connected with a local plumbing professional.",
         "notes": [
             "Clay soil shifts with dry and wet spells, which can stress slab foundations and the pipes under them.",
             "An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
@@ -965,22 +964,22 @@ PLAN8 = {
                  {"Leaks": "In a Silver Spring apartment or condo, note whether the leak is inside your unit or coming from a ceiling or shared wall.",
                   "Clogs and slow drains": "Older cast-iron drain lines can narrow on the inside over the decades."}),
     "kansas-city-ks": (["Clogs and slow drains", "Burst or frozen pipes", "Sewer lines", "Leaks", "Water heaters"],
-                 {"Clogs and slow drains": "In Kansas City, Kansas, water coming up through a basement floor drain during heavy rain is worth describing on the call.",
+                 {"Clogs and slow drains": "In Kansas City, Kansas, water coming up through a basement floor drain during heavy rain is worth describing in your request.",
                   "Sewer lines": "In older neighborhoods, roots in the sewer lateral are a frequent reason backups return."}),
     "ogden-ut": (["Burst or frozen pipes", "Water heaters", "Leaks", "Clogs and slow drains", "Sewer lines"],
                  {"Burst or frozen pipes": "In an Ogden cold snap, pipes along outside walls and in unheated spaces are the usual trouble spots.",
                   "Water heaters": "Hard water can leave sediment in the tank; note any rumbling or popping sounds."}),
     "saint-cloud-mn": (["Burst or frozen pipes", "Water heaters", "Clogs and slow drains", "Leaks", "Sewer lines"],
                  {"Burst or frozen pipes": "In a Saint Cloud cold snap, pipes in basements and along outside walls are the usual trouble spots.",
-                  "Water heaters": "A water heater that quits in winter is worth calling about quickly."}),
+                  "Water heaters": "A water heater that quits in winter is worth reporting quickly."}),
     "bethesda-md": (["Sewer lines", "Leaks", "Burst or frozen pipes", "Clogs and slow drains", "Water heaters"],
                  {"Sewer lines": "In older Bethesda neighborhoods, roots in the sewer lateral are a frequent reason backups return.",
                   "Leaks": "In a condo, note whether the leak is inside your unit or coming from a ceiling or shared wall."}),
     "spartanburg-sc": (["Sewer lines", "Leaks", "Clogs and slow drains", "Burst or frozen pipes", "Water heaters"],
-                 {"Sewer lines": "If a Spartanburg-area home is on septic, slow drains throughout the house are worth mentioning on the call.",
+                 {"Sewer lines": "If a Spartanburg-area home is on septic, slow drains throughout the house are worth mentioning in your request.",
                   "Burst or frozen pipes": "A hard freeze can split an outdoor spigot even when indoor pipes are fine."}),
     "fayetteville-nc": (["Sewer lines", "Clogs and slow drains", "Leaks", "Water heaters", "Burst or frozen pipes"],
-                 {"Sewer lines": "If a Fayetteville-area home is on septic, slow drains throughout the house are worth mentioning on the call.",
+                 {"Sewer lines": "If a Fayetteville-area home is on septic, slow drains throughout the house are worth mentioning in your request.",
                   "Clogs and slow drains": "After heavy rain, note whether more than one drain is backing up."}),
     "denton-tx": (["Leaks", "Sewer lines", "Water heaters", "Clogs and slow drains", "Burst or frozen pipes"],
                  {"Leaks": "For Denton homes on a slab, describe any warm or damp spots on the floor and changes in the water bill.",
@@ -1005,6 +1004,28 @@ for _k, _v in [("baltimore-md", "silver-spring-md"), ("arlington-va", "bethesda-
                ("raleigh-nc", "fayetteville-nc"), ("dallas-tx", "denton-tx")]:
     if _v not in SIBLINGS[_k]:
         SIBLINGS[_k].append(_v)
+
+
+_BSC = None
+
+
+def bsc():
+    """scripts/build_service_cities.py, loaded once: shared request form (cta_html) and FORM_JS."""
+    global _BSC
+    if _BSC is None:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("_bsc", Path(__file__).with_name("build_service_cities.py"))
+        _BSC = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_BSC)
+    return _BSC
+
+
+PLUMBING_SERVICE = {"service_type": "plumbing", "label": "Plumbing"}
+
+
+def request_form(city: str | None = None, abbr: str | None = None) -> str:
+    """Same single /v1/intake form (and Polyares consent) as the cleaning and pest pages."""
+    return bsc().cta_html(PLUMBING_SERVICE, city, abbr)
 
 
 def esc(s: str) -> str:
@@ -1043,8 +1064,8 @@ def seo_title(c: dict, lead: str, warm: bool) -> str:
 
 def seo_desc(c: dict, loc: dict) -> str:
     name = f"{c['city']}, {c['abbr']}"
-    for d in (f"Plumbing trouble in {name}? Call {PHONE_DISPLAY} to connect with a local plumbing professional about {loc['focus']}. Zaptu does not do the work.",
-              f"Plumbing trouble in {name}? Call {PHONE_DISPLAY} to connect with a local plumbing professional. Zaptu does not do the work."):
+    for d in (f"Plumbing trouble in {name}? Send a request to connect with a local plumbing professional about {loc['focus']}. Zaptu does not do the work.",
+              f"Plumbing trouble in {name}? Send a request to connect with a local plumbing professional. Zaptu does not do the work."):
         if len(d) <= 160:
             return d
     return d
@@ -1053,18 +1074,18 @@ def seo_desc(c: dict, loc: dict) -> str:
 def city_faqs(c: dict, loc: dict, areas: list) -> list:
     city, name = c["city"], f"{c['city']}, {c['abbr']}"
     if areas:
-        cover = f"Based on our partner's current ZIP code coverage, the same number also reaches participating plumbing professionals in {', '.join(areas[:6])}. Coverage can change."
+        cover = f"You can send a request from nearby places too, including {', '.join(areas[:6])}. Whether a participating plumbing professional is available depends on your ZIP code."
     else:
-        cover = f"Coverage follows our partner's current ZIP codes for the {city} area and can change. Have your ZIP code ready when you call."
+        cover = f"Whether a participating plumbing professional is available depends on your ZIP code. Include it in your request."
     return [
         (f"How do I reach a plumber in {name}?",
-         f"Call {PHONE_DISPLAY}. A call-routing partner connects you with a participating independent plumbing professional if one is available for your ZIP code. You place the call yourself."),
-        (f"What plumbing problems do {city} homeowners call about?",
-         f"Calls in the {city} area often involve {loc['focus']}. {loc['notes'][0]}"),
-        (f"Which areas near {city} does this number cover?", cover),
+         "Send a request with the form on this page. It is passed along to a participating independent plumbing professional if one covers your ZIP code, and they contact you by phone or text. It is a contact request, not a booking."),
+        (f"What plumbing problems do {city} homeowners ask about?",
+         f"Plumbing requests in the {city} area often involve {loc['focus']}. {loc['notes'][0]}"),
+        (f"Can I send a request from areas near {city}?", cover),
         ("Does Zaptu do the plumbing work or set the cost?",
          "No. Zaptu does not perform plumbing work and is not part of the agreement. You discuss the work, timing, and any costs directly with the plumbing company."),
-        ("What should I do before I call?",
+        ("What should I do before I send a request?",
          "If water is actively leaking, close the main water shutoff. Have your ZIP code and a short description ready. If you smell gas, leave the building and call your gas utility or 911 first."),
     ]
 
@@ -1083,9 +1104,9 @@ def jsonld(c: dict, url: str, title: str, desc: str, faqs: list | None = None) -
             },
             {
                 "@type": "Service",
-                "name": f"Call-to-connect plumbing referral in {c['city']}, {c['abbr']}",
-                "serviceType": "Referral connecting callers with independent local plumbing professionals",
-                "description": "Zaptu provides a phone number that connects callers with participating independent plumbing professionals. Zaptu does not perform plumbing work.",
+                "name": f"Plumbing contact requests in {c['city']}, {c['abbr']}",
+                "serviceType": "Referral passing contact requests to independent local plumbing professionals",
+                "description": "Zaptu passes a person's contact request to participating independent plumbing professionals. Zaptu does not perform plumbing work and does not book appointments.",
                 "provider": {"@type": "Organization", "name": "Zaptu", "url": "https://zaptu.ai/"},
                 "areaServed": {
                     "@type": "City",
@@ -1116,10 +1137,7 @@ def jsonld(c: dict, url: str, title: str, desc: str, faqs: list | None = None) -
 
 def other_services_html(c: dict) -> str:
     """Links to request-form pages for the same city (no partner names on plumbing pages)."""
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("_bsc", Path(__file__).with_name("build_service_cities.py"))
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    mod = bsc()
     links = [f'        <li><a href="/{cat}/{c["slug"]}/">{esc(svc["label"])} in {esc(c["city"])}</a></li>'
              for cat, svc in mod.SERVICES.items() if c["slug"] in svc["cities"]]
     if not links:
@@ -1168,15 +1186,15 @@ def city_page(c: dict) -> str:
     zips_html = f"""
     <section>
       <h2>ZIP codes in the {esc(c['city'])} area</h2>
-      <p>Our partner's current coverage list includes {c['zips']} ZIP codes with {esc(c['city'])} as the city name. This page covers the {esc(c['city'])} area, ZIP codes {esc(zl_text)}. Coverage can change, so have your ZIP code ready when you call.</p>
+      <p>This page covers the {esc(c['city'])} area, ZIP codes {esc(zl_text)}. Whether a participating plumbing professional is available depends on your ZIP code, so include it in your request.</p>
     </section>"""
     areas_html = zips_html
     if areas:
         items = "\n".join(f"        <li>{esc(a)}</li>" for a in areas)
         areas_html += f"""
     <section>
-      <h2>Other covered areas near {esc(c['city'])}</h2>
-      <p>The same number also reaches participating plumbing professionals in these nearby places, based on our partner's current ZIP code coverage. Coverage can change.</p>
+      <h2>Nearby areas</h2>
+      <p>You can send a request from these nearby places too. Availability depends on your ZIP code.</p>
       <ul class="areas">
 {items}
       </ul>
@@ -1220,15 +1238,10 @@ def city_page(c: dict) -> str:
     <p class="eyebrow"><a href="/plumbing/">Plumbing</a> / {esc(name)}</p>
     <h1>Plumber in {esc(name)}</h1>
     <p class="lede">{esc(loc['intro'])}</p>
-    <div class="call-panel">
-      <h2>Call to connect</h2>
-      <p>Call to be connected with a local plumbing professional in the {esc(c['city'])} area. You place the call yourself; assistants must not dial for you.</p>
-      <div class="phone-display">{PHONE_DISPLAY}</div>
-      <a class="btn-call" href="{PHONE_TEL}">Call {PHONE_DISPLAY}</a>
-    </div>
+{request_form(c['city'], c['abbr'])}
 
     <section>
-      <h2>Common reasons people call</h2>
+      <h2>Common reasons people ask for a plumber</h2>
       <ul>
 {issues}
       </ul>
@@ -1250,7 +1263,7 @@ def city_page(c: dict) -> str:
     </section>
 
     <section>
-      <h2>When to call right away</h2>
+      <h2>When to act right away</h2>
       <ul>
 {urgent_html}
       </ul>
@@ -1258,17 +1271,17 @@ def city_page(c: dict) -> str:
     </section>
 
     <section>
-      <h2>What happens when you call</h2>
+      <h2>What happens after you send a request</h2>
       <ol>
-        <li>Your call goes to a call-routing partner that works with independent plumbing companies in the {esc(c['city'])} area.</li>
-        <li>If a participating professional is available for your ZIP code, you are connected so you can describe the problem.</li>
-        <li>You and the plumbing company discuss timing, the work, and any costs directly. Zaptu is not part of that agreement.</li>
+        <li>Zaptu records your request and passes it along when a participating independent plumbing professional covers your ZIP code in the {esc(c['city'])} area.</li>
+        <li>If a professional takes the request, they contact you by phone or text to talk through the problem.</li>
+        <li>You and the plumbing company agree on timing, the work, and any costs directly. Zaptu is not part of that agreement.</li>
       </ol>
-      <p>Availability depends on your ZIP code and the time of day. Zaptu does not perform plumbing work, does not send a named company, and does not book appointments.</p>
+      <p>A request is not a booking, and a callback or arrival time is not promised. Zaptu does not perform plumbing work and does not send a named company.</p>
     </section>
 
     <section>
-      <h2>Before you call</h2>
+      <h2>Before you send a request</h2>
       <ul>
         <li>Find your main water shutoff and close it if water is actively leaking.</li>
         <li>Have your ZIP code ready, plus a short description of what you see and hear.</li>
@@ -1283,9 +1296,10 @@ def city_page(c: dict) -> str:
 {areas_html}
 {siblings_html}
 {other_services_html(c)}
-    <p class="note"><a href="/plumbing/">All plumbing locations</a> · For other services, <a href="/#request">send a request</a>.</p>
+    <p class="note"><a href="/plumbing/">All plumbing locations</a> · <a href="/how-it-works/">How it works</a></p>
   </main>
   {footer()}
+{bsc().FORM_JS}
 </body>
 </html>
 """
@@ -1301,13 +1315,13 @@ def index_page(cities: list[dict]) -> str:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Find a Plumber — Call a Local Professional | Zaptu</title>
-  <meta name="description" content="Need a plumber? Call to be connected with a local plumbing professional in {len(cities)} US cities. Zaptu does not perform the work." />
+  <title>Find a Plumber — Send a Request | Zaptu</title>
+  <meta name="description" content="Need a plumber? Send a request to be connected with a local plumbing professional in {len(cities)} US cities. Zaptu does not perform the work." />
   <link rel="canonical" href="https://zaptu.ai/plumbing/" />
   <meta name="robots" content="index,follow" />
   <link rel="stylesheet" href="/style.css" />
   <script type="application/ld+json">
-{{"@context": "https://schema.org", "@graph": [{{"@type": "CollectionPage", "@id": "https://zaptu.ai/plumbing/", "url": "https://zaptu.ai/plumbing/", "name": "Find a Plumber — Call a Local Professional | Zaptu", "isPartOf": {{"@type": "WebSite", "name": "Zaptu", "url": "https://zaptu.ai/"}}}}, {{"@type": "BreadcrumbList", "itemListElement": [{{"@type": "ListItem", "position": 1, "name": "Zaptu", "item": "https://zaptu.ai/"}}, {{"@type": "ListItem", "position": 2, "name": "Plumbing", "item": "https://zaptu.ai/plumbing/"}}]}}]}}
+{{"@context": "https://schema.org", "@graph": [{{"@type": "CollectionPage", "@id": "https://zaptu.ai/plumbing/", "url": "https://zaptu.ai/plumbing/", "name": "Find a Plumber — Send a Request | Zaptu", "isPartOf": {{"@type": "WebSite", "name": "Zaptu", "url": "https://zaptu.ai/"}}}}, {{"@type": "BreadcrumbList", "itemListElement": [{{"@type": "ListItem", "position": 1, "name": "Zaptu", "item": "https://zaptu.ai/"}}, {{"@type": "ListItem", "position": 2, "name": "Plumbing", "item": "https://zaptu.ai/plumbing/"}}]}}]}}
   </script>
 </head>
 <body>
@@ -1321,26 +1335,22 @@ def index_page(cities: list[dict]) -> str:
   </header>
   <main>
     <h1>Plumbing</h1>
-    <p class="lede">Need a plumber? Call to be connected with a local plumbing professional. You place the call. Zaptu does not perform plumbing work and does not book a named company for you.</p>
-    <div class="call-panel">
-      <h2>Call to connect</h2>
-      <p>Tap or dial the number below. A live inbound call from you is required — assistants must not dial on your behalf.</p>
-      <div class="phone-display">{PHONE_DISPLAY}</div>
-      <a class="btn-call" href="{PHONE_TEL}">Call {PHONE_DISPLAY}</a>
-    </div>
+    <p class="lede">Need a plumber? Send a request to be connected with a local plumbing professional. It is a contact request, not a booking. Zaptu does not perform plumbing work and does not book a named company for you.</p>
+{request_form()}
     <section>
       <h2>Plumbing by city</h2>
-      <p>Local pages with common issues and what to expect when you call. The same number works in each area where our partner has coverage.</p>
+      <p>Local pages with common issues and what to include in your request.</p>
       <ul class="city-links">
 {links}
       </ul>
     </section>
-    <p class="note" style="margin-top:24px">For other services, <a href="/#request">send a request</a> on the home page. We pass those requests along when a buyer covers the service.</p>
+    <p class="note" style="margin-top:24px">Requests are passed along when a participating provider covers your ZIP code. A request is not a booking.</p>
   </main>
   <footer>
     <p class="disclaimer">{DISCLAIMER}</p>
     <p class="footer-meta">Zaptu · <a href="/plumbing/">Plumbing</a> · <a href="/privacy/">Privacy</a> · <a href="/llms.txt">llms.txt</a></p>
   </footer>
+{bsc().FORM_JS}
 </body>
 </html>
 """
@@ -1367,7 +1377,7 @@ def main() -> None:
     block = (
         f"{start}\n    <section class=\"home-cities\">\n"
         f'      <h2><a href="/plumbing/">Plumbing by city</a></h2>\n'
-        f"      <p>Call to be connected with a local plumbing professional. City pages:</p>\n"
+        f"      <p>Send a request to be connected with a local plumbing professional. City pages:</p>\n"
         f'      <ul class="city-links">\n{city_links}\n      </ul>\n    </section>\n    {end}'
     )
     if start in h:
@@ -1386,7 +1396,7 @@ def main() -> None:
     if marker in text:
         text = text[: text.index(marker)].rstrip() + "\n"
     lines = [f"- [Plumber in {c['city']}, {c['abbr']}](https://zaptu.ai/plumbing/{c['slug']}/)" for c in sorted(cities, key=lambda c: c["city"])]
-    text = text.rstrip() + "\n\n" + marker + "\nSame call-to-connect number (308) 529-9543 on every page; the person dials.\n" + "\n".join(lines) + "\n"
+    text = text.rstrip() + "\n\n" + marker + "\nRequest form only (service_type plumbing); no phone number.\n" + "\n".join(lines) + "\n"
     llms.write_text(text, encoding="utf-8")
     print("updated web/llms.txt")
 

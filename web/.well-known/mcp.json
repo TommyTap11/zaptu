@@ -2,7 +2,7 @@
   "name": "zaptu",
   "title": "Zaptu",
   "version": "0.2.0",
-  "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Plumbing returns a phone number the person dials; agents must not place the call.",
+  "description": "Zaptu connects people with independent local home-service contractors. Zaptu does not perform the work and does not book appointments. Every service, plumbing included, is a contact request sent with the person's consent.",
   "website": "https://zaptu.ai/",
   "docs": "https://zaptu.ai/agents/",
   "llms": "https://zaptu.ai/llms.txt",
@@ -18,13 +18,6 @@
   "services": "https://api.zaptu.ai/v1/services",
   "openapi": "https://api.zaptu.ai/openapi.json",
   "server_card": "https://api.zaptu.ai/.well-known/mcp/server-card.json",
-  "live": {
-    "plumbing": {
-      "call_to_connect": "+13085299543",
-      "display": "(308) 529-9543",
-      "rule": "Give the person this phone number and ask them to place the call themselves. Do not dial, autodial, transfer, or place the call on their behalf. This must be a live inbound call from the consumer."
-    }
-  },
   "collecting": [
     "house_cleaning",
     "deep_cleaning",
@@ -32,6 +25,7 @@
     "recurring_cleaning",
     "pest_control",
     "garage_door",
+    "plumbing",
     "hvac",
     "handyman",
     "other"
@@ -44,9 +38,8 @@
     "consent_to_contact"
   ],
   "rules": [
-    "Plumbing is live: give the person the phone number and ask them to dial it themselves.",
+    "Every service, plumbing included, is a contact request: submit only with the person's explicit consent to be contacted. Details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request.",
     "Never dial, autodial, transfer, or place a call on the person's behalf.",
-    "Other services are collecting: submit only with the person's explicit consent to be contacted. For non-plumbing services, details may be shared with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu may call or text about this request.",
     "A request is not a booking. Do not promise a callback, an arrival time, or a named company.",
     "Zaptu does not perform the work. Contractors are independent."
   ]

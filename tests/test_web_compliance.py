@@ -1,4 +1,4 @@
-"""Client Connector ad-copy rules for every public HTML page."""
+"""Ad-copy rules for every public HTML page (no "free" outside the disclaimer, no prices, superlatives or reviews)."""
 
 from __future__ import annotations
 
@@ -51,11 +51,15 @@ def test_city_pages_exist():
 
 
 @pytest.mark.parametrize("page", CITY_PAGES, ids=lambda p: p.parent.name)
-def test_city_page_call_and_schema(page):
+def test_city_page_form_and_schema(page):
     raw = page.read_text(encoding="utf-8")
-    assert 'href="tel:+13085299543"' in raw
-    assert "(308) 529-9543" in raw
-    assert "Call to be connected with a local plumbing professional" in raw
+    form = raw[raw.index('<form id="request"'): raw.index("</form>")]
+    assert 'action="https://api.zaptu.ai/v1/intake"' in form
+    assert '<input type="hidden" name="service_type" value="plumbing" />' in form
+    assert "Polyares and its service-provider partners" in form
+    assert "tel:" not in raw
+    assert "participating independent plumbing professional" in raw
+    assert "not a booking" in raw
     blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', raw, re.S)
     assert len(blocks) == 1
     data = json.loads(blocks[0])
@@ -68,3 +72,18 @@ def test_city_page_call_and_schema(page):
     assert f'/plumbing/{page.parent.name}/' in index
     assert f'/plumbing/{page.parent.name}/' in (WEB / "sitemap.xml").read_text(encoding="utf-8")
     assert f'/plumbing/{page.parent.name}/' in (WEB / "llms.txt").read_text(encoding="utf-8")
+
+
+# The Client Connector was dropped on 2026-10-26: no trace of its number or name anywhere we publish.
+TCC_MARKERS = ["3085299543", "308-529-9543", "529-9543", "client connector", "get_plumbing_call_number", "call-to-connect", "call to connect"]
+
+
+def test_no_client_connector_anywhere_in_built_site():
+    root = WEB.parent
+    files = [p for p in WEB.rglob("*") if p.is_file() and p.suffix in {".html", ".txt", ".json", ".xml", ".js", ".webmanifest", ""}]
+    files.append(root / "server.json")
+    assert len(files) > 100
+    for p in files:
+        text = p.read_text(encoding="utf-8", errors="ignore").lower()
+        hits = [m for m in TCC_MARKERS if m in text]
+        assert not hits, f"{p.relative_to(root)}: {hits}"

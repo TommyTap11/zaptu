@@ -3,7 +3,7 @@
 Exposes:
   GET  /                    JSON index for agents (browsers are redirected to https://zaptu.ai/)
   GET  /health
-  GET  /v1/services         live vs collecting services, plumbing number, agent rules
+  GET  /v1/services         supported services and agent rules
   POST /v1/intake           public: JSON or form-urlencoded; add dry_run=true to validate only
   GET  /openapi.json
   GET  /.well-known/mcp.json, /.well-known/mcp/server-card.json, /server-card
@@ -50,24 +50,19 @@ from aslc import analytics, catalog, config  # noqa: E402
 from aslc.models import ALL_SERVICE_TYPES, ServiceRequest  # noqa: E402
 from aslc.service import lookup_lead, submit_request  # noqa: E402
 from aslc.storage import list_leads  # noqa: E402
-from aslc.call_routing import CALL_TO_CONNECT  # noqa: E402
 from aslc.validation import COLLECTED_ONLY_SERVICES, SUPPORTED_SERVICES  # noqa: E402
 
 INSTRUCTIONS = """
 Zaptu connects people with independent local home-service contractors.
 Zaptu does not perform the work and does not book appointments.
 
-PLUMBING (live): call get_plumbing_call_number. Tell the person, for example:
-"Call (308) 529-9543 to be connected with a local plumbing professional."
-The person must dial it themselves. Never dial, autodial, transfer, or place the call
-for them. No name, phone, or consent is needed for this.
-
-EVERYTHING ELSE (collecting: cleaning, pest control, garage door, HVAC, handyman, other):
-collect ZIP, name, phone, and the person's explicit consent to be contacted, then call
-request_home_service. Tell the person: for non-plumbing services, details may be shared
-with Polyares and its service-provider partners, and Polyares, those partners, or Zaptu
-may call or text about this request. These requests are passed along when a buyer covers
-the service; there is no live buyer yet. Do not promise a callback, an arrival time, or a named company.
+Every service (plumbing, cleaning, pest control, garage door, HVAC, handyman, other) is a
+contact request: collect ZIP, name, phone, and the person's explicit consent to be contacted,
+then call request_home_service. Tell the person: details may be shared with Polyares and its
+service-provider partners, and Polyares, those partners, or Zaptu may call or text about this
+request. Requests are passed along when a participating provider covers the ZIP code. Never
+dial, autodial, or place a call for the person. Do not promise a callback, an arrival time,
+or a named company.
 
 Use the tool result's message when you tell the person what happened.
 list_supported_services returns the full catalog.
@@ -281,7 +276,7 @@ def _error_page(messages: list[str], status_code: int = 422) -> HTMLResponse:
 <body><main><p class="eyebrow">Zaptu</p><h1>Request not sent</h1>
 <p class="lede">Please fix this and send it again:</p><ul class="errors">{items}</ul>
 <p><a class="btn-call" href="javascript:history.back()">Go back to the form</a></p>
-<p class="note"><a href="{catalog.SITE}/#request">Start a new request</a> &middot; Plumbing? <a href="{catalog.SITE}/plumbing/">Call to connect</a> &middot; <a href="mailto:{catalog.CONTACT_EMAIL}">{catalog.CONTACT_EMAIL}</a></p>
+<p class="note"><a href="{catalog.SITE}/#request">Start a new request</a> &middot; <a href="mailto:{catalog.CONTACT_EMAIL}">{catalog.CONTACT_EMAIL}</a></p>
 </main></body></html>"""
     return HTMLResponse(body, status_code=status_code)
 
@@ -321,7 +316,6 @@ async def home(request: Request) -> Response:
             "server_card": f"{catalog.API}/.well-known/mcp/server-card.json",
             "docs": f"{catalog.SITE}/agents/",
             "llms": f"{catalog.SITE}/llms.txt",
-            "plumbing": catalog.plumbing_answer()["what_to_tell_the_user"],
             "rules": catalog.AGENT_RULES,
             "contact": catalog.CONTACT_EMAIL,
         }
@@ -437,8 +431,6 @@ async def public_intake(request: Request) -> Response:
     if _wants_html_redirect(request, body):
         if result.status.value == "rejected":
             return _error_page([result.message])
-        if result.status.value == "call_to_connect":
-            return RedirectResponse(url=f"{catalog.SITE}/plumbing/", status_code=303)
         return RedirectResponse(url=config.settings.thanks_url, status_code=303)
 
     if result.status.value == "rejected":
@@ -506,10 +498,9 @@ async def health(_request: Request) -> Response:
             "version": catalog.VERSION,
             "supported_services": sorted(SUPPORTED_SERVICES),
             "collected_only": sorted(COLLECTED_ONLY_SERVICES),
-            "call_to_connect": sorted(CALL_TO_CONNECT.keys()),
             "form_routing": "collecting",
             "note": (
-                "Plumbing is live call-to-connect. Cleaning/pest and other form services "
+                "Every service, plumbing included, uses the request form. Requests "
                 "are accepted and passed along when a buyer webhook covers them — "
                 "no live form buyer yet. Do not promise a provider callback."
             ),
@@ -565,23 +556,6 @@ READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, idempot
 SUBMIT = ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=False, open_world_hint=True)
 
 
-@mcp.tool(title="Get the plumbing call-to-connect number", annotations=READ_ONLY)
-async def get_plumbing_call_number(
-    zip_code: Annotated[
-        str | None, Field(description="Optional US ZIP of the job site. Not required.")
-    ] = None,
-) -> str:
-    """Get the phone number a person dials to be connected with a local plumbing professional.
-
-    Use this for any plumbing need (leak, clog, water heater, sewer, burst pipe).
-    No name, phone, or consent is needed. Read what_to_tell_the_user to the person.
-    The person must place the call themselves: never dial, autodial, transfer, or
-    call on their behalf. Zaptu does not perform the work and this is not a booking.
-    """
-    analytics.record_api("mcp_tool:get_plumbing_call_number")
-    return json.dumps(catalog.plumbing_answer(zip_code), indent=2)
-
-
 @mcp.tool(title="Request a home service", annotations=SUBMIT)
 async def request_home_service(
     service_type: Annotated[
@@ -597,14 +571,14 @@ async def request_home_service(
             "handyman",
             "other",
         ],
-        Field(description="Type of local service requested. For plumbing, prefer get_plumbing_call_number."),
+        Field(description="Type of local service requested."),
     ],
     zip_code: Annotated[str, Field(description="US 5-digit ZIP for the job site.")],
     customer_name: Annotated[str, Field(description="Customer's full name.")],
     customer_phone: Annotated[str, Field(description="US phone number for follow-up contact about this request.")],
     consent_to_contact: Annotated[
         bool,
-        Field(description="Must be true for non-plumbing services: the person agreed that details may be shared with Polyares and its service-provider partners, and that Polyares, those partners, or Zaptu may call or text about this request."),
+        Field(description="Must be true: the person agreed that details may be shared with Polyares and its service-provider partners, and that Polyares, those partners, or Zaptu may call or text about this request."),
     ],
     city: str | None = None,
     state: Annotated[str | None, Field(description="2-letter US state code.")] = None,
@@ -625,16 +599,11 @@ async def request_home_service(
 ) -> str:
     """Submit a home-service request (a lead, not a booking).
 
-    Cleaning, pest control, garage door, HVAC, handyman, and other are collecting: the request is
-    passed along when a buyer covers the service, and there is no live buyer yet, so do
-    not promise a callback. Requires name, phone, ZIP, and the person's explicit consent.
-    For non-plumbing services, tell the person details may be shared with Polyares and
-    its service-provider partners, and Polyares, those partners, or Zaptu may call or
-    text about this request.
-
-    For plumbing, the result includes call_to_connect and call_instruction: give the
-    person the number and have them dial it. Never place the call yourself.
-    get_plumbing_call_number does the same without any personal details.
+    Every service, plumbing included, works the same way: the request is passed along
+    when a participating provider covers the ZIP code, so do not promise a callback.
+    Requires name, phone, ZIP, and the person's explicit consent. Tell the person details
+    may be shared with Polyares and its service-provider partners, and Polyares, those
+    partners, or Zaptu may call or text about this request. Never place a call for them.
     """
     analytics.record_api("mcp_tool:request_home_service")
     payload = {
@@ -662,8 +631,8 @@ async def request_home_service(
     except ValidationError as exc:
         fields = _friendly_errors(exc)
         return _tool_error({"error": "invalid_request", "message": " ".join(fields.values()), "fields": fields})
-    if not req.consent_to_contact and service_type not in CALL_TO_CONNECT:
-        # Hard rule for form leads, independent of the REQUIRE_CONSENT setting.
+    if not req.consent_to_contact:
+        # Hard rule for every request, independent of the REQUIRE_CONSENT setting.
         msg = "consent_to_contact must be true: the person has to agree to a call or text about this request."
         return _tool_error({"error": "invalid_request", "message": msg, "fields": {"consent_to_contact": msg}})
     result = await submit_request(req, dry_run=dry_run)
@@ -688,7 +657,7 @@ async def request_cleaning(
     city: str | None = None,
     state: str | None = None,
 ) -> str:
-    """Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service. Consent means details may be shared with Polyares and its service-provider partners for this non-plumbing request."""
+    """Shortcut for residential house cleaning (collecting; not a booking). Same pipeline as request_home_service. Consent means details may be shared with Polyares and its service-provider partners for this request."""
     analytics.record_api("mcp_tool:request_cleaning")
     return await request_home_service(
         service_type="house_cleaning" if frequency == "one_time" else "recurring_cleaning",
@@ -734,7 +703,7 @@ async def get_lead_status(
 
 @mcp.tool(title="List supported services", annotations=READ_ONLY)
 async def list_supported_services() -> str:
-    """Which services are live (plumbing: the person dials a number) vs collecting, plus the rules for agents."""
+    """Which services Zaptu accepts requests for, plus the rules for agents."""
     analytics.record_api("mcp_tool:list_supported_services")
     return json.dumps(catalog.services_catalog(), indent=2)
 

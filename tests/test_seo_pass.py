@@ -75,9 +75,12 @@ def test_same_city_cross_links():
             assert f'href="/cleaning/{slug}/"' in p.read_text()
 
 
-def test_plumbing_pages_name_no_partner():
+def test_plumbing_pages_use_polyares_consent_form():
+    # Since 2026-10-26 plumbing uses the same intake form and Polyares consent as other categories.
     for p in (WEB / "plumbing").rglob("index.html"):
-        assert "polyares" not in p.read_text().lower()
+        t = p.read_text()
+        assert "share my details with Polyares and its service-provider partners" in t, p
+        assert '<input type="hidden" name="service_type" value="plumbing" />' in t, p
 
 
 def test_index_html_variants_redirect():

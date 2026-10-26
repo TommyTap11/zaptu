@@ -54,36 +54,29 @@ def test_mcp_initialize_and_instructions(client):
     res = rpc(client, "initialize", {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "t", "version": "0"}})["result"]
     assert res["serverInfo"]["name"] == "zaptu"
     instr = res["instructions"]
-    assert "(308) 529-9543" in instr and "get_plumbing_call_number" in instr
-    assert "Never dial" in instr
+    assert "request_home_service" in instr and "plumbing" in instr
+    assert "529-9543" not in instr and "get_plumbing_call_number" not in instr
+    assert "Never" in instr and "dial" in instr and "Polyares" in instr
 
 
-def test_mcp_tools_list_has_plumbing_tool_and_annotations(client):
+def test_mcp_tools_list_and_annotations(client):
     tools = {t["name"]: t for t in rpc(client, "tools/list")["result"]["tools"]}
-    assert {"get_plumbing_call_number", "request_home_service", "request_cleaning", "get_lead_status", "list_supported_services"} <= set(tools)
-    assert tools["get_plumbing_call_number"]["annotations"]["readOnlyHint"] is True
-    assert tools["get_plumbing_call_number"]["inputSchema"].get("required", []) == []
+    assert set(tools) == {"request_home_service", "request_cleaning", "get_lead_status", "list_supported_services"}
+    assert "plumbing" in tools["request_home_service"]["inputSchema"]["properties"]["service_type"]["enum"]
     assert tools["request_home_service"]["annotations"]["readOnlyHint"] is False
     assert tools["list_supported_services"]["annotations"]["readOnlyHint"] is True
 
 
-def test_mcp_plumbing_tool_returns_number_person_dials(client, tmp_path):
-    out = call_tool(client, "get_plumbing_call_number", {"zip_code": "33139"})
-    assert out["status"] == "call_to_connect"
-    assert out["call_to_connect"] == "+13085299543"
-    assert out["call_to_connect_display"] == "(308) 529-9543"
-    assert "place the call yourself" in out["what_to_tell_the_user"]
-    assert "Do not dial" in out["call_instruction"]
-    assert leads_file(tmp_path) == []  # read-only, no personal data stored
+def test_mcp_old_plumbing_number_tool_is_gone(client):
+    res = rpc(client, "tools/call", {"name": "get_plumbing_call_number", "arguments": {}})
+    assert "error" in res or res["result"].get("isError") is True
 
 
-def test_mcp_request_home_service_plumbing_without_consent_still_gets_number(client):
-    out = call_tool(client, "request_home_service", {
-        "service_type": "plumbing", "zip_code": "33139", "customer_name": "Test Person",
-        "customer_phone": "3055550100", "consent_to_contact": False,
-    })
-    assert out["status"] == "call_to_connect"
-    assert out["call_to_connect"] == "+13085299543"
+def test_mcp_plumbing_is_a_normal_request(client, tmp_path):
+    out = call_tool(client, "request_home_service", {**CLEANING, "service_type": "plumbing", "dry_run": True})
+    assert out["status"] == "received" and out["dry_run"] is True
+    assert "call_to_connect" not in out and "529-9543" not in json.dumps(out)
+    assert leads_file(tmp_path) == []
 
 
 def test_mcp_request_validation_error_is_readable(client):
@@ -119,16 +112,16 @@ def test_mcp_unknown_argument_rejected(client, tmp_path):
 
 
 def test_mcp_unknown_argument_rejected_on_read_only_tool(client):
-    res = call_tool_raw(client, "get_plumbing_call_number", {"zip": "33139"})
+    res = call_tool_raw(client, "get_lead_status", {"lead_id": "x", "zip": "33139"})
     assert res["isError"] is True
 
 
-def test_mcp_consent_false_rejected_for_non_plumbing(client, tmp_path):
+def test_mcp_consent_false_rejected_for_every_service(client, tmp_path):
     from aslc import config
 
     config.settings.require_consent = False  # the MCP rule must hold even if the env flag is off
     try:
-        for svc in ("house_cleaning", "hvac", "pest_control", "garage_door", "handyman", "other"):
+        for svc in ("house_cleaning", "hvac", "pest_control", "garage_door", "handyman", "other", "plumbing"):
             res = call_tool_raw(client, "request_home_service", {**CLEANING, "service_type": svc, "consent_to_contact": False})
             assert res["isError"] is True, svc
             out = json.loads(res["content"][0]["text"])
@@ -154,11 +147,11 @@ def test_mcp_dry_run_has_no_lead_id_and_no_saved_wording(client, tmp_path):
     assert leads_file(tmp_path) == []
 
 
-def test_mcp_list_services_live_vs_collecting(client):
+def test_mcp_list_services_all_collecting(client):
     out = call_tool(client, "list_supported_services", {})
-    assert [s["service_type"] for s in out["live"]] == ["plumbing"]
+    assert "live" not in out
     assert "pest_control" in [s["service_type"] for s in out["collecting"]]
-    assert "plumbing" not in [s["service_type"] for s in out["collecting"]]
+    assert "plumbing" in [s["service_type"] for s in out["collecting"]]
     assert "campaign_id" not in json.dumps(out)
     assert out["contact"] == "hello@zaptu.ai"
 
@@ -183,14 +176,15 @@ def test_mcp_get_is_405_and_cors_preflight_open(client):
 def test_root_redirects_browsers_and_serves_json_index(client):
     r = client.get("/", headers={"Accept": "text/html"}, follow_redirects=False)
     assert r.status_code == 301 and r.headers["location"] == "https://zaptu.ai/"
-    body = client.get("/", headers={"Accept": "application/json"}).json()
+    r = client.get("/", headers={"Accept": "application/json"})
+    body = r.json()
     assert body["mcp"] == "https://api.zaptu.ai/mcp"
-    assert "(308) 529-9543" in body["plumbing"]
+    assert "plumbing" not in body and "529-9543" not in r.text
 
 
 def test_services_openapi_and_cards(client):
     svc = client.get("/v1/services").json()
-    assert svc["live"][0]["call_to_connect"] == "+13085299543"
+    assert "live" not in svc and "plumbing" in [s["service_type"] for s in svc["collecting"]]
     spec = client.get("/openapi.json").json()
     assert spec["openapi"].startswith("3.1")
     assert "/v1/intake" in spec["paths"] and "/v1/services" in spec["paths"]
@@ -200,7 +194,8 @@ def test_services_openapi_and_cards(client):
     assert card["serverInfo"]["name"] == "zaptu"
     assert card["authentication"] == {"required": False}
     assert card["remotes"][0] == {"type": "streamable-http", "url": "https://api.zaptu.ai/mcp", "supportedProtocolVersions": ["2025-11-25", "2025-06-18", "2025-03-26"]}
-    assert "get_plumbing_call_number" in [t["name"] for t in card["tools"]]
+    assert "get_plumbing_call_number" not in [t["name"] for t in card["tools"]]
+    assert "request_home_service" in [t["name"] for t in card["tools"]]
     v1 = client.get("/server-card")
     assert v1.headers["content-type"].startswith("application/mcp-server-card+json")
     assert v1.json()["$schema"].endswith("/schemas/v1/server-card.schema.json")
@@ -253,10 +248,10 @@ def test_form_without_consent_shows_error_not_thanks(client):
     assert "consent" in r.text.lower()
 
 
-def test_form_plumbing_goes_to_plumbing_page(client):
-    data = {k: str(v) for k, v in GOOD.items()} | {"service_type": "plumbing", "consent_to_contact": "yes"}
+def test_form_plumbing_goes_to_thanks_page(client):
+    data = {k: str(v) for k, v in GOOD.items()} | {"service_type": "plumbing", "consent_to_contact": "yes", "dry_run": "1"}
     r = client.post("/v1/intake", data=data, follow_redirects=False)
-    assert r.status_code == 303 and r.headers["location"] == "https://zaptu.ai/plumbing/"
+    assert r.status_code == 303 and r.headers["location"].endswith("/thanks/")
 
 
 def test_dry_run_stores_nothing(client, tmp_path):

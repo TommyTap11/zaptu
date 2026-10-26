@@ -128,13 +128,13 @@ def test_api_and_mcp_usage_counted(client):
     client.post(
         "/mcp",
         headers={"Accept": "application/json, text/event-stream", "Content-Type": "application/json"},
-        json={"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "get_plumbing_call_number", "arguments": {}}},
+        json={"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "list_supported_services", "arguments": {}}},
     )
     api = {r["name"]: r["count"] for r in stats(client)["api_by_endpoint"]}
     assert api["/v1/services"] == 1
     assert api["/v1/intake"] == 1
     assert api["mcp"] == 1
-    assert api["mcp_tool:get_plumbing_call_number"] == 1
+    assert api["mcp_tool:list_supported_services"] == 1
 
 
 def test_every_page_loads_counter_script():

@@ -21,7 +21,7 @@ def test_city_seo(page):
     assert title.startswith("Plumber in ") and len(title) <= 65
     desc = re.search(r'<meta name="description" content="([^"]*)"', t).group(1)
     assert len(desc) <= 160 and "does not do the work" in desc
-    for h in ("What to tell the plumber", "When to call right away", "plumbing questions"):
+    for h in ("What to tell the plumber", "When to act right away", "plumbing questions"):
         assert h in t
     faq = [n for b in blocks(t) for n in b.get("@graph", []) if n.get("@type") == "FAQPage"]
     assert len(faq) == 1 and len(faq[0]["mainEntity"]) == 5
