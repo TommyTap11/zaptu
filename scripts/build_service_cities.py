@@ -55,6 +55,7 @@ DISCLAIMER = (
 
 CITIES = {
     "miami-fl": ("Miami", "FL", "Florida"),
+    "miami-beach-fl": ("Miami Beach", "FL", "Florida"),
     "fort-lauderdale-fl": ("Fort Lauderdale", "FL", "Florida"),
     "west-palm-beach-fl": ("West Palm Beach", "FL", "Florida"),
     "fort-myers-fl": ("Fort Myers", "FL", "Florida"),
@@ -111,7 +112,7 @@ SERVICES = {
             ("Who checks licensing and insurance?", "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not do the cleaning."),
             ("What detail helps with a cleaning request?", "The type of clean, the number of bedrooms and bathrooms or the square footage, the home type, pets or allergies, and a rough timeframe such as a move date."),
         ],
-        "cities": ["miami-fl", "fort-lauderdale-fl", "west-palm-beach-fl", "atlanta-ga", "marietta-ga", "dallas-tx",
+        "cities": ["miami-fl", "miami-beach-fl", "fort-lauderdale-fl", "west-palm-beach-fl", "atlanta-ga", "marietta-ga", "dallas-tx",
                    "fort-worth-tx", "san-antonio-tx", "phoenix-az", "mesa-az"],
         "local": {
             "west-palm-beach-fl": ("West Palm Beach is warm and humid for much of the year, and many homes are condos or seasonal residences that sit empty for part of the year.",
@@ -138,6 +139,11 @@ SERVICES = {
                          ["In a condo or apartment tower, mention the floor, the elevator, and any rules for service visitors or parking.",
                           "Humidity can lead to mildew in bathrooms and on window frames. Say where you see it.",
                           "Leases often call for a move-out clean. Mention the move date if there is one."]),
+            "miami-beach-fl": ("Miami Beach sits on barrier islands between Biscayne Bay and the Atlantic, from South Beach through Mid-Beach to North Beach, and many homes are condos in high-rise and mid-rise buildings near the water.",
+                               ["Salt air and beach sand find their way indoors. Mention balconies, sliding door tracks, window glass and floors near the entry.",
+                                "In a condo or high-rise building, mention the floor, the service elevator, and any rules for service visitors, the front desk, or parking.",
+                                "For a vacation rental, describe the turnover clean between guests, such as linens, kitchens and bathrooms. Miami Beach restricts short-term rentals in many neighborhoods and buildings, and following those rules is up to the owner.",
+                                "Seasonal and second homes are often cleaned before the owner returns. Say whether the home has been closed up and whether there is mildew in bathrooms or closets."]),
             "fort-lauderdale-fl": ("Fort Lauderdale's humid climate and sandy beaches both find their way indoors, and the area mixes condos, townhomes and single-family houses.",
                                    ["Sand and salt air can build up on floors, sliding door tracks and patio glass. Mention balconies or patios.",
                                     "In a condo building, note any rules for service visitors or parking.",
@@ -154,6 +160,15 @@ SERVICES = {
                            ["Hard water leaves spots on glass shower doors, faucets and fixtures. Say where they show up.",
                             "Dust storms can coat patios, window tracks and blinds. Mention outdoor areas if they are part of the request.",
                             "Many rentals require a move-out clean. Mention the move date if there is one."]),
+        },
+        # Optional in-text links for a city's "Things to know" section: (before, href, anchor, after).
+        "local_links": {
+            "miami-beach-fl": [
+                ("Across Biscayne Bay, see ", "/cleaning/miami-fl/", "house cleaning in Miami", "."),
+                ("Farther north, see ", "/cleaning/fort-lauderdale-fl/", "house cleaning in Fort Lauderdale", "."),
+                ("For ants, roaches or termites, see ", "/pest-control/miami-fl/", "pest control in the Miami area", "."),
+                ("For a leak or a clogged drain, see ", "/plumbing/miami-fl/", "a plumber in the Miami area", "."),
+            ],
         },
         "siblings_label": "House cleaning in",
     },
@@ -592,6 +607,11 @@ def city_page(cat: str, s: dict, slug: str) -> str:
     # City pages list issue names only; the hub page carries the full descriptions.
     issues = "\n".join(f"        <li>{esc(t)}</li>" for t, _ in s["issues"])
     notes_html = bullets(notes)
+    links = s.get("local_links", {}).get(slug, [])
+    links_html = ""
+    if links:
+        sentences = " ".join(f'{esc(a)}<a href="{href}">{esc(anchor)}</a>{esc(b)}' for a, href, anchor, b in links)
+        links_html = f"\n      <p>{sentences}</p>"
     safety = bullets(s["safety"])
     sibs = "\n".join(
         f'        <li><a href="/{cat}/{o}/">{s["siblings_label"]} {esc(CITIES[o][0])}, {CITIES[o][1]}</a></li>'
@@ -653,7 +673,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
       <h2>Things to know in {esc(city)}</h2>
       <ul>
 {notes_html}
-      </ul>
+      </ul>{links_html}
     </section>
 
     <section>

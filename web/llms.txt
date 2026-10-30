@@ -101,6 +101,7 @@ Request form only (service_type plumbing); no phone number.
 Request form only (service_type house_cleaning, collecting); no phone number.
 - [House cleaning](https://zaptu.ai/cleaning/)
 - [House cleaning in Miami, FL](https://zaptu.ai/cleaning/miami-fl/)
+- [House cleaning in Miami Beach, FL](https://zaptu.ai/cleaning/miami-beach-fl/)
 - [House cleaning in Fort Lauderdale, FL](https://zaptu.ai/cleaning/fort-lauderdale-fl/)
 - [House cleaning in West Palm Beach, FL](https://zaptu.ai/cleaning/west-palm-beach-fl/)
 - [House cleaning in Atlanta, GA](https://zaptu.ai/cleaning/atlanta-ga/)
