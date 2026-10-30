@@ -142,7 +142,7 @@ SERVICES = {
             "miami-beach-fl": ("Miami Beach sits on barrier islands between Biscayne Bay and the Atlantic, from South Beach through Mid-Beach to North Beach, and many homes are condos in high-rise and mid-rise buildings near the water.",
                                ["Salt air and beach sand find their way indoors. Mention balconies, sliding door tracks, window glass and floors near the entry.",
                                 "In a condo or high-rise building, mention the floor, the service elevator, and any rules for service visitors, the front desk, or parking.",
-                                "For a vacation rental, describe the turnover clean between guests, such as linens, kitchens and bathrooms. Miami Beach restricts short-term rentals in many neighborhoods and buildings, and following those rules is up to the owner.",
+                                "For a vacation rental, describe the turnover clean between guests, such as linens, kitchens and bathrooms.",
                                 "Seasonal and second homes are often cleaned before the owner returns. Say whether the home has been closed up and whether there is mildew in bathrooms or closets."]),
             "fort-lauderdale-fl": ("Fort Lauderdale's humid climate and sandy beaches both find their way indoors, and the area mixes condos, townhomes and single-family houses.",
                                    ["Sand and salt air can build up on floors, sliding door tracks and patio glass. Mention balconies or patios.",
