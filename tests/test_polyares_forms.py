@@ -5,7 +5,7 @@ from pathlib import Path
 
 WEB = Path(__file__).resolve().parents[1] / "web"
 KEY = "bcbd33d83d047f182121c2a4404c4853e3f50324"
-CATS = {"cleaning": 24, "pest-control": 37, "plumbing": 1}
+CATS = {"cleaning": 24, "pest-control": 37, "plumbing": 1, "garage-door": 33, "hvac": 8, "handyman": 9}
 
 
 def pages(trade):

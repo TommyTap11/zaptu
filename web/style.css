@@ -98,6 +98,8 @@ footer { padding: 36px 24px 56px; }
 }
 .footer-meta { margin: 0; color: var(--muted); font-size: 13px; }
 .footer-meta a { display: inline-block; padding: 10px 2px; }
+.footer-areas { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.footer-areas a { display: inline-block; padding: 10px 2px; }
 .call-panel {
   margin-top: 8px;
   background: var(--card);

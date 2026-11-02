@@ -160,6 +160,7 @@ SERVICES = {
         "siblings_label": "House cleaning in",
     },
     "garage-door": {
+        "polyares_category": 33,  # Polyares hosted form (form-block swap, 2026-11-02)
         "service_type": "garage_door",
         "label": "Garage door repair",
         "h1": "Garage door repair in {name}",
@@ -316,6 +317,7 @@ SERVICES = {
         "siblings_label": "Pest control in",
     },
     "hvac": {
+        "polyares_category": 8,  # Polyares hosted form (form-block swap, 2026-11-02)
         "service_type": "hvac",
         "label": "HVAC repair",
         "h1": "HVAC repair in {name}",
@@ -360,6 +362,7 @@ SERVICES = {
         "siblings_label": "HVAC repair in",
     },
     "handyman": {
+        "polyares_category": 9,  # Polyares hosted form (form-block swap, 2026-11-02)
         "service_type": "handyman",
         "label": "Handyman",
         "h1": "Handyman services in {name}",

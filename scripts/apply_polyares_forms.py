@@ -22,6 +22,9 @@ TRADES = {
     "cleaning": bsc.SERVICES["cleaning"],
     "pest-control": bsc.SERVICES["pest-control"],
     "plumbing": {"label": "Plumbing", "polyares_category": 1},
+    "garage-door": bsc.SERVICES["garage-door"],
+    "hvac": bsc.SERVICES["hvac"],
+    "handyman": bsc.SERVICES["handyman"],
 }
 FORM_RE = re.compile(r'    <form id="request" class="request-form" action="https://api\.zaptu\.ai/v1/intake".*?\n    </form>', re.S)
 CITY_RE = re.compile(r'<input type="hidden" name="city" value="([^"]*)" />')
