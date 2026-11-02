@@ -177,8 +177,17 @@ def main() -> None:
             "nearby_covered_areas": [a for a, _ in areas.most_common(MAX_AREAS)],
         })
 
+    # Keep pages added from other coverage data (entries with a "source", e.g. Tucson from the
+    # Polyares priority ZIP list, 2026-11-02). This script derives only the TCC-based cities,
+    # so a rerun must not drop them.
+    if OUT.exists():
+        known = {c["slug"] for c in chosen}
+        chosen += [c for c in json.loads(OUT.read_text())["cities"] if c.get("source") and c["slug"] not in known]
     OUT.write_text(json.dumps({"min_required": MIN_REQUIRED, "cities": chosen, "rejected": rejected}, indent=2) + "\n")
     for c in chosen:
+        if c.get("source"):
+            print(f"{c['city']}, {c['abbr']}: kept ({c['source']})")
+            continue
         print(f"{c['city']}, {c['abbr']}: median Min ${c['median_min']:.2f}, {c['zips_ge_100']}/{c['zips']} ZIPs >= $100, "
               f"buyers {c['buyers']}, areas {c['nearby_covered_areas']}")
     for r in rejected:
