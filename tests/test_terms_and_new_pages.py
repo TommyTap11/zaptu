@@ -58,3 +58,30 @@ def test_new_city_pages_have_polyares_form_and_links(rel, cat, hub):
     assert f"<loc>https://zaptu.ai/{rel}/</loc>" in (WEB / "sitemap.xml").read_text()
     assert f'href="/{rel}/"' in (WEB / hub / "index.html").read_text(encoding="utf-8")
     assert f"https://zaptu.ai/{rel}/" in (WEB / "llms.txt").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("page", PUBLIC, ids=lambda p: str(p.relative_to(WEB)))
+def test_footer_links_priority_city_pages(page):
+    t = page.read_text(encoding="utf-8")
+    areas = re.search(r'<p class="footer-areas">(.*?)</p>', t, re.S)
+    assert areas, page
+    for href in ("/plumbing/miami-fl/", "/plumbing/tucson-az/", "/pest-control/houston-tx/", "/pest-control/phoenix-az/"):
+        assert f'href="{href}"' in areas.group(1)
+    for href in re.findall(r'href="(/[^"]+)"', areas.group(1)):
+        assert (WEB / href.strip("/") / "index.html").exists(), href
+
+
+@pytest.mark.parametrize("rel,cat", [("hvac", 8), ("handyman", 9), ("garage-door", 33)] +
+                         [(f"garage-door/{p.name}", 33) for p in sorted((WEB / "garage-door").iterdir()) if p.is_dir()])
+def test_more_categories_use_polyares_form(rel, cat):
+    t = (WEB / rel / "index.html").read_text(encoding="utf-8")
+    assert f"&amp;category={cat}&amp;step=1" in t and 'id="polyares-request"' in t
+    assert 'class="backup-form"' in t  # our intake form stays below, collapsed
+
+
+def test_sitemap_lastmod_marks_polyares_form_pages():
+    sm = (WEB / "sitemap.xml").read_text()
+    for p in WEB.rglob("index.html"):
+        if 'id="polyares-request"' in p.read_text(encoding="utf-8"):
+            path = p.parent.relative_to(WEB).as_posix()
+            assert re.search(rf"<loc>https://zaptu.ai/{re.escape(path)}/</loc><lastmod>2026-11-\d\d</lastmod>", sm), path

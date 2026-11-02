@@ -35,6 +35,15 @@ FOOTER_LINKS = [
     ("/terms/", "Terms"),
     (f"mailto:{CONTACT_EMAIL}", "Contact"),
 ]
+# Footer line linking the city pages where Polyares lists the most high-priority ZIP codes
+# (polyares-zips/*-zips-2026-11-02.csv). Footer-wide, so it is allowed on frozen pages.
+AREA_LINKS = [
+    ("Plumbers", [("/plumbing/miami-fl/", "Miami"), ("/plumbing/san-antonio-tx/", "San Antonio"), ("/plumbing/denver-co/", "Denver"),
+                  ("/plumbing/tucson-az/", "Tucson"), ("/plumbing/las-vegas-nv/", "Las Vegas"), ("/plumbing/mesa-az/", "Mesa"),
+                  ("/plumbing/boulder-co/", "Boulder"), ("/plumbing/riverside-ca/", "Riverside"), ("/plumbing/columbia-sc/", "Columbia, SC"),
+                  ("/plumbing/greenville-sc/", "Greenville, SC"), ("/plumbing/spartanburg-sc/", "Spartanburg")]),
+    ("Pest control", [("/pest-control/houston-tx/", "Houston"), ("/pest-control/phoenix-az/", "Phoenix")]),
+]
 ICONS = "\n".join(
     [
         "  <!-- seo:icons -->",
@@ -91,6 +100,11 @@ def footer_meta_html() -> str:
     return '<p class="footer-meta">Zaptu · ' + " · ".join(f'<a href="{h}">{t}</a>' for h, t in FOOTER_LINKS) + "</p>"
 
 
+def footer_areas_html() -> str:
+    parts = [f"{label}: " + " · ".join(f'<a href="{h}">{t}</a>' for h, t in links) for label, links in AREA_LINKS]
+    return '<p class="footer-areas">' + " | ".join(parts) + "</p>"
+
+
 def apply_chrome(text: str, current: str) -> str:
     """Shared header nav, footer links, and icon/manifest tags on every page."""
     if "<header>" in text:
@@ -98,6 +112,8 @@ def apply_chrome(text: str, current: str) -> str:
     else:
         text = text.replace("<body>\n", "<body>\n  " + header_html(current) + "\n", 1)
     text = re.sub(r'<p class="footer-meta">.*?</p>', lambda _m: footer_meta_html(), text, count=1, flags=re.S)
+    text = re.sub(r'\n\s*<p class="footer-areas">.*?</p>', "", text, flags=re.S)
+    text = re.sub(r'(<p class="footer-meta">.*?</p>)', lambda m: m.group(1) + "\n    " + footer_areas_html(), text, count=1, flags=re.S)
     text = re.sub(r"\n  <!-- seo:icons -->.*?<!-- /seo:icons -->", "", text, flags=re.S)
     text = text.replace('  <link rel="stylesheet" href="/style.css" />', ICONS + '\n  <link rel="stylesheet" href="/style.css" />', 1)
     return text
