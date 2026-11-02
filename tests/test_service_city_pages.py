@@ -36,8 +36,8 @@ def visible_word_count(html: str) -> int:
 
 
 def test_pages_exist():
-    # cleaning hub + 10 cities, garage-door hub + 7 cities, pest-control hub + 11 cities, hvac hub, handyman hub
-    assert len(PAGES) == 33
+    # cleaning hub + 11 cities, garage-door hub + 7 cities, pest-control hub + 11 cities, hvac hub, handyman hub
+    assert len(PAGES) == 34
 
 
 @pytest.mark.parametrize("page", PAGES, ids=lambda p: str(p.relative_to(WEB)))
@@ -87,7 +87,7 @@ def test_home_form_preselects_hvac_and_handyman():
 
 
 CLEANING_PEST_NEW = [
-    "cleaning/miami-fl", "cleaning/fort-lauderdale-fl", "cleaning/atlanta-ga", "cleaning/dallas-tx",
+    "cleaning/miami-fl", "cleaning/miami-beach-fl", "cleaning/fort-lauderdale-fl", "cleaning/atlanta-ga", "cleaning/dallas-tx",
     "cleaning/phoenix-az", "pest-control/miami-fl", "pest-control/atlanta-ga",
 ]
 
