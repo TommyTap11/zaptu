@@ -32,6 +32,7 @@ FOOTER_LINKS = [
     ("/agents/", "For agents"),
     ("/ai/", "AI assistants"),
     ("/privacy/", "Privacy"),
+    ("/terms/", "Terms"),
     (f"mailto:{CONTACT_EMAIL}", "Contact"),
 ]
 ICONS = "\n".join(

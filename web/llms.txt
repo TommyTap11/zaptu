@@ -137,6 +137,7 @@ Request form only (service_type pest_control, collecting); no phone number.
 - [Pest control in West Palm Beach, FL](https://zaptu.ai/pest-control/west-palm-beach-fl/)
 - [Pest control in Fort Myers, FL](https://zaptu.ai/pest-control/fort-myers-fl/)
 - [Pest control in Atlanta, GA](https://zaptu.ai/pest-control/atlanta-ga/)
+- [Pest control in Houston, TX](https://zaptu.ai/pest-control/houston-tx/)
 
 ## HVAC repair
 Request form only (service_type hvac, collecting); no phone number. No city pages.
