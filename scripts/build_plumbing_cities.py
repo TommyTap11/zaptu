@@ -1006,6 +1006,48 @@ for _k, _v in [("baltimore-md", "silver-spring-md"), ("arlington-va", "bethesda-
         SIBLINGS[_k].append(_v)
 
 
+# Single page (2026-11-02): Tucson, AZ. Picked from the Polyares plumbing high-priority ZIP list
+# (54 Tucson ZIPs, nearly all 857xx). Local specifics are verifiable: Tucson Water's Colorado River
+# (CAP) + groundwater blend, CAP water being harder (Tucson Water aquifer report), and the NWS
+# monsoon season dates (June 15 to September 30).
+LOCAL9 = {
+    "tucson-az": {
+        "intro": "Tucson sits in the Sonoran Desert, where Tucson Water delivers a blend of Colorado River water, brought in by the Central Arizona Project, and local groundwater, and summer monsoon storms can bring sudden heavy rain. Send a request to be connected with a local plumbing professional.",
+        "notes": [
+            "Tucson Water notes that Colorado River water is generally harder than the local groundwater it is blended with. Hard water leaves mineral deposits that can build up in water heaters, faucet aerators, and shower heads.",
+            "The National Weather Service treats June 15 through September 30 as monsoon season in the Southwest. A heavy storm can overload drains and sewer lines, so describe where any backup appears and whether it started during rain.",
+            "Many homes in the area sit on slab foundations. An unexplained jump in the water bill, or a warm or damp spot on the floor, can point to a leak under the slab.",
+            "Winter nights can still drop below freezing. Disconnect garden hoses and cover exposed outdoor pipes before a cold night.",
+        ],
+        "focus": "hard water and slab leaks",
+        "related_html": (
+            '    <section>\n'
+            '      <h2>More plumbing help</h2>\n'
+            '      <p>Elsewhere in Arizona, see the pages for a <a href="/plumbing/phoenix-az/">plumber in Phoenix</a> and a '
+            '<a href="/plumbing/mesa-az/">plumber in Mesa</a>. To see what happens to a request, read '
+            '<a href="/how-it-works/">how Zaptu works</a>, or <a href="/plumbing/">browse all plumbing locations</a>. '
+            'If you use an AI assistant, it can <a href="/ai/">send the request for you</a>.</p>\n'
+            '    </section>\n'
+        ),
+    },
+}
+PLAN9 = {
+    "tucson-az": (["Water heaters", "Clogs and slow drains", "Leaks", "Sewer lines", "Burst or frozen pipes"],
+                 {"Water heaters": "Tucson's blended water is on the hard side, so sediment can collect in the tank; note any rumbling or popping sounds.",
+                  "Clogs and slow drains": "If drains back up during a monsoon storm, say so in your request even if they clear afterward."}),
+}
+SIB9 = {
+    "tucson-az": ["phoenix-az", "mesa-az", "las-vegas-nv"],
+}
+
+LOCAL.update(LOCAL9)
+ISSUE_PLAN.update(PLAN9)
+SIBLINGS.update(SIB9)
+for _k, _v in [("phoenix-az", "tucson-az"), ("mesa-az", "tucson-az")]:
+    if _v not in SIBLINGS[_k]:
+        SIBLINGS[_k].append(_v)
+
+
 _BSC = None
 
 
@@ -1254,7 +1296,7 @@ def city_page(c: dict) -> str:
       </ul>
     </section>
 
-    <section>
+{loc.get('related_html', '')}    <section>
       <h2>What to tell the plumber</h2>
       <ul>
         <li>Your ZIP code, the type of home (house, condo, apartment), and its rough age if you know it.</li>

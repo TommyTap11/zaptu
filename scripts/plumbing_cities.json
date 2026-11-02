@@ -1703,6 +1703,28 @@
         "Sanger",
         "Slidell"
       ]
+    },
+    {
+      "city": "Tucson",
+      "state": "Arizona",
+      "abbr": "AZ",
+      "slug": "tucson-az",
+      "source": "polyares-priority-zips-2026-11-02",
+      "zips": 54,
+      "zip_areas": [
+        "857",
+        "85629",
+        "85641",
+        "85653"
+      ],
+      "nearby_covered_areas": [
+        "Oro Valley",
+        "Marana",
+        "Sahuarita",
+        "Vail",
+        "Green Valley",
+        "Catalina"
+      ]
     }
   ],
   "rejected": [
