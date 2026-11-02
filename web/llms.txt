@@ -139,9 +139,11 @@ Request form only (service_type pest_control, collecting); no phone number.
 - [Pest control in Atlanta, GA](https://zaptu.ai/pest-control/atlanta-ga/)
 - [Pest control in Houston, TX](https://zaptu.ai/pest-control/houston-tx/)
 
-## HVAC repair
-Request form only (service_type hvac, collecting); no phone number. No city pages.
+## HVAC repair city pages
+Request form only (service_type hvac, collecting); no phone number.
 - [HVAC repair](https://zaptu.ai/hvac/)
+- [HVAC repair in Dallas, TX](https://zaptu.ai/hvac/dallas-tx/)
+- [HVAC repair in San Antonio, TX](https://zaptu.ai/hvac/san-antonio-tx/)
 
 ## Handyman
 Request form only (service_type handyman, collecting); no phone number. No city pages.
