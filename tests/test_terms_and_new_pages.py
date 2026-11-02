@@ -24,6 +24,7 @@ def test_terms_page_says_referral_only_and_no_booking():
     assert "No callback, visit, arrival time or price is promised" in t
     assert CONSENT in t
     assert "Do not submit a request if you do not want a call or text" in t  # same line as the privacy page
+    assert "operated by Construction Irish LLC dba Zaptu" in t
 
 
 def test_terms_consent_matches_form_consent():
