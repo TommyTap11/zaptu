@@ -65,6 +65,7 @@ CITIES = {
     "dallas-tx": ("Dallas", "TX", "Texas"),
     "fort-worth-tx": ("Fort Worth", "TX", "Texas"),
     "san-antonio-tx": ("San Antonio", "TX", "Texas"),
+    "houston-tx": ("Houston", "TX", "Texas"),
     "atlanta-ga": ("Atlanta", "GA", "Georgia"),
     "kansas-city-mo": ("Kansas City", "MO", "Missouri"),
     "oklahoma-city-ok": ("Oklahoma City", "OK", "Oklahoma"),
@@ -255,7 +256,7 @@ SERVICES = {
             ("What detail helps with a pest request?", "Name the pest if it is known, where it shows up, and when. Mention children or pets in the home, and any product already put down. Keep children and pets away from that product. Zaptu does not perform pest control."),
         ],
         "cities": ["phoenix-az", "mesa-az", "dallas-tx", "fort-worth-tx", "arlington-tx", "san-antonio-tx", "miami-fl",
-                   "fort-lauderdale-fl", "west-palm-beach-fl", "fort-myers-fl", "atlanta-ga"],
+                   "fort-lauderdale-fl", "west-palm-beach-fl", "fort-myers-fl", "atlanta-ga", "houston-tx"],
         "local": {
             "mesa-az": ("Mesa shares the East Valley's desert pests, including bark scorpions, roaches and desert subterranean termites.",
                         ["Bark scorpions can climb walls and come in through small gaps under doors. Mention where you have seen them.",
@@ -294,9 +295,23 @@ SERVICES = {
             "fort-worth-tx": ("Fort Worth homes see many of the same pests as the rest of North Texas, from fire ants to termites and rodents in cooler months.",
                               ["Rodents often look for shelter indoors when the weather turns cold.",
                                "Termite swarms in spring are a common reason homeowners reach out."]),
+            # Added 2026-11-02: Houston has 182 ZIPs on the Polyares pest-control priority list
+            # ('pest control houston' 5,400/mo, Serpstat). Facts kept to well-documented ones:
+            # Formosan subterranean termites are established in the Houston area (Texas A&M AgriLife)
+            # and red imported fire ants are common in Texas lawns.
+            "houston-tx": ("Houston's hot, humid Gulf Coast climate keeps pests active for much of the year, including large roaches, ants, termites, mosquitoes and rats.",
+                           ["Formosan subterranean termites are established in the Houston area and often swarm on warm evenings in late spring. Mention any winged insects gathered near lights, windows or doors.",
+                            "Heavy rain and flooding can push fire ants and other ants indoors. Say whether the problem started after a storm.",
+                            "Standing water after rain can increase mosquitoes around the home. Note standing water in the yard, gutters or plant saucers.",
+                            "Large American cockroaches, often called water bugs, can come in from drains, sewers and the yard. Say whether you see them inside, outside, or both.",
+                            "Rats often move into attics and walls. Mention scratching sounds overhead or droppings in the garage or kitchen."]),
             "san-antonio-tx": ("San Antonio's heat and humidity support a long pest season, including roaches, ants, termites and mosquitoes.",
                                ["Standing water after rain can increase mosquitoes around the home.",
                                 "Note whether you see pests mainly inside, in the yard, or both."]),
+        },
+        # Nearby places for cities without plumbing data (Houston: suburbs on the Polyares pest list).
+        "nearby": {
+            "houston-tx": ["Pasadena", "Spring", "Katy", "Sugar Land", "Humble", "Conroe"],
         },
         "siblings_label": "Pest control in",
     },
@@ -643,7 +658,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
 {chr(10).join(same_city)}
       </ul>
     </section>"""
-    nearby = PLUMBING.get(slug, {}).get("nearby_covered_areas", [])[:8]
+    nearby = (PLUMBING.get(slug, {}).get("nearby_covered_areas") or s.get("nearby", {}).get(slug, []))[:8]
     nearby_html = ""
     if nearby:
         listed = ", ".join(nearby[:-1]) + (f" and {nearby[-1]}" if len(nearby) > 1 else nearby[0])
