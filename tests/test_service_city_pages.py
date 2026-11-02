@@ -96,9 +96,11 @@ CLEANING_PEST_NEW = [
 def test_cleaning_pest_pages_contact_request_only(rel):
     text = (WEB / rel / "index.html").read_text()
     body = text.split('<p class="disclaimer">')[0].lower()
-    # Same consent wording as the intake (version 2026-10-19-polyares-v1); no Polyares link or redirect yet.
+    # Same consent wording as the intake (version 2026-10-19-polyares-v1). Since Nov 2 2026 the only
+    # Polyares URL on the page is its hosted form iframe (no outbound link or redirect).
     assert "share my details with polyares and its service-provider partners" in body
-    assert "polyares.com" not in text.lower() and "leads.polyares" not in text.lower()
+    assert text.lower().count("polyares.com") == 1
+    assert '<iframe class="partner-frame" src="https://leads.polyares.com/' in text
     assert "http-equiv=\"refresh\"" not in text.lower()
     assert "consent_source_page" in text and 'fetch("/"' in text  # source page + Netlify Forms backup
     assert "not a booking" in body

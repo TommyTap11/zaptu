@@ -72,6 +72,7 @@ CITIES = {
 
 SERVICES = {
     "cleaning": {
+        "polyares_category": 24,
         # Several cleaning service types share one page; the visitor picks one in a select.
         "service_type": "house_cleaning",
         "service_options": [
@@ -219,6 +220,7 @@ SERVICES = {
         "siblings_label": "Garage door repair in",
     },
     "pest-control": {
+        "polyares_category": 37,
         "service_type": "pest_control",
         "label": "Pest control",
         "h1": "Pest control in {name}",
@@ -392,11 +394,14 @@ def esc(s: str) -> str:
 # How each page asks for the request. "intake" = our own /v1/intake form (all pages today).
 # To move a category to a buyer's hosted form later, set "cta": "hosted_link" and
 # "hosted_url" on that SERVICES entry; cta_html() then renders a single link instead.
-# No hosted links are set: no buyer has issued per-category keys or written rates.
+# Polyares: set "polyares_category" to embed its hosted form above the intake form (see polyares_html).
 def cta_html(s: dict, city: str | None, abbr: str | None) -> str:
     mode = s.get("cta", "intake")
     if mode == "intake":
-        return form_html(s["service_type"], s["label"], city, abbr, s.get("service_options"))
+        form = form_html(s["service_type"], s["label"], city, abbr, s.get("service_options"))
+        if s.get("polyares_category"):
+            return polyares_html(s["polyares_category"], s["label"], city) + "\n" + backup_wrap(form)
+        return form
     if mode == "hosted_link":
         url = s["hosted_url"]  # required; must come from the buyer in writing
         where = f" in the {esc(city)} area" if city else ""
@@ -406,6 +411,36 @@ def cta_html(s: dict, city: str | None, abbr: str | None) -> str:
       <p><a class="btn-call" href="{esc(url)}" rel="nofollow">Open the request form</a></p>
     </div>"""
     raise ValueError(f"unknown cta mode {mode!r}")
+
+
+# Polyares hosted form (portal Nov 2 2026): one public account api_key, category id per trade.
+# The Polyares form is the primary request form; our /v1/intake form (with its Netlify Forms
+# backup copy) stays on the page, collapsed, as a fallback. Our copy is stored only and never
+# forwarded to another buyer, so a consumer is never sold twice.
+POLYARES_API_KEY = "bcbd33d83d047f182121c2a4404c4853e3f50324"
+POLYARES_MARK = 'id="polyares-request"'
+
+
+def polyares_url(category: int) -> str:
+    return (f"https://leads.polyares.com/?api_key={POLYARES_API_KEY}"
+            f"&funnel=3&category={int(category)}&step=1&buttons=btn-primary")
+
+
+def polyares_html(category: int, label: str, city: str | None) -> str:
+    where = f" in the {esc(city)} area" if city else ""
+    return f"""    <section {POLYARES_MARK} class="request-form partner-form">
+      <h2>Send a request</h2>
+      <p class="hint">{esc(label)}{where}. This form is run by Polyares, a partner that passes requests to participating independent providers. It is a contact request, not a booking.</p>
+      <iframe class="partner-frame" src="{esc(polyares_url(category))}" title="{esc(label)} request form (Polyares)" width="100%" height="525"></iframe>
+      <p class="note">Sending this form shares your details with Polyares and its service-provider partners, who may call or text about this request. <a href="/privacy/">Privacy</a></p>
+    </section>"""
+
+
+def backup_wrap(form: str) -> str:
+    return ("    <details class=\"backup-form\">\n"
+            "      <summary>Form above not loading? Send your request to Zaptu instead.</summary>\n"
+            f"{form}\n"
+            "    </details>")
 
 
 def form_html(service_type: str, label: str, city: str | None, abbr: str | None,
