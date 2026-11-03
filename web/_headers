@@ -55,3 +55,7 @@
 /z.js
   Content-Type: application/javascript; charset=utf-8
   Cache-Control: public, max-age=3600
+
+/dashboard/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store

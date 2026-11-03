@@ -1,0 +1,12 @@
+{
+  "source": "Entered by hand from the Polyares portal (app.polyares.com/dashboard/leads). Not fetched automatically.",
+  "as_of": "2026-11-03T09:20:00-05:00",
+  "sold_forms": 0,
+  "sold_calls": 0,
+  "revenue_usd": 0.0,
+  "leads": [],
+  "call_numbers": [
+    {"service": "Plumbing", "number": "855-360-1813", "status": "Live", "pages": 66, "path": "/plumbing/"},
+    {"service": "Pest control", "number": "855-341-9295", "status": "Ships with the Nov 4 deploy", "pages": 13, "path": "/pest-control/"}
+  ]
+}
