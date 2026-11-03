@@ -52,6 +52,10 @@ def test_page_rules(page):
     else:
         assert f'name="service_type" value="{service_type(page)}"' in text
     body = text.split('<p class="disclaimer">')[0].lower()
+    if page.relative_to(WEB).as_posix().startswith("pest-control/"):
+        # Only call link allowed: the Polyares pest-control tracking number (2026-11-03); see test_pest_call_number.py
+        assert re.findall(r'href="tel:[^"]*"', text) == ['href="tel:+18553419295"']
+        body = body.replace('href="tel:+18553419295"', "")
     for b in BANNED:
         assert b not in body, b
     assert not re.search(r"\bfree\b", body) and "guarantee" not in body

@@ -72,6 +72,10 @@ CITIES = {
     "oklahoma-city-ok": ("Oklahoma City", "OK", "Oklahoma"),
 }
 
+# Polyares Pest Control tracking number (portal /phone-numbers), issued 2026-11-03. Pest-control only:
+# calls are tracked per number, so never put it on another category.
+POLYARES_PEST_PHONE = "855-341-9295"
+
 SERVICES = {
     "cleaning": {
         "polyares_category": 24,
@@ -224,6 +228,7 @@ SERVICES = {
     },
     "pest-control": {
         "polyares_category": 37,
+        "polyares_phone": POLYARES_PEST_PHONE,
         "service_type": "pest_control",
         "label": "Pest control",
         "h1": "Pest control in {name}",
@@ -455,8 +460,9 @@ def tel_href(phone: str) -> str:
     return "tel:+" + digits
 
 
-# Polyares tracking number per category (portal /phone-numbers). Plumbing only, issued 2026-11-02
-# ("Plumbing Pros 509"). Only set it on the category it was issued for: calls are tracked per number.
+# Polyares tracking number per category (portal /phone-numbers). Plumbing issued 2026-11-02
+# ("Plumbing Pros 509"); pest control is POLYARES_PEST_PHONE above (2026-11-03). Only set a number on the
+# category it was issued for: calls are tracked per number.
 POLYARES_PLUMBING_PHONE = "855-360-1813"
 CALL_MARK = 'class="call-line"'
 

@@ -14,7 +14,8 @@ PHONE = "855-360-1813"
 TEL = "tel:+18553601813"
 PLUMBING = sorted((WEB / "plumbing").rglob("index.html"))
 PUBLIC = [p for p in sorted(WEB.rglob("*.html")) if "dashboard" not in p.parts]
-OTHER = [p for p in PUBLIC if p not in PLUMBING]
+PEST = sorted((WEB / "pest-control").rglob("index.html"))  # own number since 2026-11-03
+OTHER = [p for p in PUBLIC if p not in PLUMBING and p not in PEST]
 CALL_LINE = (f'<p class="call-line">Prefer to call? <a class="btn-call" href="{TEL}">Call {PHONE}</a></p>')
 CALL_NOTE = ("The call goes to a Polyares line that passes it to participating independent providers. "
              "A call is a contact request, not a booking.")
@@ -75,5 +76,8 @@ def test_generator_matches_and_is_plumbing_only():
     assert CALL_LINE in m.polyares_html(1, "Plumbing", "Miami", PHONE)
     assert "tel:" not in m.polyares_html(1, "Plumbing", "Miami")
     for key, s in m.SERVICES.items():
-        assert not s.get("polyares_phone"), key
-        assert "tel:" not in m.cta_html(s, None, None), key
+        assert s.get("polyares_phone") != PHONE, key
+        assert TEL not in m.cta_html(s, None, None), key
+        if key != "pest-control":  # pest has its own number since 2026-11-03 (test_pest_call_number.py)
+            assert not s.get("polyares_phone"), key
+            assert "tel:" not in m.cta_html(s, None, None), key
