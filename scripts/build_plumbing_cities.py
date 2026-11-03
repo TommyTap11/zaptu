@@ -1062,7 +1062,8 @@ def bsc():
     return _BSC
 
 
-PLUMBING_SERVICE = {"service_type": "plumbing", "label": "Plumbing", "polyares_category": 1}
+PLUMBING_SERVICE = {"service_type": "plumbing", "label": "Plumbing", "polyares_category": 1,
+                    "polyares_phone": bsc().POLYARES_PLUMBING_PHONE}
 
 
 def request_form(city: str | None = None, abbr: str | None = None) -> str:

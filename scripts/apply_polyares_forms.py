@@ -21,7 +21,7 @@ spec.loader.exec_module(bsc)
 TRADES = {
     "cleaning": bsc.SERVICES["cleaning"],
     "pest-control": bsc.SERVICES["pest-control"],
-    "plumbing": {"label": "Plumbing", "polyares_category": 1},
+    "plumbing": {"label": "Plumbing", "polyares_category": 1, "polyares_phone": bsc.POLYARES_PLUMBING_PHONE},
     "garage-door": bsc.SERVICES["garage-door"],
     "hvac": bsc.SERVICES["hvac"],
     "handyman": bsc.SERVICES["handyman"],
@@ -39,7 +39,7 @@ def patch(text: str, s: dict) -> str | None:
     form = m.group(0)
     c = CITY_RE.search(form)
     city = html.unescape(c.group(1)) if c else None
-    block = bsc.polyares_html(s["polyares_category"], s["label"], city) + "\n" + bsc.backup_wrap(form)
+    block = bsc.polyares_html(s["polyares_category"], s["label"], city, s.get("polyares_phone")) + "\n" + bsc.backup_wrap(form)
     return text[: m.start()] + block + text[m.end():]
 
 
