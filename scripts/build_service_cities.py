@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from pathlib import Path
 
 PLUMBING_DATA = json.loads((Path(__file__).with_name("plumbing_cities.json")).read_text(encoding="utf-8"))
@@ -418,7 +419,8 @@ def cta_html(s: dict, city: str | None, abbr: str | None) -> str:
     if mode == "intake":
         form = form_html(s["service_type"], s["label"], city, abbr, s.get("service_options"))
         if s.get("polyares_category"):
-            return polyares_html(s["polyares_category"], s["label"], city) + "\n" + backup_wrap(form)
+            return (polyares_html(s["polyares_category"], s["label"], city, s.get("polyares_phone"))
+                    + "\n" + backup_wrap(form))
         return form
     if mode == "hosted_link":
         url = s["hosted_url"]  # required; must come from the buyer in writing
@@ -444,12 +446,34 @@ def polyares_url(category: int) -> str:
             f"&funnel=3&category={int(category)}&step=1&buttons=btn-primary")
 
 
-def polyares_html(category: int, label: str, city: str | None) -> str:
+def tel_href(phone: str) -> str:
+    digits = re.sub(r"\D", "", phone)
+    if len(digits) == 10:
+        digits = "1" + digits
+    if len(digits) != 11 or not digits.startswith("1"):
+        raise ValueError(f"not a US phone number: {phone!r}")
+    return "tel:+" + digits
+
+
+# Polyares tracking number per category (portal /phone-numbers). Plumbing only, issued 2026-11-02
+# ("Plumbing Pros 509"). Only set it on the category it was issued for: calls are tracked per number.
+POLYARES_PLUMBING_PHONE = "855-360-1813"
+CALL_MARK = 'class="call-line"'
+
+
+def call_html(phone: str) -> str:
+    return (f'      <p {CALL_MARK}>Prefer to call? <a class="btn-call" href="{tel_href(phone)}">Call {esc(phone)}</a></p>\n'
+            '      <p class="note">The call goes to a Polyares line that passes it to participating independent providers. '
+            'A call is a contact request, not a booking.</p>\n')
+
+
+def polyares_html(category: int, label: str, city: str | None, phone: str | None = None) -> str:
     where = f" in the {esc(city)} area" if city else ""
+    call = call_html(phone) if phone else ""
     return f"""    <section {POLYARES_MARK} class="request-form partner-form">
       <h2>Send a request</h2>
       <p class="hint">{esc(label)}{where}. This form is run by Polyares, a partner that passes requests to participating independent providers. It is a contact request, not a booking.</p>
-      <iframe class="partner-frame" src="{esc(polyares_url(category))}" title="{esc(label)} request form (Polyares)" width="100%" height="525"></iframe>
+{call}      <iframe class="partner-frame" src="{esc(polyares_url(category))}" title="{esc(label)} request form (Polyares)" width="100%" height="525"></iframe>
       <p class="note">Sending this form shares your details with Polyares and its service-provider partners, who may call or text about this request. <a href="/privacy/">Privacy</a></p>
     </section>"""
 

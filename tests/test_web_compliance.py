@@ -57,7 +57,8 @@ def test_city_page_form_and_schema(page):
     assert 'action="https://api.zaptu.ai/v1/intake"' in form
     assert '<input type="hidden" name="service_type" value="plumbing" />' in form
     assert "Polyares and its service-provider partners" in form
-    assert "tel:" not in raw
+    # Only call link allowed: the Polyares plumbing tracking number (2026-11-02); see test_plumbing_call_number.py
+    assert re.findall(r'href="tel:[^"]*"', raw) == ['href="tel:+18553601813"']
     assert "participating independent plumbing professional" in raw
     assert "not a booking" in raw
     blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', raw, re.S)
