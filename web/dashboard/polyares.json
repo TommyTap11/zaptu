@@ -6,7 +6,19 @@
   "revenue_usd": 0.0,
   "leads": [],
   "call_numbers": [
-    {"service": "Plumbing", "number": "855-360-1813", "status": "Live", "pages": 66, "path": "/plumbing/"},
-    {"service": "Pest control", "number": "855-341-9295", "status": "Ships with the Nov 4 deploy", "pages": 13, "path": "/pest-control/"}
+    {
+      "service": "Plumbing",
+      "number": "855-360-1813",
+      "status": "Live",
+      "pages": 66,
+      "path": "/plumbing/"
+    },
+    {
+      "service": "Pest control",
+      "number": "855-341-9295",
+      "status": "Live",
+      "pages": 13,
+      "path": "/pest-control/"
+    }
   ]
 }
