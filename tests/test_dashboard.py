@@ -76,7 +76,8 @@ def test_dashboard_uses_real_stats_fields_and_honest_labels():
                   "top_pages", "referrers", "api_by_endpoint", "call_clicks_by_page", "top_locations"):
         assert field in t, field
     assert "Counts are stored in the database and survive API restarts; nightly snapshots are a backup record." in t
-    assert "not tracked here yet" in t
+    # /v1/intake is labelled as tests + dry runs, never as sold leads.
+    assert "/v1/intake" in t and "includes our tests and dry runs" in t and "not a sold-lead count" in t
 
 
 def test_seo_script_skips_dashboard():
@@ -87,7 +88,7 @@ def test_seo_script_skips_dashboard():
 def test_dashboard_has_location_map_and_list():
     t = html()
     assert 'id="top-locations"' in t and 'id="map"' in t
-    assert "Visits by place" in t
+    assert "Where visits come from" in t and 'id="by-state"' in t
     assert "Locations are approximate, from IP address, city-level only." in t
     # Leaflet/OpenStreetMap is loaded dynamically only after PIN login succeeds
     # (renderMap is called from render(), which runs only on a 200 stats reply).
@@ -110,14 +111,13 @@ def test_dashboard_polyares_style_layout():
 
 def test_dashboard_stat_cards_chart_and_ranges():
     t = html()
-    for label in ("Visits", "Unique visitors", "Call clicks", "Revenue", "$0", "0 leads sold"):
+    for label in ("Visits", "Sold leads (Polyares)", "Call clicks", "Revenue (Polyares)"):
         assert label in t, label
     assert 'id="chart"' in t and "renderChart" in t and "<svg" in t
     assert "Visits per day" in t
-    assert 'id="range-today"' in t and 'id="range-30"' in t
-    assert "Last 30 days" in t and ">Today<" in t
-    # Range filtering is derived from per_day only.
-    assert 'currentRange === "today"' in t and 'd.day === todayUtc' in t
+    # Ranges are fetched from the server (days=1/7/30/366), not filtered from a 30-day window.
+    for rid, days in (("range-today", 1), ("range-7", 7), ("range-30", 30), ("range-all", 366)):
+        assert f'id="{rid}" type="button" data-days="{days}"' in t, rid
+    assert '"?days=" + days' in t
     assert 'id="top-pages"' in t
-    assert "Requests received" in t and "includes tests" in t
     assert 'id="api-calls"' in t and 'id="mcp-calls"' in t
