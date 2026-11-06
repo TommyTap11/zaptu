@@ -22,3 +22,5 @@ Brand: Zaptu (zaptu.ai). This repo is vertical 1 — the home-services lead rout
 - Polyares call numbers, each only on its own category's pages (hub + cities), in the Polyares block: plumbing
   855-360-1813 (tel:+18553601813, `POLYARES_PLUMBING_PHONE`, live 2026-11-03) and pest control 855-341-9295
   (tel:+18553419295, `POLYARES_PEST_PHONE`, live 2026-11-03). Never on other categories.
+- Polyares conversions are recorded at GET/POST `/v1/polyares-postback` only. Do not send them through
+  `/v1/intake` or buyer forwarding, and do not change hosted forms or call numbers from that receiver.

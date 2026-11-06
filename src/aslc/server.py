@@ -13,6 +13,7 @@ Exposes:
   POST /v1/hit              anonymous page-view / call-click beacon (no cookies, no IPs stored)
   GET  /v1/stats            visit + usage stats (Bearer stats token)
   GET  /v1/dashboard-stats  same stats for the dashboard (X-Dashboard-Pin header)
+  GET/POST /v1/polyares-postback   Polyares conversion postback (stored only; no lead forwarding)
 
 CORS is open (no credentials) so browser-based agent clients can call the public API.
 """
@@ -49,6 +50,7 @@ from mcp.types import CallToolResult, TextContent, ToolAnnotations  # noqa: E402
 from aslc import analytics, catalog, config  # noqa: E402
 from aslc.models import ALL_SERVICE_TYPES, ServiceRequest  # noqa: E402
 from aslc.service import lookup_lead, submit_request  # noqa: E402
+from aslc.polyares_postback import handle_postback  # noqa: E402
 from aslc.storage import list_leads  # noqa: E402
 from aslc.validation import COLLECTED_ONLY_SERVICES, SUPPORTED_SERVICES  # noqa: E402
 
@@ -487,6 +489,12 @@ async def dashboard_stats_http(request: Request) -> Response:
     except ValueError:
         days = 30
     return JSONResponse(analytics.stats(days), headers={"Cache-Control": "no-store"})
+
+
+@mcp.custom_route("/v1/polyares-postback", methods=["GET", "POST"])
+async def polyares_postback(request: Request) -> Response:
+    """Polyares conversion postback. Records the event; does not sell or forward a lead."""
+    return await handle_postback(request)
 
 
 @mcp.custom_route("/health", methods=["GET"])
