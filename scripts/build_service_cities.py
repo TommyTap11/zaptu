@@ -326,9 +326,10 @@ SERVICES = {
         "polyares_category": 8,  # Polyares hosted form (form-block swap, 2026-11-02)
         "service_type": "hvac",
         "label": "HVAC repair",
-        "h1": "HVAC repair in {name}",
-        "title": "HVAC Repair in {name} — Send a Request | Zaptu",
-        "desc": "Need HVAC repair in {name}? Send a request to be connected with an independent local HVAC professional. Zaptu does not perform the work.",
+        "label_lc": "HVAC repair",
+        "h1": "AC and HVAC repair in {name}",
+        "title": "AC and HVAC Repair in {name} | Zaptu",
+        "desc": "AC not cooling or heat not working in {name}? Send a request to be connected with an independent local HVAC professional. Zaptu does not do the work.",
         "hub_title": "HVAC Repair — Send a Request | Zaptu",
         "hub_desc": "Send a request to be connected with an independent local HVAC professional. Zaptu does not perform the work and does not book appointments.",
         "hub_lede": "No cooling, no heat, a leak at the indoor unit, or a system that makes a new noise? Send a request to be connected with an independent local HVAC professional. A request is not a booking. Zaptu does not perform HVAC work and does not send a named company.",
@@ -363,8 +364,22 @@ SERVICES = {
             ("Who checks licensing and insurance?", "The homeowner does. License and insurance rules vary by state and by the job. Zaptu does not check them and does not perform the work."),
             ("What should the notes say about the system?", "Say whether the problem is heating, cooling, or both. Add the system type if known, such as central air, a furnace, a heat pump, a ductless mini-split, or a boiler. Add the approximate age and what the system is doing, such as not turning on, blowing warm air, short cycling, leaking water, or making a noise or a smell. Note whether anyone in the home is vulnerable to heat or cold."),
         ],
-        "cities": [],
-        "local": {},
+        # City pages (prepared 2026-11-02, deploy on or after Nov 9): Dallas has 109 and San Antonio 86 ZIPs
+        # on the Polyares HVAC priority list; 'ac repair dallas' 2,400/mo + 'hvac repair dallas' 880/mo,
+        # 'ac repair san antonio' 2,900/mo (Serpstat).
+        "cities": ["dallas-tx", "san-antonio-tx"],
+        "local": {
+            "dallas-tx": ("Dallas summers bring long stretches of heat, often near or above 100 degrees, and North Texas winters can still bring a hard freeze, so both cooling and heating get heavy use.",
+                          ["On the hottest afternoons, a working system can still fall behind the thermostat setting. Say how far the indoor temperature is from the setting and whether it catches up overnight.",
+                           "Outdoor units sit in the sun and collect cottonwood fluff, grass clippings and dust. Mention whether the outdoor coil looks clogged or the fan is not spinning.",
+                           "Many homes use a heat pump or a gas furnace for winter. Say which one the home has if known, and whether the problem started during a cold snap.",
+                           "Spring storms and hail can damage outdoor units. Note any storm damage when you describe the problem."]),
+            "san-antonio-tx": ("San Antonio has a long, hot cooling season that can run from spring well into fall, and humid Gulf air makes moisture removal part of the job.",
+                               ["A system that runs but leaves the home feeling damp or clammy can point to an airflow or sizing issue. Say whether the problem is heat, humidity, or both.",
+                                "Water at the indoor unit or a drain line that backs up is common when a system runs for long hours. Switch the system off if water is near electrical parts.",
+                                "Attic air handlers and ducts get very hot in summer. Say where the indoor unit sits: attic, closet, or garage.",
+                                "Winter is short but freezes do happen. Mention whether the home uses a heat pump or a furnace."]),
+        },
         "siblings_label": "HVAC repair in",
     },
     "handyman": {
@@ -668,6 +683,7 @@ def other_hubs_section(cat: str) -> str:
 
 def city_page(cat: str, s: dict, slug: str) -> str:
     city, abbr, state = CITIES[slug]
+    lc = s.get("label_lc", s["label"].lower())  # e.g. "HVAC repair" keeps its capitals
     name = f"{city}, {abbr}"
     url = f"{BASE}/{cat}/{slug}/"
     title, desc = fit_title(s, name), fit_desc(s, name)
@@ -700,7 +716,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
       <h2>Nearby places</h2>
       <p>Requests from the {esc(city)} area can come from nearby places such as {esc(listed)}. Put the ZIP code where the work is on the request. Whether a provider follows up depends on that ZIP code.</p>
     </section>"""
-    work = s["label"].lower()
+    work = lc
     city_faq = [
         (f"What should a {work} request in {city} mention?", f"{intro} {notes[0]}"),
         (f"Is a visit or arrival time promised in {city}?", f"No. A request is not a booking. A callback depends on whether a participating provider covers the ZIP code, and any timing is agreed directly with that provider."),
@@ -711,8 +727,8 @@ def city_page(cat: str, s: dict, slug: str) -> str:
         {"@type": "WebPage", "@id": url, "url": url, "name": title, "description": desc,
          "isPartOf": {"@type": "WebSite", "name": "Zaptu", "url": f"{BASE}/"}},
         {"@type": "Service", "name": f"{s['label']} request referral in {name}",
-         "serviceType": f"Referral connecting homeowners with independent local {s['label'].lower()} professionals",
-         "description": f"Zaptu passes requests along to participating independent {s['label'].lower()} professionals. Zaptu does not perform the work.",
+         "serviceType": f"Referral connecting homeowners with independent local {lc} professionals",
+         "description": f"Zaptu passes requests along to participating independent {lc} professionals. Zaptu does not perform the work.",
          "provider": {"@type": "Organization", "name": "Zaptu", "url": f"{BASE}/"},
          "areaServed": {"@type": "City", "name": city, "containedInPlace": {"@type": "State", "name": state}}, "url": url},
         crumbs([("Zaptu", f"{BASE}/"), (s["label"], f"{BASE}/{cat}/"), (name, url)]),
@@ -721,7 +737,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
     body = f"""  <main class="city">
     <p class="eyebrow"><a href="/{cat}/">{s['label']}</a> / {esc(name)}</p>
     <h1>{esc(s['h1'].format(name=name))}</h1>
-    <p class="lede">{esc(intro)} Send a request to be connected with an independent local {s['label'].lower()} professional in the {esc(city)} area.</p>
+    <p class="lede">{esc(intro)} Send a request to be connected with an independent local {lc} professional in the {esc(city)} area.</p>
 {cta_html(s, city, abbr)}
 
     <section>
@@ -729,7 +745,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
       <ul>
 {issues}
       </ul>
-      <p class="note">More detail on each is on the <a href="/{cat}/">{esc(s['label'].lower())} page</a>.</p>
+      <p class="note">More detail on each is on the <a href="/{cat}/">{esc(lc)} page</a>.</p>
     </section>
 
     <section>
@@ -755,7 +771,7 @@ def city_page(cat: str, s: dict, slug: str) -> str:
 {sibs}
       </ul>
     </section>
-    <p class="note"><a href="/{cat}/">All {s['label'].lower()} locations</a></p>
+    <p class="note"><a href="/{cat}/">All {lc} locations</a></p>
   </main>"""
     return page(title, desc, url, body, ld)
 

@@ -36,8 +36,8 @@ def visible_word_count(html: str) -> int:
 
 
 def test_pages_exist():
-    # cleaning hub + 10 cities, garage-door hub + 7 cities, pest-control hub + 12 cities (Houston added Nov 2), hvac hub, handyman hub
-    assert len(PAGES) == 34
+    # cleaning hub + 10 cities, garage-door hub + 7 cities, pest-control hub + 12 cities (Houston added Nov 2), hvac hub + 2 cities, handyman hub
+    assert len(PAGES) == 36
 
 
 @pytest.mark.parametrize("page", PAGES, ids=lambda p: str(p.relative_to(WEB)))
@@ -75,8 +75,9 @@ def test_collecting_hubs_are_substantive(cat):
     assert "FAQPage" in types
     faq = next(node for node in data["@graph"] if node["@type"] == "FAQPage")
     assert 3 <= len(faq["mainEntity"]) <= 4
-    assert list((WEB / cat).glob("*/index.html")) == []
-    assert "by city" not in text.lower()
+    if cat == "handyman":  # HVAC got city pages on 2026-11-02 (Dallas, San Antonio)
+        assert list((WEB / cat).glob("*/index.html")) == []
+        assert "by city" not in text.lower()
     for href in ("/plumbing/", "/garage-door/", "/pest-control/", "/hvac/", "/handyman/", "/how-it-works/"):
         if href == f"/{cat}/":
             continue
