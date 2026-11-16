@@ -36,6 +36,8 @@ services:
         sync: false # dashboard PIN; set in Render dashboard/API, never commit the value
       - key: DATABASE_URL
         sync: false # Postgres/Supabase connection string; set in Render dashboard, never commit the value
+      - key: POLYARE_POSTBACK_SECRET
+        sync: false # HMAC for /v1/polyares-postback; set in Render dashboard, never commit the value
       - key: LEAD_WEBHOOK_URL
         sync: false
       - key: LEAD_WEBHOOK_TOKEN
