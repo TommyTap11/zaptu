@@ -36,8 +36,8 @@ def visible_word_count(html: str) -> int:
 
 
 def test_pages_exist():
-    # cleaning hub + 10 cities, garage-door hub + 7 cities, pest-control hub + 12 cities (Houston added Nov 2), hvac hub + 2 cities, handyman hub
-    assert len(PAGES) == 36
+    # cleaning hub + 10 cities, garage-door hub + 7 cities, pest-control hub + 12 cities (Houston added Nov 2), hvac hub + 3 cities, handyman hub
+    assert len(PAGES) == 37
 
 
 @pytest.mark.parametrize("page", PAGES, ids=lambda p: str(p.relative_to(WEB)))

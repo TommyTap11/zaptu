@@ -144,6 +144,7 @@ Request form only (service_type hvac, collecting); no phone number.
 - [HVAC repair](https://zaptu.ai/hvac/)
 - [HVAC repair in Dallas, TX](https://zaptu.ai/hvac/dallas-tx/)
 - [HVAC repair in San Antonio, TX](https://zaptu.ai/hvac/san-antonio-tx/)
+- [HVAC repair in Miami, FL](https://zaptu.ai/hvac/miami-fl/)
 
 ## Handyman
 Request form only (service_type handyman, collecting); no phone number. No city pages.
