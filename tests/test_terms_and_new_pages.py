@@ -51,6 +51,7 @@ def test_footer_links_terms(page):
     ("plumbing/tucson-az", 1, "plumbing"),
     ("hvac/dallas-tx", 8, "hvac"),
     ("hvac/san-antonio-tx", 8, "hvac"),
+    ("hvac/miami-fl", 8, "hvac"),
 ])
 def test_new_city_pages_have_polyares_form_and_links(rel, cat, hub):
     t = (WEB / rel / "index.html").read_text(encoding="utf-8")

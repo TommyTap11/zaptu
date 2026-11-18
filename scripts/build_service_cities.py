@@ -367,7 +367,8 @@ SERVICES = {
         # City pages (prepared 2026-11-02, deploy on or after Nov 9): Dallas has 109 and San Antonio 86 ZIPs
         # on the Polyares HVAC priority list; 'ac repair dallas' 2,400/mo + 'hvac repair dallas' 880/mo,
         # 'ac repair san antonio' 2,900/mo (Serpstat).
-        "cities": ["dallas-tx", "san-antonio-tx"],
+        # Miami added 2026-11-18: 'hvac miami' about 2,400/mo, KD 42, about 94 priority ZIPs.
+        "cities": ["dallas-tx", "san-antonio-tx", "miami-fl"],
         "local": {
             "dallas-tx": ("Dallas summers bring long stretches of heat, often near or above 100 degrees, and North Texas winters can still bring a hard freeze, so both cooling and heating get heavy use.",
                           ["On the hottest afternoons, a working system can still fall behind the thermostat setting. Say how far the indoor temperature is from the setting and whether it catches up overnight.",
@@ -379,6 +380,11 @@ SERVICES = {
                                 "Water at the indoor unit or a drain line that backs up is common when a system runs for long hours. Switch the system off if water is near electrical parts.",
                                 "Attic air handlers and ducts get very hot in summer. Say where the indoor unit sits: attic, closet, or garage.",
                                 "Winter is short but freezes do happen. Mention whether the home uses a heat pump or a furnace."]),
+            "miami-fl": ("Miami stays hot and humid across a long cooling season, so cooling equipment runs for long stretches, and salt air along the coast wears on outdoor units.",
+                         ["Overnight humidity can leave a musty smell at the supply vents even when the thermostat setting is met. Say which rooms have the smell.",
+                          "Many condo air handlers sit in a closet, and a blocked condensate line can drip onto the closet floor or the ceiling below. Say where the water shows up.",
+                          "Condensers near Biscayne Bay pick up salt film and sand. Mention whether the unit is on a roof, a balcony, or a pad, and whether the fan is turning.",
+                          "Little Havana and Coconut Grove houses, and towers in Brickell and Edgewater, often use different equipment. Say whether the home has central air, a ductless mini-split, or a single-room unit."]),
         },
         "siblings_label": "HVAC repair in",
     },
