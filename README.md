@@ -1,5 +1,7 @@
 # Zaptu — Agent Service Lead Connector
 
+[![TommyTap11/zaptu MCP server](https://glama.ai/mcp/servers/TommyTap11/zaptu/badges/score.svg)](https://glama.ai/mcp/servers/TommyTap11/zaptu)
+
 Repo: **https://github.com/TommyTap11/zaptu**  
 Public home: **[zaptu.ai](https://zaptu.ai)** (owned).
 
